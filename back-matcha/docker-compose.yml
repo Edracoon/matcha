@@ -1,15 +1,16 @@
-version: '3.1'
+version: "3.1"
 
 services:
   db:
-    image: postgres:14.1
+    image: mysql:latest
     restart: always
     environment:
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
-      POSTGRES_DB: ${DB_NAME}
-      POSTGRES_USER: ${DB_USER}
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
     ports:
-      - ${DB_PORT}:5432
+      - ${DB_PORT}:3306
     volumes:
       - pgdata:/var/lib/postgresql/data
 
@@ -21,9 +22,9 @@ services:
 
 volumes:
   pgdata:
-    name: 'pgdata'
+    name: "pgdata"
     driver: local
     driver_opts:
-      type: 'none'
-      o: 'bind'
-      device: './pgdata'
+      type: "none"
+      o: "bind"
+      device: "./pgdata"
