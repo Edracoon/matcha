@@ -1,8 +1,8 @@
 require("dotenv").config();
 
 // My exports
-const pool = require("./src/db/db");
-const initDatabase = require("./src/db/db");
+const pool = require("./src/db");
+const initDatabase = require("./src/db");
 const User = require("./src/db/entities/user.entity");
 
 // Global exports

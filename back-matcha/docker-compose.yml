@@ -1,4 +1,4 @@
-version: "3.1"
+version: "3.3"
 
 services:
   db:
@@ -12,7 +12,8 @@ services:
     ports:
       - ${DB_PORT}:3306
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - script_database:/docker-entrypoint-initdb.d
+      - mysqldata:/var/lib/mysql
 
   adminer:
     image: adminer:4.8.1
@@ -21,10 +22,17 @@ services:
       - 8080:8080
 
 volumes:
-  pgdata:
-    name: "pgdata"
+  mysqldata:
+    name: "mysqldata"
     driver: local
     driver_opts:
       type: "none"
       o: "bind"
-      device: "./pgdata"
+      device: "./mysqldata"
+  script_database:
+    name: "script_database"
+    driver: local
+    driver_opts:
+      type: "none"
+      o: "bind"
+      device: "./script_database"
