@@ -1,58 +1,104 @@
 mysql -u root --password=passwd matcha -e "CREATE TABLE IF NOT EXISTS USER (
       ID INT(11) PRIMARY KEY AUTO_INCREMENT NOT NULL COMMENT 'Identifiant utilisateur',
-      LOGIN VARCHAR(30) NOT NULL COMMENT 'Login',
-      PWD TEXT NOT NULL COMMENT 'Mot de passe crypté',
-      NOM VARCHAR(50) NOT NULL COMMENT 'Nom',
-      PRE VARCHAR(30) NOT NULL COMMENT 'Prénom',
-      EMAIL VARCHAR(100) NOT NULL COMMENT 'e-mail',
-      GENRE VARCHAR(1) NOT NULL COMMENT 'Genre (Homme,Femme,Autre)',
-      BIO TEXT NOT NULL COMMENT 'Bio courte',
-      LASTIP TEXT NOT NULL COMMENT 'Dernière IP utilisée pour localisation si besoin',
-      ADR1 VARCHAR(100) NOT NULL COMMENT '1° partie de l adresse',
-      ADR2 VARCHAR(100) NOT NULL COMMENT 'Adresse partie 2 (loc géo)',
-      CODPOS VARCHAR(10) NOT NULL COMMENT 'Code postal (loc géo)',
-      VILLE VARCHAR(50) NOT NULL COMMENT 'Nom de la ville (loc géo)',
-      ONLINE tinyINT(1) NOT NULL COMMENT 'En ligne',
-      TRA_ID INT(11) NOT NULL,
-      ORI_ID INT(11) NOT NULL
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Liste des utilisateurs';"
+      login VARCHAR(30) NOT NULL COMMENT 'Login',
+      pwd TEXT NOT NULL COMMENT 'Mot de passe crypte',
+      firstname VARCHAR(30) NOT NULL COMMENT 'Prenom',
+      familyname VARCHAR(50) NOT NULL COMMENT 'Nom',
+      email VARCHAR(100) NOT NULL COMMENT 'e-mail',
+      genre VARCHAR(100) NOT NULL COMMENT 'Genre (Homme,Femme,Autre)',
+      bio TEXT NOT NULL COMMENT 'Bio courte',
+      last_ip TEXT NOT NULL COMMENT 'Derniere IP utilisee pour localisation si besoin',
+      ADR1 VARCHAR(100) NOT NULL COMMENT '1ere partie de l adresse',
+      ADR2 VARCHAR(100) NOT NULL COMMENT 'Adresse partie 2 (loc geo)',
+      city VARCHAR(50) NOT NULL COMMENT 'Nom de la city (loc geo)',
+      is_online tinyINT(1) NOT NULL COMMENT 'En ligne',
+      tra_id INT(11) NOT NULL COMMENT 'Id tranche d''age',
+      ori_id INT(11) NOT NULL COMMENT 'Id orientation sexuel',
+      fake_counter INT(11) NOT NULL COMMENT 'counter for reported accounts'
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Liste des utilisateurs';
 
-mysql -u root --password=passwd matcha -e "CREATE TABLE IF NOT EXISTS TRA (
-      ID int(11) PRIMARY KEY AUTO_INCREMENT NOT NULL COMMENT 'Identifiant Tranche d''âge',
-      MIN INT NOT NULL COMMENT 'âge min',
-      MAX INT NOT NULL COMMENT 'âge max',
-      ACT BOOL NOT NULL COMMENT 'Tranche d''âge active ou non'
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Liste des tranches d''âges des utilisateurs';"
+    CREATE TABLE IF NOT EXISTS TRA (
+      ID int(11) PRIMARY KEY AUTO_INCREMENT NOT NULL COMMENT 'Identifiant Tranche d''age',
+      min INT NOT NULL DEFAULT 18 COMMENT 'age min',
+      max INT NOT NULL COMMENT 'age max',
+      activated BOOL NOT NULL COMMENT 'Tranche d''age active ou non'
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Liste des tranches d''ages des utilisateurs';
 
-mysql -u root --password=passwd matcha -e "CREATE TABLE IF NOT EXISTS ORI (
+    CREATE TABLE IF NOT EXISTS ORI (
       ID int(11) PRIMARY KEY AUTO_INCREMENT NOT NULL COMMENT 'Identifiant orientation sexuelle',
-      DESIGN varchar(100) NOT NULL COMMENT 'Désignation orientation sexuelle',
-      ACT tinyint(1) NOT NULL DEFAULT 1 COMMENT 'Orientation active ou non'
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Toutes les orientations sexuelles possibles et proposées';"
+      design varchar(100) NOT NULL COMMENT 'Designation orientation sexuelle',
+      activated tinyint(1) NOT NULL DEFAULT 1 COMMENT 'Orientation active ou non'
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Toutes les orientations sexuelles possibles et proposees';
 
-mysql -u root --password=passwd matcha -e "CREATE TABLE IF NOT EXISTS IMG (
+    CREATE TABLE IF NOT EXISTS IMG (
       ID int(11) PRIMARY KEY AUTO_INCREMENT  NOT NULL COMMENT 'Identifiant Image',
-      USRID int(11) NOT NULL COMMENT 'Identifiant utilisateur',
-      FILE BLOB NOT NULL COMMENT 'Nom du fichier image'
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Liste des images pour un utilisateur (limiter à 5 par programme)';"
+      user_id int(11) NOT NULL COMMENT 'Identifiant utilisateur',
+      file BLOB NOT NULL COMMENT 'Nom du fichier image'
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Liste des images pour un utilisateur (limiter a 5 par programme)';
 
-mysql -u root --password=passwd matcha -e "CREATE TABLE IF NOT EXISTS NOTIF (
-      ID int(11) PRIMARY KEY AUTO_INCREMENT NOT NULL,
-      USRIDACONSULT int(11) NOT NULL COMMENT 'Utilisateur qui a consulté',
-      USRIDESTCONSULT int(11) NOT NULL COMMENT 'Utilisateur qui est consulté',
-      DATE TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Date de consultation',
-      BLK tinyint(1) NOT NULL DEFAULT 0 COMMENT 'USRID consulté est bloqué ou non',
-      LIK tinyint(1) NOT NULL DEFAULT 0 COMMENT 'Appréciation pour usr qui est cons'
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Liste des notifications/consultations';"
+    CREATE TABLE IF NOT EXISTS NOTIF (
+      id int(11) PRIMARY KEY AUTO_INCREMENT NOT NULL,
+      sender_id int(11) NOT NULL COMMENT 'Utilisateur qui a consulte',
+      receiver_id int(11) NOT NULL COMMENT 'Utilisateur qui est consulte',
+      category ENUM('liked', 'visited', 'message', 'liked_back', 'unliked') NOT NULL COMMENT 'type de la notification',
+      date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Date de consultation',
+      likes tinyint(1) NOT NULL DEFAULT 0 COMMENT 'Appreciation pour usr qui est cons'
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Liste des notifications/consultations';
 
-mysql -u root --password=passwd matcha -e "CREATE TABLE IF NOT EXISTS TAG (
+    CREATE TABLE IF NOT EXISTS TAG (
       ID int(11) PRIMARY KEY AUTO_INCREMENT NOT NULL COMMENT 'Identifiant #tag',
-      DESIGN varchar(100) NOT NULL COMMENT 'Désignation du #tag',
-      COD varchar(10) NOT NULL COMMENT 'Code (ou #tag) attribué'
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Liste des tags';"
+      design varchar(100) NOT NULL COMMENT 'Designation du #tag'
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Liste des tags';
 
-mysql -u root --password=passwd matcha -e "CREATE TABLE IF NOT EXISTS USR_TAG (
+    CREATE TABLE IF NOT EXISTS USER_TAG (
       ID int(11) PRIMARY KEY AUTO_INCREMENT NOT NULL COMMENT 'Identifiant couple Utilisateur / #tag',
-      USRID int(11) NOT NULL COMMENT 'Identifiant utilisateur',
-      TAGID int(11) NOT NULL COMMENT 'Identifiant #tag'
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='couples des Utilisateurs / #tag)';"
+      user_id int(11) NOT NULL COMMENT 'Identifiant utilisateur',
+      tag_id int(11) NOT NULL COMMENT 'Identifiant #tag'
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='couples des Utilisateurs / #tag';
+
+    CREATE TABLE IF NOT EXISTS ROOM (
+      ID int(11) PRIMARY KEY AUTO_INCREMENT NOT NULL COMMENT 'Identifiant couple Utilisateur / #tag',
+      user_id1 int(11) NOT NULL COMMENT 'Identifiant utilisateur 1',
+      user_id2 int(11) NOT NULL COMMENT 'Identifiant utilisateur 2'
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='liste des rooms';
+
+    CREATE TABLE IF NOT EXISTS MESSAGE (
+      ID int(11) PRIMARY KEY AUTO_INCREMENT NOT NULL COMMENT 'Identifiant couple Utilisateur / #tag',
+      room_id int(11) NOT NULL COMMENT 'id de la room dans lequel le msg est envoye',
+      user_id int(11) NOT NULL COMMENT 'Identifiant du sender' ,
+      text VARCHAR(255) NOT NULL COMMENT 'Contenu du message',
+      date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Date d''envoie du message'
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='tous les messages de toutes les rooms';
+
+    CREATE TABLE IF NOT EXISTS BLOCK_LIST (
+      ID int(11) PRIMARY KEY AUTO_INCREMENT NOT NULL COMMENT 'Identifiant couple Utilisateur / #tag',
+      user_id1 int(11) NOT NULL COMMENT 'Id de celui qui bloque',
+      user_id2 int(11) NOT NULL COMMENT 'Id de celui qui est bloque'
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Liste des bloquages entre users';
+
+    ALTER TABLE NOTIF
+      ADD CONSTRAINT NOTIF_ibfk_1 FOREIGN KEY (sender_id) REFERENCES USER (ID),
+      ADD CONSTRAINT NOTIF_ibfk_2 FOREIGN KEY (receiver_id) REFERENCES USER (ID);
+
+    ALTER TABLE IMG
+      ADD CONSTRAINT IMG_ibfk_1 FOREIGN KEY (user_id) REFERENCES USER (ID);
+
+    ALTER TABLE USER
+      ADD CONSTRAINT USER_ibfk_1 FOREIGN KEY (tra_id) REFERENCES TRA (ID),
+      ADD CONSTRAINT USER_ibfk_2 FOREIGN KEY (ori_id) REFERENCES ORI (ID);
+
+    ALTER TABLE USER_TAG
+      ADD CONSTRAINT USER_TAG_ibfk_1 FOREIGN KEY (user_id) REFERENCES USER (ID),
+      ADD CONSTRAINT USER_TAG_ibfk_2 FOREIGN KEY (tag_id) REFERENCES TAG (ID);
+
+    ALTER TABLE ROOM
+      ADD CONSTRAINT ROOM_ibfk_1 FOREIGN KEY (user_id1) REFERENCES USER (ID),
+      ADD CONSTRAINT ROOM_ibfk_2 FOREIGN KEY (user_id2) REFERENCES USER (ID);
+
+    ALTER TABLE MESSAGE
+      ADD CONSTRAINT MESSAGE_ibfk_1 FOREIGN KEY (room_id) REFERENCES ROOM (ID),
+      ADD CONSTRAINT MESSAGE_ibfk_2 FOREIGN KEY (user_id) REFERENCES USER (ID);
+    
+    ALTER TABLE BLOCK_LIST
+      ADD CONSTRAINT BLOCK_LIST_ibfk_1 FOREIGN KEY (user_id1) REFERENCES USER (ID),
+      ADD CONSTRAINT BLOCK_LIST_ibfk_2 FOREIGN KEY (user_id2) REFERENCES USER (ID);"
