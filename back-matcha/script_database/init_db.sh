@@ -50,6 +50,11 @@ mysql -u root --password=passwd matcha -e "CREATE TABLE IF NOT EXISTS USER (
       design varchar(100) NOT NULL COMMENT 'Designation du #tag'
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Liste des tags';
 
+    # CREATE TABLE IF NOT EXISTS GENDER (
+    #   ID int(11) PRIMARY KEY AUTO_INCREMENT NOT NULL COMMENT 'Identifiant genre',
+    #   design varchar(100) NOT NULL COMMENT 'Designation du genre'
+    # ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Liste des genre disponibles';
+
     CREATE TABLE IF NOT EXISTS USER_TAG (
       ID int(11) PRIMARY KEY AUTO_INCREMENT NOT NULL COMMENT 'Identifiant couple Utilisateur / #tag',
       user_id int(11) NOT NULL COMMENT 'Identifiant utilisateur',

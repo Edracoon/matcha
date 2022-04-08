@@ -7,6 +7,7 @@ import {
   insertTra,
   insertUser,
   insertTag,
+  insertUsertag,
 } from "./wrapperSQL.js";
 
 /*
@@ -56,6 +57,8 @@ pool.getConnection((err, connection) => {
 });
 
 export async function truncateDatabase() {
+  await pool.query("DELETE FROM USER_TAG;");
+  await pool.query("DELETE FROM TAG;");
   await pool.query("DELETE FROM IMG;");
   await pool.query("DELETE FROM USER;");
   await pool.query("DELETE FROM TRA;");
@@ -64,24 +67,30 @@ export async function truncateDatabase() {
   await pool.query("ALTER TABLE TRA AUTO_INCREMENT = 1");
   await pool.query("ALTER TABLE ORI AUTO_INCREMENT = 1");
   await pool.query("ALTER TABLE IMG AUTO_INCREMENT = 1");
+  await pool.query("ALTER TABLE USER_TAG AUTO_INCREMENT = 1");
+  await pool.query("ALTER TABLE TAG AUTO_INCREMENT = 1");
 }
 
 export async function populateDatabase(nb) {
   await insertTra({ min: "18", max: "99", activated: "1" });
   await insertTra({ min: "30", max: "50", activated: "1" });
   await insertTra({ min: "60", max: "90", activated: "1" });
+
   await insertOri({ design: "undefined", activated: "1" });
   await insertOri({ design: "heterosexual", activated: "1" });
   await insertOri({ design: "homosexual", activated: "1" });
   await insertOri({ design: "bisexual", activated: "1" });
-  await insertTag({ design: "voyage" });
-  await insertTag({ design: "photo" });
-  await insertTag({ design: "code" });
-  await insertTag({ design: "sport" });
-  await insertTag({ design: "video games" });
-  await insertTag({ design: "animals" });
-  await insertTag({ design: "cat" });
-  await insertTag({ design: "dog" });
+
+  await insertTag({ design: "Voyage" });
+  await insertTag({ design: "Photo" });
+  await insertTag({ design: "Code" });
+  await insertTag({ design: "Sport" });
+  await insertTag({ design: "Video games" });
+  await insertTag({ design: "Animals" });
+  await insertTag({ design: "Cat" });
+  await insertTag({ design: "Dog" });
+  await insertTag({ design: "LGBTQ+" });
+  await insertTag({ design: "Music" });
 
   for (let i = 1; i <= nb; i++) {
     await insertUser(generateUser());
@@ -89,6 +98,14 @@ export async function populateDatabase(nb) {
       user_id: i,
       // file: faker.image.imageUrl(640, 480, "people", true, true),
       file: faker.internet.avatar(),
+    });
+    await insertUsertag({
+      user_id: i,
+      tag_id: Math.floor(Math.random() * 10) + 1,
+    });
+    await insertUsertag({
+      user_id: i,
+      tag_id: Math.floor(Math.random() * 10) + 1,
     });
   }
 }

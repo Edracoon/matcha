@@ -64,10 +64,10 @@ export async function insertTag(tag) {
   }
 }
 
-export async function insertUsertag(Usertag) {
+export async function insertUsertag(usertag) {
   try {
     await pool.query(
-      `INSERT INTO USER_TAG (user_id, file) VALUES ('${usertag.user_id}', '${usertag.tag_id}')`
+      `INSERT INTO USER_TAG (user_id, tag_id) VALUES ('${usertag.user_id}', '${usertag.tag_id}')`
     );
   } catch (error) {
     console.log("======== Error in InsertUsertag =========\n", error);
