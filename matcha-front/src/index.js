@@ -11,8 +11,8 @@ class App extends React.Component {
   }
 
   render() {
-    return <Header />;
+    return <Login />;
   }
 }
 
-ReactDOM.render(<Login />, document.getElementById("root"));
+ReactDOM.render(<App />, document.getElementById("root"));
