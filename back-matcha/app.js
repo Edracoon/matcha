@@ -6,7 +6,7 @@ import { populateDatabase, pool, truncateDatabase } from "./src/manager.js";
 const express = pkg;
 
 const app = express();
-const port = 4200;
+const port = 3000;
 
 // Middleware
 app.use(express.json());
