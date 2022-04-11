@@ -26,6 +26,11 @@ app.get("/truncate", (req, res) => {
   res.send("Truncate");
 });
 
+app.get("/api/user/:user", (req, res) => {
+  truncateDatabase();
+  res.send("Truncate");
+});
+
 app.listen(port, () => {
   console.log(`Matcha listening on port ${port}`);
 });
