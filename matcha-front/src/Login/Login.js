@@ -112,10 +112,24 @@ export function RegisterModal(props) {
       errors.username = "Must be 20 characters or less";
     }
 
-    if (!values.password) {
-      errors.password = "Please provide an password !";
-    } else if (values.password.length < 7) {
-      errors.password = "Must be 7 characters or more";
+    if (values.password1 !== values.password2) {
+      errors.password2 = "Passwords are not the same !";
+    }
+
+    if (!values.password1) {
+      errors.password1 = "Please provide a password !";
+    } else if (values.password1.length < 7) {
+      errors.password1 = "Must be 7 characters or more !";
+    } else if (values.password1.length > 72) {
+      errors.password1 = "Must be less than 72 characters !";
+    }
+
+    if (!values.password2) {
+      errors.password2 = "Please provide a password !";
+    } else if (values.password2.length < 7) {
+      errors.password2 = "Must be 7 characters or more !";
+    } else if (values.password2.length > 72) {
+      errors.password2 = "Must be less than 72 characters !";
     }
 
     return errors;
@@ -127,7 +141,8 @@ export function RegisterModal(props) {
       lastname: "",
       email: "",
       username: "",
-      password: "",
+      password1: "",
+      password2: "",
     },
     validate,
     onSubmit: (values) => {
@@ -212,15 +227,30 @@ export function RegisterModal(props) {
             <Form.Group as={Col} md="6">
               <Form.Label>Password (this will be used to login)</Form.Label>
               <Form.Control
-                id="password"
-                name="password"
-                type="Password"
+                id="password1"
+                name="password1"
+                type="password"
                 placeholder="Password"
                 required
                 onChange={formik.handleChange}
               />
-              {formik.touched.password && formik.errors.password ? (
-                <p style={{ color: "red" }}>{formik.errors.password}</p>
+              {formik.touched.password1 && formik.errors.password1 ? (
+                <p style={{ color: "red" }}>{formik.errors.password1}</p>
+              ) : null}
+            </Form.Group>
+            <br />
+            <Form.Group as={Col} md="6">
+              <Form.Label>Same password again </Form.Label>
+              <Form.Control
+                id="password2"
+                name="password2"
+                type="password"
+                placeholder="Password"
+                required
+                onChange={formik.handleChange}
+              />
+              {formik.touched.password2 && formik.errors.password2 ? (
+                <p style={{ color: "red" }}>{formik.errors.password2}</p>
               ) : null}
             </Form.Group>
           </Row>
@@ -249,8 +279,18 @@ export default function Login() {
     console.log(values);
   }
 
-  function onClickSubmitRegister(values) {
+  async function onClickSubmitRegister(values) {
+    console.log(JSON.stringify(values));
     console.log(values);
+    fetch("http://localhost:3000/api/user/register", {
+      method: "POST",
+      mode: "no-cors",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(values),
+    }).then((response) => response.json().then((json) => console.log(json)));
   }
 
   let modalLoginProps = {

@@ -1,18 +1,10 @@
 import {} from "dotenv/config";
 import { faker } from "@faker-js/faker";
-import mysql from "mysql2/promise";
-import {
-  insertImg,
-  insertOri,
-  insertTra,
-  insertUser,
-  insertTag,
-  insertUsertag,
-} from "./wrapperSQL.js";
 
-/*
- ** Utils
- */
+import { pool } from "../app.js";
+import { insertOri, insertTra } from "./wrapper/ori_tra_wrapper.js";
+import * as userWrapper from "./wrapper/user_wrapper.js";
+
 // replaceAll
 String.prototype.sqlizeStr = function () {
   let str = this;
@@ -23,38 +15,6 @@ String.prototype.sqlizeStr = function () {
   }
   return str;
 };
-
-/*
- ** Using pool system to reuse connections previously released
- */
-export const pool = mysql.createPool({
-  connectionLimit: 100,
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
-  port: process.env.DB_PORT,
-});
-
-/*
- ** Handle pool potential errors
- */
-pool.getConnection((err, connection) => {
-  console.log("pool.getConnection() called.");
-  if (err) {
-    if (err.code === "PROTOCOL_CONNECTION_LOST") {
-      console.error("Database connection was closed.");
-    }
-    if (err.code === "ER_CON_COUNT_ERROR") {
-      console.error("Database has too many connections.");
-    }
-    if (err.code === "ECONNREFUSED") {
-      console.error("Database connection was refused.");
-    }
-  }
-  if (connection) connection.release();
-  return;
-});
 
 export async function truncateDatabase() {
   await pool.query("DELETE FROM USER_TAG;");
@@ -80,30 +40,29 @@ export async function populateDatabase(nb) {
   await insertOri({ design: "heterosexual", activated: "1" });
   await insertOri({ design: "homosexual", activated: "1" });
   await insertOri({ design: "bisexual", activated: "1" });
-
-  await insertTag({ design: "Voyage" });
-  await insertTag({ design: "Photo" });
-  await insertTag({ design: "Code" });
-  await insertTag({ design: "Sport" });
-  await insertTag({ design: "Video games" });
-  await insertTag({ design: "Animals" });
-  await insertTag({ design: "Cat" });
-  await insertTag({ design: "Dog" });
-  await insertTag({ design: "LGBTQ+" });
-  await insertTag({ design: "Music" });
+  await userWrapper.insertTag({ design: "Voyage" });
+  await userWrapper.insertTag({ design: "Photo" });
+  await userWrapper.insertTag({ design: "Code" });
+  await userWrapper.insertTag({ design: "Sport" });
+  await userWrapper.insertTag({ design: "Video games" });
+  await userWrapper.insertTag({ design: "Animals" });
+  await userWrapper.insertTag({ design: "Cat" });
+  await userWrapper.insertTag({ design: "Dog" });
+  await userWrapper.insertTag({ design: "LGBTQ+" });
+  await userWrapper.insertTag({ design: "Music" });
 
   for (let i = 1; i <= nb; i++) {
-    await insertUser(generateUser());
-    await insertImg({
+    await userWrapper.insertUser(generateUser());
+    await userWrapper.insertImg({
       user_id: i,
       // file: faker.image.imageUrl(640, 480, "people", true, true),
       file: faker.internet.avatar(),
     });
-    await insertUsertag({
+    await userWrapper.insertUsertag({
       user_id: i,
       tag_id: Math.floor(Math.random() * 10) + 1,
     });
-    await insertUsertag({
+    await userWrapper.insertUsertag({
       user_id: i,
       tag_id: Math.floor(Math.random() * 10) + 1,
     });
@@ -111,19 +70,20 @@ export async function populateDatabase(nb) {
 }
 
 function generateUser() {
-  let gender = faker.name.gender(true);
+  let gender = faker.name.gender(true).toLowerCase();
   let firstname = faker.name.firstName(gender.toLowerCase());
   let familyname = faker.name.lastName();
   let city = faker.address.city();
   let ADR1 = faker.address.streetAddress(false);
   let ADR2 = city + ", " + faker.address.state();
   return {
-    login: faker.internet.userName(firstname).sqlizeStr(),
-    pwd: faker.internet.password().sqlizeStr(),
+    username: faker.internet.userName(firstname).sqlizeStr(),
+    password: faker.internet.password().sqlizeStr(),
     firstname: firstname.sqlizeStr(),
     familyname: familyname.sqlizeStr(),
     email: faker.internet.email(firstname, familyname).sqlizeStr(),
-    genre: gender.sqlizeStr(),
+    genre1: gender,
+    genre2: "cisgender",
     bio: faker.lorem.sentences(3).sqlizeStr(),
     last_ip: faker.internet.ip().sqlizeStr(),
     ADR1: ADR1.sqlizeStr(),
