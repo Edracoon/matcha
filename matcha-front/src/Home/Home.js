@@ -8,17 +8,17 @@ import Modal from "react-bootstrap/Modal";
 import Form from "react-bootstrap/Form";
 
 import { BrowserRouter as Router, Link } from "react-router-dom";
+import { useUserContext } from "../UserContext";
 
-export default class Home extends React.Component {
-  constructor() {
-    super();
-  }
+export default function Home() {
+  const { logout } = useUserContext();
 
-  render() {
-    return (
-      <div className="d-flex align-items-center flex-column justify-content-between">
-        <h1 className="title-matcha">Home Working!</h1>
-      </div>
-    );
-  }
+  return (
+    <div className="d-flex align-items-center flex-column justify-content-between">
+      <h1 className="title-matcha">Home Working!</h1>
+      <button onClick={() => logout()} className="button">
+        Disconnect
+      </button>
+    </div>
+  );
 }

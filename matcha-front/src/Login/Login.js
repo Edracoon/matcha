@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import "./Login.css";
 import "../style.css";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -7,24 +7,49 @@ import logomatcha from "../assets/matcha-logo.png";
 import Modal from "react-bootstrap/Modal";
 import Form from "react-bootstrap/Form";
 import InputGroup from "react-bootstrap/InputGroup";
-import Button from "react-bootstrap/Button";
 import Row from "react-bootstrap/Container";
 import Col from "react-bootstrap/Container";
 
-import { BrowserRouter as Router, Link } from "react-router-dom";
+import { BrowserRouter as Router, Link, Navigate } from "react-router-dom";
 
 import { useFormik } from "formik";
+import { useUserContext } from "../UserContext";
 
 export function LoginModal(props) {
-  const [username, setUsername] = React.useState("");
-  const [password, setPassword] = React.useState("");
+  const validate = (values) => {
+    const errors = {};
 
-  function submit() {
-    props.onClickSubmitLogin({
-      username: username,
-      password: password,
-    });
-  }
+    if (!values.username) {
+      errors.username = "Please provide an username !";
+    } else if (values.username.length > 20) {
+      errors.username = "Must be 20 characters or less";
+    }
+
+    if (!values.password) {
+      errors.password = "Please provide a password !";
+    } else if (values.password.length < 7) {
+      errors.password = "Must be 7 characters or more !";
+    } else if (values.password.length > 72) {
+      errors.password = "Must be less than 72 characters !";
+    }
+    return errors;
+  };
+
+  const formik = useFormik({
+    initialValues: {
+      username: "",
+      password: "",
+    },
+    validate,
+    onSubmit: (values) => {
+      if (values.username && values.password) {
+        props.onClickSubmitLogin({
+          username: values.username,
+          password: values.password,
+        });
+      }
+    },
+  });
 
   return (
     <>
@@ -32,51 +57,52 @@ export function LoginModal(props) {
         <Modal.Title className="modal-text">Login</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <Form.Label column sm="2">
-          Username
-        </Form.Label>
-        <Form.Control
-          size="lg"
-          type="username"
-          placeholder="Username"
-          onChange={(e) => setUsername(e.currentTarget.value)}
-        />
-        <br />
-        <Form.Label column sm="2">
-          Password
-        </Form.Label>
-        <Form.Control
-          size="lg"
-          type="password"
-          placeholder="Password"
-          onChange={(e) => setPassword(e.currentTarget.value)}
-        />
-        <br />
-        <Link to="/recovery-password">Forgot password ?</Link>
-        <br />
-        <br />
-        <div className="center-btn">
-          <button className="button" variant="primary" onClick={submit}>
-            Login
-          </button>
-        </div>
-        <br />
-        <div className="center-btn">
-          <button
-            className="button"
-            variant="secondary"
-            onClick={props.onClickNone}
-          >
-            Close
-          </button>
-        </div>
+        <Form noValidate onSubmit={formik.handleSubmit}>
+          <Form.Label column sm="2">
+            Username
+          </Form.Label>
+          <Form.Control
+            size="lg"
+            type="username"
+            id="username"
+            name="username"
+            placeholder="Username"
+            onChange={formik.handleChange}
+          />
+          {formik.touched.username && formik.errors.username ? (
+            <p style={{ color: "red" }}>{formik.errors.username}</p>
+          ) : null}
+          <br />
+          <Form.Label column sm="2">
+            Password
+          </Form.Label>
+          <Form.Control
+            size="lg"
+            type="password"
+            id="password"
+            name="password"
+            placeholder="Password"
+            onChange={formik.handleChange}
+          />
+          {formik.touched.password && formik.errors.password ? (
+            <p style={{ color: "red" }}>{formik.errors.password}</p>
+          ) : null}
+          <br />
+          <Link to="/recovery-password">Forgot password ?</Link>
+          <br />
+          <br />
+          <div className="center-btn">
+            <button className="button" type="submit">
+              Login
+            </button>
+          </div>
+        </Form>
       </Modal.Body>
     </>
   );
 }
 
 export function RegisterModal(props) {
-  let [validated, setValidated] = React.useState(false);
   let [error, setError] = React.useState("");
 
   const validate = (values) => {
@@ -103,7 +129,6 @@ export function RegisterModal(props) {
         )
     ) {
       errors.email = "Invalid email address";
-    } else {
     }
 
     if (!values.username) {
@@ -156,7 +181,7 @@ export function RegisterModal(props) {
         <Modal.Title className="modal-text">Register</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <Form noValidate validated={validated} onSubmit={formik.handleSubmit}>
+        <Form noValidate onSubmit={formik.handleSubmit}>
           <Row className="mb-3">
             <Form.Group as={Col} md="4">
               <Form.Label>First name</Form.Label>
@@ -202,9 +227,16 @@ export function RegisterModal(props) {
                   onChange={formik.handleChange}
                 />
               </InputGroup>
-              {formik.touched.email && formik.errors.email ? (
+              {formik.touched.email &&
+              formik.errors.email &&
+              !props.isEmailTaken ? (
                 <p style={{ color: "red" }}>{formik.errors.email}</p>
               ) : null}
+              {props.isEmailTaken && !formik.errors.email && (
+                <p style={{ color: "red" }}>
+                  Sorry, this email already in use !
+                </p>
+              )}
             </Form.Group>
           </Row>
           <br />
@@ -219,9 +251,16 @@ export function RegisterModal(props) {
                 required
                 onChange={formik.handleChange}
               />
-              {formik.touched.username && formik.errors.username ? (
+              {formik.touched.username &&
+              formik.errors.username &&
+              !props.isUsernameTaken ? (
                 <p style={{ color: "red" }}>{formik.errors.username}</p>
               ) : null}
+              {props.isUsernameTaken && !formik.errors.username && (
+                <p style={{ color: "red" }}>
+                  Sorry, this username already in use !
+                </p>
+              )}
             </Form.Group>
             <br />
             <Form.Group as={Col} md="6">
@@ -269,42 +308,104 @@ export function RegisterModal(props) {
 export default function Login() {
   let [isLogin, setLogin] = React.useState(false);
   let [isRegister, setRegister] = React.useState(false);
+  let [isEmailTaken, setEmailTaken] = React.useState(false);
+  let [isUsernameTaken, setUsernameTaken] = React.useState(false);
+  let [isWaitingRegister, setWaitingRegister] = React.useState(false);
+  let [isFailedLogin, setFailedLogin] = React.useState(false);
+
+  const {
+    isLogin: isLoggedIn,
+    setLogin: setLoggedIn,
+    setJwt,
+  } = useUserContext();
+
+  if (isEmailTaken) {
+    setTimeout(() => {
+      setEmailTaken(false);
+    }, 5000);
+  }
+
+  if (isUsernameTaken) {
+    setTimeout(() => {
+      setUsernameTaken(false);
+    }, 5000);
+  }
 
   function onClickNone() {
     setLogin(false);
     setRegister(false);
+    setEmailTaken(false);
+    setUsernameTaken(false);
   }
 
-  function onClickSubmitLogin(values) {
-    console.log(values);
-  }
-
-  async function onClickSubmitRegister(values) {
+  const onClickSubmitLogin = async (values) => {
     console.log(JSON.stringify(values));
     console.log(values);
-    fetch("http://localhost:3000/api/user/register", {
+    const json = await fetch("http://localhost:3000/api/user/login", {
       method: "POST",
-      mode: "no-cors",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
+      mode: "cors",
       body: JSON.stringify(values),
-    }).then((response) => response.json().then((json) => console.log(json)));
+    }).then((response) => response.json());
+    switch (json.response) {
+      case "Username or password incorrect":
+        console.log(json.response);
+        setFailedLogin();
+        return;
+      default:
+        setLoggedIn(true);
+        setJwt(json.accessToken);
+        return;
+    }
+  };
+
+  async function onClickSubmitRegister(values) {
+    console.log(JSON.stringify(values));
+    console.log(values);
+    const json = await fetch("http://localhost:3000/api/user/register", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      mode: "cors",
+      body: JSON.stringify(values),
+    }).then((response) => response.json());
+    console.log(json);
+    switch (json.response) {
+      case "email taken":
+        setEmailTaken(true);
+        return;
+      case "username taken":
+        setUsernameTaken(true);
+        return;
+      case "success":
+        onClickNone();
+        setWaitingRegister(true);
+        window.location.href = "/register-confirm";
+        return;
+    }
   }
 
   let modalLoginProps = {
     onClickNone: onClickNone,
     onClickSubmitLogin: onClickSubmitLogin,
+    isFailedLogin: isFailedLogin,
   };
 
   let modalRegisterProps = {
     onClickNone: onClickNone,
     onClickSubmitRegister: onClickSubmitRegister,
+    isEmailTaken: isEmailTaken,
+    isUsernameTaken: isUsernameTaken,
   };
 
   return (
     <>
+      {isLoggedIn || && <Navigate to="/home" replace />}
       <header>
         <div className="d-flex align-items-center flex-column justify-content-between">
           <img alt="" witdh="175" height="175" src={logomatcha}></img>
