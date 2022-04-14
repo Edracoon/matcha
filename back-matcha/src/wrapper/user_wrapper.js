@@ -4,11 +4,19 @@ import { pool } from "../../app.js";
 // POST
 export async function insertUser(User) {
   try {
+    if (
+      !User.email ||
+      !User.password ||
+      !User.username ||
+      !User.firstname ||
+      !User.familyname
+    )
+      throw "register content error";
     await pool
       .query("SELECT COUNT(*) AS cnt FROM USER WHERE email = ?", [User.email])
       .then((data) => {
         if (data[0][0].cnt > 0) {
-          throw "EMAIL ALREADY EXISTS";
+          throw "email taken";
         }
       });
     await pool
@@ -17,32 +25,14 @@ export async function insertUser(User) {
       ])
       .then((data) => {
         if (data[0][0].cnt > 0) {
-          throw "USERNAME ALREADY EXISTS";
+          throw "username taken";
         }
       });
-    await pool.query(
-      `INSERT INTO USER (username, password, firstname, familyname, email, genre1, genre2, bio, last_ip, ADR1, ADR2, city, is_online, tra_id, ori_id, fake_counter) VALUES (
-            '${User.username}',
-            '${User.password}',
-            '${User.firstname}',
-            '${User.familyname}',
-            '${User.email}',
-            '${User.genre1}',
-            '${User.genre2}',
-            '${User.bio}',
-            '${User.last_ip}',
-            '${User.ADR1}',
-            '${User.ADR2}',
-            '${User.city}',
-            '${User.is_online}',
-            '${User.tra_id}',
-            '${User.ori_id}',
-            '${User.fake_counter}')`
-    );
+    await pool.query(`INSERT INTO USER SET ?`, User);
     return "success";
   } catch (error) {
     console.log("======== Error in InsertUser =========\n", error);
-    return "failed";
+    return error;
   }
 }
 
@@ -99,10 +89,11 @@ export async function getUserByEmail(email) {
 export async function getUserByUsername(username) {
   try {
     let results = await pool.query(
-      `SELECT * FROM USER WHERE username = ${username};`
+      `SELECT * FROM USER WHERE username = '${username}';`
     );
-    return results;
+    return results[0][0];
   } catch (error) {
     console.log("======== Error in getUserByUsername =========\n", error);
+    return false;
   }
 }

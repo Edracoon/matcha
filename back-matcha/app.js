@@ -1,6 +1,7 @@
 import {} from "dotenv/config";
 import express from "express";
 import mysql from "mysql2/promise";
+import cors from "cors";
 import { populateDatabase, truncateDatabase } from "./src/database_manager.js";
 import { router as user } from "./src/user/user_manager.js";
 
@@ -41,7 +42,9 @@ pool.getConnection((err, connection) => {
 });
 
 // Middleware
+// app.use(bodyParser.json());
 app.use(express.json());
+app.use(cors());
 
 app.use("/api/user", user);
 

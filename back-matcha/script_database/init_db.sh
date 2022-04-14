@@ -12,10 +12,10 @@ mysql -u root --password=passwd matcha -e "CREATE TABLE IF NOT EXISTS USER (
       ADR1 VARCHAR(100) COMMENT '1ere partie de l adresse',
       ADR2 VARCHAR(100) COMMENT 'Adresse partie 2 (loc geo)',
       city VARCHAR(50) COMMENT 'Nom de la city (loc geo)',
-      is_online tinyINT(1) NOT NULL COMMENT 'En ligne',
+      is_online tinyINT(1) DEFAULT 0 COMMENT 'En ligne',
       tra_id INT(11) COMMENT 'Id tranche d''age',
       ori_id INT(11) COMMENT 'Id orientation sexuel',
-      fake_counter INT(11) NOT NULL COMMENT 'counter for reported accounts'
+      fake_counter INT(11) DEFAULT 0 COMMENT 'counter for reported accounts'
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Liste des utilisateurs';
 
     CREATE TABLE IF NOT EXISTS TRA (
