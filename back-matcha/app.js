@@ -3,11 +3,15 @@ import express from "express";
 import mysql from "mysql2/promise";
 import cors from "cors";
 import { populateDatabase, truncateDatabase } from "./src/database_manager.js";
-import { router as user } from "./src/user/user_manager.js";
+import { user } from "./src/user/user_manager.js";
+import { auth, authenticateJWT } from "./src/auth/auth_manager.js";
 
 const port = 3000;
 
 export const app = express();
+
+app.use(express.json());
+app.use(cors());
 
 /*
  ** Using pool system to reuse connections previously released
@@ -41,12 +45,9 @@ pool.getConnection((err, connection) => {
   return;
 });
 
-// Middleware
-// app.use(bodyParser.json());
-app.use(express.json());
-app.use(cors());
-
-app.use("/api/user", user);
+// Middlewares
+app.use("/api/user", authenticateJWT, user);
+app.use("/api/auth", auth);
 
 // Default route
 app.get("/", (req, res) => {

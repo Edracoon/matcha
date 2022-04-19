@@ -36,6 +36,17 @@ export async function insertUser(User) {
   }
 }
 
+export async function UserUpdateRefreshToken(username, refreshToken) {
+  try {
+    await pool.query(
+      `UPDATE USER SET refreshToken = '${refreshToken}' WHERE username = '${username}';`
+    );
+  } catch (error) {
+    console.log("======== Error in UserUpdateRefreshToken =========\n", error);
+    return error;
+  }
+}
+
 export async function insertImg(img) {
   try {
     await pool.query(
