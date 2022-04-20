@@ -2,6 +2,7 @@ import express from "express";
 import * as userWrapper from "../wrapper/user_wrapper.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { faker } from "@faker-js/faker";
 
 export const auth = express.Router();
 
@@ -10,14 +11,18 @@ export const authenticateJWT = (req, res, next) => {
   if (authHeader) {
     const token = authHeader.split(" ")[1]; // Bearer format = split(' ');
     console.log("authenticateJWT -> ", token);
-    jwt.verify(token, accessTokenSecret, (err, user) => {
-      if (err) {
-        return res.sendStatus(403);
-      }
+    const payload = jwt.verify(
+      token,
+      process.env.MATCHA_SECRET,
+      (err, user) => {
+        if (err) {
+          return res.sendStatus(403);
+        }
 
-      req.user = user;
-      next();
-    });
+        req.user = user;
+        next();
+      }
+    );
   } else {
     res.sendStatus(401);
   }
@@ -53,14 +58,8 @@ auth.post("/login", async (req, res) => {
     const accessToken = jwt.sign(
       { username: user.username, role: "member" },
       process.env.MATCHA_SECRET,
-      { expiresIn: "20m" }
+      { expiresIn: "60m" }
     );
-    const refreshToken = jwt.sign(
-      { username: user.username, role: "member" },
-      process.env.MATCHA_REFRESH_SECRET
-    );
-
-    userWrapper.UserUpdateRefreshToken(username, refreshToken);
 
     res.json({
       accessToken,
@@ -93,6 +92,14 @@ auth.post("/register", async (req, res) => {
     email: req.body.email,
   });
 
+  // ==== A FAIRE SI VOULOIR IMPLEMENTER REFRESH TOKEN ====
+  // const refreshToken = jwt.sign(
+  //   { username: user.username, role: "member" },
+  //   process.env.MATCHA_REFRESH_SECRET
+  // );
+  // await userWrapper.UserUpdateRefreshToken(req.body.username, refreshToken);
+  // ======================================================
+
   // Check if success and send appropriate response
   switch (ret) {
     case "success":
@@ -111,12 +118,11 @@ auth.post("/register", async (req, res) => {
 });
 
 auth.post("/jwt", async (req, res) => {
-  console.log(req.body);
   const { token } = req.body;
   try {
     const ret = jwt.verify(token, process.env.MATCHA_SECRET);
     console.log(ret);
-    res.json({ response: true });
+    res.json({ response: true, payload: ret });
   } catch (e) {
     console.log("Error in jwt.verify");
     res.json({ response: false });
