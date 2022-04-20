@@ -16,7 +16,7 @@ export default class NotFound extends React.Component {
     return (
       <div className="d-flex align-items-center flex-column justify-content-between">
         <h1 className="title-matcha">404</h1>
-        <h1 className="title-matcha">Page Not Found !</h1>
+        <h4 className="title-matcha">Page Not Found !</h4>
         <Link to="/home">
           <button className="button">Home</button>
         </Link>

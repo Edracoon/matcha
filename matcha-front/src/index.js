@@ -51,6 +51,7 @@ const PrivateRoute = ({ element }) => {
     }
     return () => (mounted = false);
   });
+  if (isLogged === null) return <Loading />;
   return isLogged ? <> {element} </> : false;
 };
 

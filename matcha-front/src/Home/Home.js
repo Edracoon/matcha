@@ -1,24 +1,64 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "./Home.css";
 import "../style.css";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 
-import Modal from "react-bootstrap/Modal";
-import Form from "react-bootstrap/Form";
-
 import { BrowserRouter as Router, Link } from "react-router-dom";
-import { useUserContext } from "../UserContext";
+
+import Loading from "../Loading/Loading";
+import Header from "../Header/Header";
+import UserProfile from "../UserProfile/UserProfile";
 
 export default function Home() {
-  const { logout } = useUserContext();
+  const [User, setUser] = useState(null);
+  const [Avatar, setAvatar] = useState(null);
+
+  useEffect(() => {
+    if (!User) {
+      fetch("http://localhost:3000/api/user", {
+        method: "GET",
+        headers: {
+          Authorization: "Bearer " + localStorage.getItem("access_token"),
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        mode: "cors",
+      }).then((response) =>
+        response.json().then((json) => {
+          setUser(json);
+        })
+      );
+    }
+    if (!Avatar) {
+      fetch("http://localhost:3000/api/user", {
+        method: "GET",
+        headers: {
+          Authorization: "Bearer " + localStorage.getItem("access_token"),
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        mode: "cors",
+      }).then((response) =>
+        response.json().then((json) => {
+          setAvatar(json);
+        })
+      );
+    }
+  }, [User, Avatar]);
+
+  console.log(User);
 
   return (
-    <div className="d-flex align-items-center flex-column justify-content-between">
-      <h1 className="title-matcha">Home Working!</h1>
-      <button onClick={() => logout()} className="button">
-        Disconnect
-      </button>
-    </div>
+    <>
+      {!User && <Loading />}
+      {User && (
+        <>
+          <Header />
+          <div className="d-flex align-items-center flex-column justify-content-between"></div>
+          <UserProfile {...User} />
+        </>
+      )}
+    </>
   );
 }

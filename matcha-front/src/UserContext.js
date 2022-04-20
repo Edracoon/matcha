@@ -1,4 +1,4 @@
-import { createContext, useContext, useDebugValue, useState } from "react";
+import { createContext, useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 export const UserContext = createContext();
@@ -45,9 +45,7 @@ export const useUserContext = () => {
 export const UserProvider = (props) => {
   const [isLogin, setLogin] = useState(false);
 
-  useDebugValue(isLogin, (value) => (value ? "connecté" : "pas connecté"));
-
-  const defaultValue = { isLogin, setLogin /*, jwt, setJwt */ };
+  const defaultValue = { isLogin, setLogin };
 
   return (
     <UserContext.Provider value={defaultValue}>

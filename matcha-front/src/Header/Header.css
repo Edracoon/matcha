@@ -1,0 +1,20 @@
+.title-navbar {
+  font-family: "Roboto", sans-serif;
+  font-size: 2.5rem;
+  letter-spacing: 10px;
+  font-weight: lighter;
+  color: rgba(58, 58, 58, 0.945);
+}
+
+.title-links {
+  font-family: "Roboto", sans-serif;
+  font-size: 1.8rem;
+  letter-spacing: 5px;
+  font-weight: lighter;
+}
+
+.vertical-line {
+  border-left: thin solid #000000;
+  margin-left: 1.5rem;
+  margin-right: 1.5rem;
+}
