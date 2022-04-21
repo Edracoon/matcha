@@ -17,6 +17,8 @@ import RecoveryPassword from "./Recovery-Password/Recovery-Password";
 import Loading from "./Loading/Loading";
 import { UserProvider, useUserContext } from "./UserContext";
 
+import ImageHandler from "./UserProfile/ImageHandler";
+
 const UnprivateRoute = ({ element }) => {
   const { verifyJwt } = useUserContext();
   const [isLogged, setLogged] = React.useState(null);
@@ -69,6 +71,11 @@ function App() {
             exact
             path="/home"
             element={<PrivateRoute element={<Home />} />}
+          />
+          <Route
+            exact
+            path="/imagehandler"
+            element={<PrivateRoute element={<ImageHandler />} />}
           />
           <Route
             exact

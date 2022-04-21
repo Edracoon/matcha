@@ -12,7 +12,6 @@ import UserProfile from "../UserProfile/UserProfile";
 
 export default function Home() {
   const [User, setUser] = useState(null);
-  const [Avatar, setAvatar] = useState(null);
 
   useEffect(() => {
     if (!User) {
@@ -30,24 +29,7 @@ export default function Home() {
         })
       );
     }
-    if (!Avatar) {
-      fetch("http://localhost:3000/api/user", {
-        method: "GET",
-        headers: {
-          Authorization: "Bearer " + localStorage.getItem("access_token"),
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        mode: "cors",
-      }).then((response) =>
-        response.json().then((json) => {
-          setAvatar(json);
-        })
-      );
-    }
-  }, [User, Avatar]);
-
-  console.log(User);
+  }, [User]);
 
   return (
     <>
@@ -55,7 +37,6 @@ export default function Home() {
       {User && (
         <>
           <Header />
-          <div className="d-flex align-items-center flex-column justify-content-between"></div>
           <UserProfile {...User} />
         </>
       )}

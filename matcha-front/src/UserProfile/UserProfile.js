@@ -1,70 +1,181 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
+
 import "../style.css";
-import profile_icon from "../assets/profile-icon.png";
+import "./UserProfile.css";
 
 import Modal from "react-bootstrap/Modal";
-import { Container, Row, Col } from "react-bootstrap";
-import { Carousel } from "react-bootstrap";
+import Form from "react-bootstrap/Form";
+import InputGroup from "react-bootstrap/InputGroup";
+import Row from "react-bootstrap/Container";
+import Col from "react-bootstrap/Container";
+
+import { useFormik } from "formik";
+
+import { Container } from "react-bootstrap";
 
 import Alert from "react-bootstrap/Alert";
 
-import { Form } from "react-bootstrap";
+import ImageHandler from "./ImageHandler";
 
-import { BrowserRouter as Router, Link } from "react-router-dom";
+const validate = (values) => {
+  const errors = {};
+  if (!values.firstname) {
+    errors.firstname = "Please provide your first name !";
+  } else if (values.firstname.length > 15) {
+    errors.firstname = "Must be 15 characters or less.";
+  }
+
+  if (!values.lastname) {
+    errors.lastname = "Please provide your last name !";
+  } else if (values.lastname.length > 20) {
+    errors.lastname = "Must be 20 characters or less.";
+  }
+
+  if (!values.username) {
+    errors.username = "Please provide an username !";
+  } else if (values.username.length > 20) {
+    errors.username = "Must be 20 characters or less.";
+  }
+
+  if (!values.bio) {
+    errors.bio = "Please provide a bio !";
+  } else if (values.bio.length > 255) {
+    errors.username = "Must be 255 characters or less.";
+  }
+  return errors;
+};
 
 export default function UserProfile(props) {
-  //   const [file, setFile] = useState();
-  let images_to_upload = [];
+  const [images, setImages] = useState([]);
+  const [alert, setAlert] = useState(true);
 
-  images_to_upload.push(profile_icon);
+  // console.log(images.length);
+  // console.log("props", props);
 
-  const handleChange = (event) => {
-    console.log(event.target.files[0]);
-    images_to_upload.push(event.target.files[0]);
-  };
+  const formik = useFormik({
+    initialValues: {
+      firstname: props.firstname,
+      lastname: props.familyname,
+      username: props.username,
+      bio: props.bio,
+    },
+    validate,
+    onSubmit: (values) => {},
+  });
 
   return (
     <div className="d-flex align-items-center flex-column justify-content-between">
+      <br />
       <h1 className="title-secondary">Your profile</h1>
-      <Alert variant="warning" /*onClose={() => {}} dismissible*/>
-        <Alert.Heading>Your profile is not extended !</Alert.Heading>
-        <p>You will not be able to match with other people !</p>
-        <li> 1 - 5 pictures of you (At least one).</li>
-        <li> Precise your birth gender and your actual gender.</li>
-        <li> Fill in your bio to describe yourself in a few words. </li>
-        <li>Precise your city and address to match with people around you !</li>
-      </Alert>
-      {/* <div>
-        <img alt="" src={profile_icon} width="220" height="220" />
-      </div> */}
+      <br />
+      {alert && (
+        <Modal show={alert}>
+          <Alert
+            variant="warning"
+            onClose={() => {
+              setAlert(false);
+            }}
+            dismissible
+          >
+            <Alert.Heading>Your profile is not extended !</Alert.Heading>
+            <p>You will not be able to match with other people !</p>
+            <li>1 - 5 pictures of you (At least one).</li>
+            <li>Precise your birth gender and your actual gender.</li>
+            <li>Fill in your bio to describe yourself in a few words. </li>
+            <li>
+              Precise your city and address to match with people around you !
+            </li>
+          </Alert>
+        </Modal>
+      )}
       <Container>
         <Row>
-          <Col />
-          <Col style={{ textAlign: "center" }}>
-            <Carousel variant="dark">
-              {images_to_upload.map((img, idx) => (
-                <Carousel.Item key={idx}>
-                  <img alt="" src={img} width="220" height="220" />
-                </Carousel.Item>
-              ))}
-            </Carousel>
+          <Col align="center">
+            <ImageHandler toUpload={setImages} />
           </Col>
-          <Col />
         </Row>
 
         <Row>
-          <Col />
-          <Col>
-            <Form.Control
-              type="file"
-              id="upload-picture"
-              label="Upload a picture"
-              onChange={handleChange}
-              custom="true"
-            />
-          </Col>
-          <Col />
+          <Form noValidate onSubmit={formik.handleSubmit}>
+            <Form.Group
+              as={Col}
+              md="2"
+              className="custom-group-form"
+              style={{ width: "18rem" }}
+            >
+              <Form.Label className="form-text"> First name</Form.Label>
+              <Form.Control
+                required
+                id="firstname"
+                name="firstname"
+                type="text"
+                value={props.firstname}
+                placeholder="First name"
+                onChange={formik.handleChange}
+              />
+            </Form.Group>
+            <Form.Group
+              as={Col}
+              md="2"
+              className="custom-group-form"
+              style={{ width: "18rem" }}
+            >
+              <Form.Label className="form-text">Last name</Form.Label>
+              <Form.Control
+                required
+                id="lastname"
+                name="lastname"
+                type="text"
+                value={props.familyname}
+                placeholder="Last name"
+                onChange={formik.handleChange}
+              />
+            </Form.Group>
+            <Form.Group
+              as={Col}
+              md="2"
+              className="custom-group-form"
+              style={{ width: "18rem" }}
+            >
+              <Form.Label className="form-text">
+                Username (Used to login)
+              </Form.Label>
+              <Form.Control
+                id="username"
+                name="username"
+                type="text"
+                value={props.username}
+                placeholder="Username"
+                onChange={formik.handleChange}
+              />
+            </Form.Group>
+            <Form.Group
+              as={Col}
+              md="2"
+              className="custom-group-form"
+              style={{ width: "18rem" }}
+            >
+              <Form.Label className="form-text">
+                Username (Used to login)
+              </Form.Label>
+              <Form.Control
+                id="bio"
+                name="bio"
+                type="text"
+                value={props.bio}
+                placeholder="Your bio"
+                onChange={formik.handleChange}
+              />
+            </Form.Group>
+            <button
+              className="button"
+              style={{ width: "10rem", height: "3.3rem" }}
+              type="submit"
+            >
+              Save changes
+            </button>
+          </Form>
         </Row>
       </Container>
     </div>
