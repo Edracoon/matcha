@@ -58,7 +58,7 @@ auth.post("/login", async (req, res) => {
     const accessToken = jwt.sign(
       { username: user.username, role: "member" },
       process.env.MATCHA_SECRET,
-      { expiresIn: "60m" }
+      { expiresIn: "180m" }
     );
 
     res.json({

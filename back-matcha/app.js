@@ -5,6 +5,7 @@ import cors from "cors";
 import { populateDatabase, truncateDatabase } from "./src/database_manager.js";
 import { user } from "./src/user/user_manager.js";
 import { auth, authenticateJWT } from "./src/auth/auth_manager.js";
+import fetch from "node-fetch";
 
 const port = 3000;
 
@@ -12,6 +13,20 @@ export const app = express();
 
 app.use(express.json());
 app.use(cors());
+
+app.get("/retrieve-cities/:country", (req, res) => {
+  const country = req.params.country;
+  fetch(`https://shivammathur.com/countrycity/cities/${country}`, {
+    method: "GET",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+  })
+    .then((response) => response.json())
+    .then((result) => res.send(result))
+    .catch((error) => console.log("error", error));
+});
 
 /*
  ** Using pool system to reuse connections previously released
