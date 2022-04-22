@@ -4,8 +4,6 @@ import "../style.css";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 
-import { BrowserRouter as Router, Link } from "react-router-dom";
-
 import Loading from "../Loading/Loading";
 import Header from "../Header/Header";
 import UserProfile from "../UserProfile/UserProfile";

@@ -85,3 +85,7 @@ input[type="file"] {
   /* font-weight: lighter; */
   color: rgba(75, 75, 75, 0.945);
 }
+
+.alert-no-padding {
+  margin: 0px;
+}

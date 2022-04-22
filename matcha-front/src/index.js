@@ -14,6 +14,8 @@ import Auth from "./Auth/Auth";
 import NotFound from "./Not-Found/Not-Found";
 import Home from "./Home/Home";
 import RecoveryPassword from "./Recovery-Password/Recovery-Password";
+import RegisterConfirm from "./RegisterConfirm/RegisterConfirm";
+
 import Loading from "./Loading/Loading";
 import { UserProvider, useUserContext } from "./UserContext";
 
@@ -74,8 +76,8 @@ function App() {
           />
           <Route
             exact
-            path="/imagehandler"
-            element={<PrivateRoute element={<ImageHandler />} />}
+            path="/register-confirm"
+            element={<UnprivateRoute element={<RegisterConfirm />} />}
           />
           <Route
             exact
