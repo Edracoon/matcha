@@ -57,6 +57,16 @@ export async function insertImg(img) {
   }
 }
 
+export async function getUserImagesById(user_id, file) {
+  try {
+    await pool.query(
+      `INSERT INTO IMG (user_id, file) VALUES ('${user_id}', '${file}')`
+    );
+  } catch (error) {
+    console.log("======== Error in InsertImg =========\n", error);
+  }
+}
+
 export async function insertTag(tag) {
   try {
     await pool.query(`INSERT INTO TAG (design) VALUES ('${tag.design}')`);
