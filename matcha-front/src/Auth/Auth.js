@@ -85,7 +85,7 @@ export default function Auth() {
         return;
       case "success":
         onClickNone();
-        navigate("/register-confirm");
+        navigate("/register-confirm", { replace: true });
         return;
       default:
         return;

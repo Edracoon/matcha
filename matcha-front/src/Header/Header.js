@@ -6,7 +6,7 @@ import Navbar from "react-bootstrap/Navbar";
 import { Nav } from "react-bootstrap";
 import Container from "react-bootstrap/Container";
 
-import { BrowserRouter as Router, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import { useUserContext } from "../UserContext";
 

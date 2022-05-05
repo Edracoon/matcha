@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 
 import Select from "react-select";
 import countryList from "react-select-country-list";
@@ -46,25 +46,53 @@ const validate = (values) => {
   return errors;
 };
 
-var headers = new Headers();
-// headers.append("X-CSCAPI-KEY", "API_KEY");
-
-var requestOptions = {};
-
 export default function UserProfile(props) {
   const [isExtended, setExtended] = useState(false);
 
+  const [cities, setCities] = useState([]); // all cities from the country
+  const [city, setCity] = useState(undefined); // the selected city
+  const [CityOption, setCityOption] = useState(undefined); // options cities
+
   const [images, setImages] = useState([]);
   const [alert, setAlert] = useState(false);
+
   const [country, setCountry] = useState(undefined);
-  const [city, setCity] = useState(undefined);
-  const [cityOptions, setCityOptions] = useState([]);
+  const [CountryOptions, setCountryOptions] = useState([]);
   const options = useMemo(() => countryList().getData(), []);
 
+  useEffect(() => {
+    // var headers = new Headers();
+    // headers.append("X-CSCAPI-KEY", "API_KEY");
+    // var requestOptions = {
+    //   method: "GET",
+    //   headers: headers,
+    //   redirect: "follow",
+    // };
+    // fetch("https://api.countrystatecity.in/v1/countries", requestOptions)
+    //   .then((response) => response.text())
+    //   .then((result) => console.log('result -> ', result))
+    //   .catch((error) => console.log("error", error));
+    // if (CountryOptions.length === 0) {
+    //   setCountryOptions([
+    //     { value: "AF", label: "Afghanistan" },
+    //     { value: "FR", label: "France" },
+    //   ]);
+    // }
+  });
+
+  const handleInputChange = (inputValue) => {
+    const ret = cities.filter((city) => city.label.includes(inputValue));
+
+    if (inputValue === "") setCityOption(undefined);
+    else setCityOption(ret);
+  };
+
   const updateCountry = (e) => {
-    console.log(e.label);
+    // console.log(e.label);
     setCountry(e.label);
-    console.log(options);
+    setCities([]);
+    setCityOption(undefined);
+    // console.log("CountryOptions -> ", CountryOptions);
 
     fetch(`http://localhost:3000/retrieve-cities/${e.label}`, {
       method: "GET",
@@ -77,12 +105,12 @@ export default function UserProfile(props) {
     })
       .then((response) => response.json())
       .then((results) => {
-        console.log(results);
+        // console.log(results);
         results = results.map((value) => {
           return { value: "1", label: value };
         });
-        console.log(results);
-        setCityOptions(results);
+        // console.log(results);
+        setCities(results);
       });
   };
 
@@ -242,11 +270,11 @@ export default function UserProfile(props) {
                   width: "18rem",
                   marginTop: "0.8rem",
                 }}
-                options={cityOptions}
-                // value={props}
+                options={CityOption}
+                onInputChange={handleInputChange}
                 id="city"
                 name="city"
-                onChange={(e) => setCity(e.abel)}
+                onChange={(e) => setCity(e.label)}
               />
             </Form.Group>
             <Col align="center">
