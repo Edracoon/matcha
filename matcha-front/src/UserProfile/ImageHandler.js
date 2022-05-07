@@ -35,6 +35,8 @@ export default function ImageHandler(props) {
 
   const onChange = (imageList, addUpdateIndex) => {
     // data for submit
+    // RESIZE IMAGE TO STOCK IN DB ?
+    // let resizedImages = imageList.map(async (curr) => await resizeFile(curr));
     setImages(imageList);
     props.toUpload(imageList);
     if (imageList.length > 0) setIndex(imageList.length - 1);
@@ -60,8 +62,6 @@ export default function ImageHandler(props) {
       {({
         imageList,
         onImageUpload,
-        //   onImageRemoveAll,
-        //   onImageUpdate,
         onImageRemove,
         isDragging,
         dragProps,

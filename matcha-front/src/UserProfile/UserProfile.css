@@ -68,6 +68,23 @@ input[type="file"] {
   outline: none;
 }
 
+.control-form-profile {
+  background: linear-gradient(
+    90deg,
+    rgba(254, 108, 85, 1) 24%,
+    rgba(254, 136, 120, 1) 53%,
+    rgb(254, 110, 120, 1) 86%
+  );
+  text-align: center;
+  font-family: "Roboto", sans-serif;
+  font-size: 1rem;
+  letter-spacing: 2.5px;
+  color: rgb(253, 253, 253) !important;
+  border-color: rgb(0, 0, 0);
+  border-radius: 2rem;
+  border-width: 0.2rem;
+}
+
 .objectfit {
   object-fit: contain;
   /* background: black; */
@@ -76,16 +93,37 @@ input[type="file"] {
 .custom-group-form {
   width: 18rem;
   text-align: center;
+
 }
 
 .form-text {
   font-family: "Roboto", sans-serif;
   font-size: 1rem;
-  letter-spacing: 2px;
+  letter-spacing: 0.25rem;
   /* font-weight: lighter; */
-  color: rgba(75, 75, 75, 0.945);
+  color: rgba(240, 240, 240, 0.945);
+  font-size: 0.9rem;
 }
 
 .alert-no-padding {
   margin: 0px;
+}
+
+.text-area {
+  background: linear-gradient(
+    90deg,
+    rgba(254, 108, 85, 1) 24%,
+    rgba(254, 136, 120, 1) 53%,
+    rgb(254, 110, 120, 1) 86%
+  );
+  text-align: center;
+  font-family: "Roboto", sans-serif;
+  font-size: 1rem;
+  letter-spacing: 2.5px;
+  color: rgb(240, 240, 240) !important;
+  border-color: rgb(0, 0, 0);
+  border-radius: 1rem;
+  border-width: 0.2rem;
+  height: 6rem;
+  width: 18rem;
 }

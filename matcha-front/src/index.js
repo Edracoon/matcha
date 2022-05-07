@@ -19,8 +19,6 @@ import RegisterConfirm from "./RegisterConfirm/RegisterConfirm";
 import Loading from "./Loading/Loading";
 import { UserProvider, useUserContext } from "./UserContext";
 
-import ImageHandler from "./UserProfile/ImageHandler";
-
 const UnprivateRoute = ({ element }) => {
   const { verifyJwt } = useUserContext();
   const [isLogged, setLogged] = React.useState(null);

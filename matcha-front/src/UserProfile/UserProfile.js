@@ -1,10 +1,8 @@
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 
 import Select from "react-select";
-import countryList from "react-select-country-list";
 
 import ImageHandler from "./ImageHandler";
-
 // Styles
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../style.css";
@@ -18,104 +16,109 @@ import Alert from "react-bootstrap/Alert";
 
 import { useFormik } from "formik";
 
-const validate = (values) => {
-  const errors = {};
-  if (!values.firstname) {
-    errors.firstname = "Please provide your first name !";
-  } else if (values.firstname.length > 15) {
-    errors.firstname = "Must be 15 characters or less.";
-  }
-
-  if (!values.lastname) {
-    errors.lastname = "Please provide your last name !";
-  } else if (values.lastname.length > 20) {
-    errors.lastname = "Must be 20 characters or less.";
-  }
-
-  if (!values.username) {
-    errors.username = "Please provide an username !";
-  } else if (values.username.length > 20) {
-    errors.username = "Must be 20 characters or less.";
-  }
-
-  if (!values.bio) {
-    errors.bio = "Please provide a bio !";
-  } else if (values.bio.length > 110) {
-    errors.bio = "Must be 110 characters or less.";
-  }
-  return errors;
-};
-
 export default function UserProfile(props) {
+  
   const [isExtended, setExtended] = useState(false);
+  const [hasChanged, setHasChanged] = useState(false);
 
-  const [cities, setCities] = useState([]); // all cities from the country
   const [city, setCity] = useState(undefined); // the selected city
+  const [country, setCountry] = useState(undefined); // the selected country
+
+  const [cities, setCities] = useState([]); // all cities from the country if too much cities
   const [CityOption, setCityOption] = useState(undefined); // options cities
 
   const [images, setImages] = useState([]);
   const [alert, setAlert] = useState(false);
 
-  const [country, setCountry] = useState(undefined);
+  const [errorCity, setErrorCity] = useState('');
+  const [errorCountry, setErrorCountry ] = useState('');
+
   const [CountryOptions, setCountryOptions] = useState([]);
-  const options = useMemo(() => countryList().getData(), []);
+
+  const validate = (values) => {
+    setHasChanged(true);
+    const errors = {};
+    if (!values.firstname) {
+      errors.firstname = "Please provide your first name !";
+    } else if (values.firstname.length > 15) {
+      errors.firstname = "Must be 15 characters or less.";
+    }
+  
+    if (!values.lastname) {
+      errors.lastname = "Please provide your last name !";
+    } else if (values.lastname.length > 20) {
+      errors.lastname = "Must be 20 characters or less.";
+    }
+  
+    if (!values.username) {
+      errors.username = "Please provide an username !";
+    } else if (values.username.length > 20) {
+      errors.username = "Must be 20 characters or less.";
+    }
+  
+    if (!values.bio) {
+      errors.bio = "Please provide a bio !";
+    } else if (values.bio.length > 110) {
+      errors.bio = "Must be 110 characters or less.";
+    }
+
+    return errors;
+  };
 
   useEffect(() => {
-    // var headers = new Headers();
-    // headers.append("X-CSCAPI-KEY", "API_KEY");
-    // var requestOptions = {
-    //   method: "GET",
-    //   headers: headers,
-    //   redirect: "follow",
-    // };
-    // fetch("https://api.countrystatecity.in/v1/countries", requestOptions)
-    //   .then((response) => response.text())
-    //   .then((result) => console.log('result -> ', result))
-    //   .catch((error) => console.log("error", error));
-    // if (CountryOptions.length === 0) {
-    //   setCountryOptions([
-    //     { value: "AF", label: "Afghanistan" },
-    //     { value: "FR", label: "France" },
-    //   ]);
-    // }
+    if (CountryOptions.length === 0) {
+      fetch("http://localhost:3000/all-countries", {
+        method: "GET",
+        headers: {
+          Authorization: "Bearer " + localStorage.getItem("access_token"),
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        mode: "cors",
+      })
+      .then((response) => response.json())
+      .then((result) => {
+          setCountryOptions(result);
+      });  
+    }
+    if (!hasChanged && ((props.city && city !== props.city) || (props.country && country !== props.country)))
+      setHasChanged(true);
   });
 
   const handleInputChange = (inputValue) => {
-    const ret = cities.filter((city) => city.label.includes(inputValue));
-
-    if (inputValue === "") setCityOption(undefined);
+    const ret = cities.filter((city) => city.label.startsWith(inputValue));
+    if (inputValue === "" && cities.length > 1300) setCityOption(undefined);
+    else if (inputValue === "" && cities.length < 1300) setCityOption(cities);
     else setCityOption(ret);
   };
 
   const updateCountry = (e) => {
-    // console.log(e.label);
     setCountry(e.label);
+    setCity(undefined);
     setCities([]);
     setCityOption(undefined);
-    // console.log("CountryOptions -> ", CountryOptions);
-
-    fetch(`http://localhost:3000/retrieve-cities/${e.label}`, {
-      method: "GET",
-      headers: {
-        Authorization: "Bearer " + localStorage.getItem("access_token"),
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      mode: "cors",
-    })
+    fetch(`http://localhost:3000/all-cities/${e.value}`, {
+        method: "GET",
+        headers: {
+          Authorization: "Bearer " + localStorage.getItem("access_token"),
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        mode: "cors",
+      })
       .then((response) => response.json())
-      .then((results) => {
-        // console.log(results);
-        results = results.map((value) => {
-          return { value: "1", label: value };
-        });
-        // console.log(results);
-        setCities(results);
+      .then((result) => {
+        console.log(result);
+        if (result.length < 1300)
+          setCityOption(result);
+        if (result.length === 0) {
+          setCityOption([{value : 0, label: e.label}]);
+          setCities([{value : 0, label: e.label}]);
+        }
+        else
+          setCities(result);
       });
   };
-
-  // console.log(images.length);
-  // console.log("props", props);
 
   const formik = useFormik({
     initialValues: {
@@ -126,7 +129,17 @@ export default function UserProfile(props) {
     },
     validate,
     onSubmit: (values) => {
-      console.log("OnSubmit : ", images, values, country);
+      console.log("OnSubmit : ", images, values, country, city);
+      if (country === undefined)
+        setErrorCountry('Please provide a valid country !');
+      else
+        setErrorCountry('');
+      if (city === undefined)
+        setErrorCity('Provide a valid city from the choose country !');
+      else
+        setErrorCity('');
+      
+      // SEND ALL DATA TO SERVER /updateUser et recup info via le token dans le header
     },
   });
 
@@ -173,7 +186,7 @@ export default function UserProfile(props) {
           <Form noValidate onSubmit={formik.handleSubmit}>
             <Form.Group
               className="custom-group-form"
-              style={{ width: "18rem", marginTop: "0.8rem" }}
+              style={{ width: "18rem", marginTop: "0.8rem"}}
             >
               <Form.Label className="form-text"> First name</Form.Label>
               <Form.Control
@@ -184,6 +197,7 @@ export default function UserProfile(props) {
                 value={formik.values.firstname}
                 placeholder="First name"
                 onChange={formik.handleChange}
+                className="control-form-profile"
               />
               <p className="form-text" style={{ color: "#FADF4B" }}>
                 {" "}
@@ -203,6 +217,7 @@ export default function UserProfile(props) {
                 placeholder="Last name"
                 value={formik.values.lastname}
                 onChange={formik.handleChange}
+                className="control-form-profile"
               />
               <p className="form-text" style={{ color: "#FADF4B" }}>
                 {" "}
@@ -223,6 +238,7 @@ export default function UserProfile(props) {
                 placeholder="Username"
                 value={formik.values.username}
                 onChange={formik.handleChange}
+                className="control-form-profile"
               />
               <p className="form-text" style={{ color: "#FADF4B" }}>
                 {" "}
@@ -235,14 +251,13 @@ export default function UserProfile(props) {
             >
               <Form.Label className="form-text">Your bio</Form.Label>
               <textarea
-                className="form-control"
+                className="text-area"
                 id="bio"
                 name="bio"
                 type="text"
                 value={formik.values.bio}
-                placeholder="Your bio"
+                placeholder="My bio..."
                 onChange={formik.handleChange}
-                style={{ height: "4.5rem" }}
               />
             </Form.Group>
             <p className="form-text" style={{ color: "#FADF4B" }}>
@@ -252,16 +267,34 @@ export default function UserProfile(props) {
             <Form.Group className="custom-group-form">
               <Form.Label className="form-text">Country</Form.Label>
               <Select
+                // className="control-form-profile"
                 style={{
                   width: "18rem",
                   marginTop: "0.8rem",
                 }}
-                options={options}
-                // value={props}
+                options={CountryOptions}
+                placeholder={'Search ...'}
+                value={{label : !country ? 'Search...' : country}}
                 id="country"
                 name="country"
-                onChange={updateCountry}
+                onChange={(e) => {updateCountry(e)}}
+                theme={(theme) => ({
+                  ...theme,
+                  borderRadius: 18,
+                  color: 'white',
+                  colors: {
+                    ...theme.colors,
+                    primary25: '',
+                    primary: 'black',
+                    neutral0: 'rgba(254, 136, 120, 1)',
+                    neutral80: 'white',
+                  },
+                })}
               />
+              <p className="form-text" style={{ color: "#FADF4B" }}>
+                {" "}
+                {errorCountry}
+              </p>
             </Form.Group>
             <Form.Group className="custom-group-form">
               <Form.Label className="form-text">City</Form.Label>
@@ -271,22 +304,44 @@ export default function UserProfile(props) {
                   marginTop: "0.8rem",
                 }}
                 options={CityOption}
+                placeholder={'Search ...'}
                 onInputChange={handleInputChange}
+                value={{label : !city ? 'Search...' : city}}
                 id="city"
                 name="city"
                 onChange={(e) => setCity(e.label)}
+                noOptionsMessage={({inputValue}) => !inputValue ? 'Type something to search ...' : "No results found"}
+                theme={(theme) => ({
+                  ...theme,
+                  borderRadius: 18,
+                  color: 'white',
+                  colors: {
+                    ...theme.colors,
+                    primary25: '',
+                    primary: 'black',
+                    neutral0: 'rgba(254, 136, 120, 1)',
+                    neutral80: 'white',
+                  },
+                })}
               />
+              <p className="form-text" style={{ color: "#FADF4B" }}>
+                {" "}
+                {errorCity}
+              </p>
             </Form.Group>
-            <Col align="center">
-              <Alert
-                variant="warning"
-                style={{ width: "20rem", marginTop: "1.5rem" }}
-              >
-                <Alert.Heading>
-                  Care, you have some unsaved changes !
-                </Alert.Heading>
-              </Alert>
-            </Col>
+            {hasChanged &&
+              <Col align="center">
+                <Alert
+                  variant="warning"
+                  style={{ width: "20rem", marginTop: "1.5rem" }}
+                >
+                  
+                  <Alert.Heading>
+                    Care, you have some unsaved changes !
+                  </Alert.Heading>
+                </Alert>
+              </Col>
+            }
             <button
               className="button"
               style={{
