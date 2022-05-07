@@ -5,7 +5,7 @@ import cors from "cors";
 import { populateDatabase, truncateDatabase } from "./src/database_manager.js";
 import { user } from "./src/user/user_manager.js";
 import { auth, authenticateJWT } from "./src/auth/auth_manager.js";
-import fetch from "node-fetch";
+import fetch, {Headers} from "node-fetch";
 
 const port = 3000;
 
@@ -14,18 +14,44 @@ export const app = express();
 app.use(express.json());
 app.use(cors());
 
-app.get("/retrieve-cities/:country", (req, res) => {
-  const country = req.params.country;
-  fetch(`https://shivammathur.com/countrycity/cities/${country}`, {
+const API_COUNTRY_KEY= process.env.API_COUNTRY_KEY;
+
+app.get("/all-countries", (req, res) => {
+  var headers = new Headers();
+  headers.append("X-CSCAPI-KEY", API_COUNTRY_KEY);
+  var requestOptions = {
     method: "GET",
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-    },
-  })
+    headers: headers,
+    redirect: "follow",
+  };
+  fetch("https://api.countrystatecity.in/v1/countries", requestOptions)
     .then((response) => response.json())
-    .then((result) => res.send(result))
+    .then((result) => {
+      result = result.map((value) => {
+        return { value: value.iso2, label: value.name };
+      });
+      res.send(result);
+    })
     .catch((error) => console.log("error", error));
+});
+
+app.get("/all-cities/:country", (req, res) => {
+  const country = req.params.country;
+  var headers = new Headers();
+    headers.append("X-CSCAPI-KEY", API_COUNTRY_KEY);
+    var requestOptions = {
+    method: 'GET',
+    headers: headers,
+    redirect: 'follow'
+    };
+    fetch(`https://api.countrystatecity.in/v1/countries/${country}/cities`, requestOptions)
+      .then(response => response.json())
+      .then(result => {
+        result = result.map((value) => {
+          return { value: value.id, label: value.name };
+        });
+        res.send(result);
+      });
 });
 
 /*
