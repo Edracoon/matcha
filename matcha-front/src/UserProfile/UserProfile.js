@@ -16,13 +16,40 @@ import Alert from "react-bootstrap/Alert";
 
 import { useFormik } from "formik";
 
+// Localisation params
+var options = {
+  enableHighAccuracy: true,
+  timeout: 5000,
+  maximumAge: 0,
+};
+function success(pos) {
+  var crd = pos.coords;
+
+  console.log("Your current position is:");
+  console.log(`Latitude : ${crd.latitude}`);
+  console.log(`Longitude: ${crd.longitude}`);
+  console.log(`More or less ${crd.accuracy} meters.`);
+}
+function errors(err) {
+  console.log(`ERROR(${err.code}): ${err.message}`);
+}
+
+
 export default function UserProfile(props) {
+
+  let initialCountry = props.country === null ? undefined : props.country;
+  let initialCity = props.city === null ? undefined : props.city;
+  let initialBio = props.bio === null ? undefined : props.bio;
   
+  const [locationAsk, setLocationAsk] = useState(true);
+
+  const [bio, setBio] = useState(initialBio);
+
   const [isExtended, setExtended] = useState(false);
   const [hasChanged, setHasChanged] = useState(false);
 
-  const [city, setCity] = useState(undefined); // the selected city
-  const [country, setCountry] = useState(undefined); // the selected country
+  const [city, setCity] = useState(props.city === null ? undefined : props.city); // the selected city
+  const [country, setCountry] = useState(props.country === null ? undefined : props.country); // the selected country
 
   const [cities, setCities] = useState([]); // all cities from the country if too much cities
   const [CityOption, setCityOption] = useState(undefined); // options cities
@@ -32,11 +59,12 @@ export default function UserProfile(props) {
 
   const [errorCity, setErrorCity] = useState('');
   const [errorCountry, setErrorCountry ] = useState('');
+  const [errorBio, setErrorBio] = useState('');
 
   const [CountryOptions, setCountryOptions] = useState([]);
 
   const validate = (values) => {
-    setHasChanged(true);
+    // setHasChanged(true);
     const errors = {};
     if (!values.firstname) {
       errors.firstname = "Please provide your first name !";
@@ -55,17 +83,38 @@ export default function UserProfile(props) {
     } else if (values.username.length > 20) {
       errors.username = "Must be 20 characters or less.";
     }
-  
-    if (!values.bio) {
-      errors.bio = "Please provide a bio !";
-    } else if (values.bio.length > 110) {
-      errors.bio = "Must be 110 characters or less.";
-    }
 
     return errors;
   };
 
   useEffect(() => {
+    if (locationAsk && navigator.geolocation) {
+      navigator.permissions
+        .query({ name: "geolocation" })
+        .then(function (result) {
+          console.log('result -> ', result);
+          navigator.geolocation.getCurrentPosition(success, errors, options);
+          try {
+            fetch("https://geolocation-db.com/json/")
+              .then((response) => response.json())
+              .then((result) => {console.log(result);
+              setCountry(result.country_name);
+              setCity(result.city);
+            });
+          }
+          catch (e) {
+            console.log(e);
+          }
+          result.onchange = function () {
+            console.log(result.state);
+          };
+        });
+        setLocationAsk(false);
+    }
+    else if (locationAsk) {
+      setLocationAsk(false);
+      console.log("Sorry Not available!");
+    }
     if (CountryOptions.length === 0) {
       fetch("http://localhost:3000/all-countries", {
         method: "GET",
@@ -81,8 +130,8 @@ export default function UserProfile(props) {
           setCountryOptions(result);
       });  
     }
-    if (!hasChanged && ((props.city && city !== props.city) || (props.country && country !== props.country)))
-      setHasChanged(true);
+    // if (!hasChanged && ((city !== initialCity) || (country !== initialCountry)))
+    //   setHasChanged(true);
   });
 
   const handleInputChange = (inputValue) => {
@@ -90,9 +139,12 @@ export default function UserProfile(props) {
     if (inputValue === "" && cities.length > 1300) setCityOption(undefined);
     else if (inputValue === "" && cities.length < 1300) setCityOption(cities);
     else setCityOption(ret);
+    setHasChanged(true);
   };
 
   const updateCountry = (e) => {
+    setHasChanged(true);
+    setErrorCountry(undefined);
     setCountry(e.label);
     setCity(undefined);
     setCities([]);
@@ -125,37 +177,62 @@ export default function UserProfile(props) {
       firstname: !props.firstname ? "" : props.firstname,
       lastname: !props.familyname ? "" : props.familyname,
       username: !props.username ? "" : props.username,
-      bio: !props.bio ? "" : props.bio,
     },
     validate,
     onSubmit: (values) => {
-      console.log("OnSubmit : ", images, values, country, city);
-      if (country === undefined)
-        setErrorCountry('Please provide a valid country !');
-      else
-        setErrorCountry('');
-      if (city === undefined)
-        setErrorCity('Provide a valid city from the choose country !');
-      else
-        setErrorCity('');
-      
       // SEND ALL DATA TO SERVER /updateUser et recup info via le token dans le header
     },
   });
 
+  const onSubmitCustom = (values) => {
+      console.log("OnSubmit : ", images, values, country, city);
+      if (country === undefined)
+        setErrorCountry('Please provide a valid country !');
+      else
+        setErrorCountry(undefined);
+      if (city === undefined)
+        setErrorCity('Provide a valid city from the choose country !');
+      else
+        setErrorCity(undefined);
+      if (bio === undefined || bio === null || bio.length === 0)
+        setErrorBio('Please provide a bio !'); 
+      else if (bio.length > 110)
+        setErrorBio('Must be 110 characters or less !');
+      else
+        setErrorBio(undefined);
+        
+      setHasChanged(false);
+      console.log(country, city, values.username, values.firstname, values.lastname, bio, images);
+      let toSave = JSON.stringify({...values, bio, country, city /*,images*/});
+      fetch("http://localhost:3000/api/user/update-user", {
+      method: "POST",
+      headers: {
+        Authorization: "Bearer " + localStorage.getItem("access_token"),
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      mode: "cors",
+      body: toSave,
+    })
+    .then((response) => response.json())
+    .then((result) => console.log(result));
+  }
+
   return (
     <div className="d-flex align-items-center flex-column justify-content-between">
       <br />
-      <h1 className="title-secondary">Your profile</h1>
+      <h1 className="title-secondary">My profile</h1>
       <br />
-      <Alert
-        variant="warning"
-        className="alert-no-padding"
-        style={{ marginBottom: "1rem" }}
-        onClick={() => setAlert(true)}
-      >
-        Your profile is not extended (?)
-      </Alert>
+      {!isExtended &&
+        <Alert
+          variant="warning"
+          className="alert-no-padding"
+          style={{ marginBottom: "1rem" }}
+          onClick={() => setAlert(true)}
+        >
+          Your profile is not extended (?)
+        </Alert>
+       }
       <Modal show={alert}>
         <Alert
           variant="warning"
@@ -171,7 +248,7 @@ export default function UserProfile(props) {
           <li>Precise your birth gender and your actual gender.</li>
           <li>Fill in your bio to describe yourself in a few words. </li>
           <li>
-            Precise your city and address to match with people around you !
+            Precise your location to match with people around you !
           </li>
         </Alert>
       </Modal>
@@ -184,6 +261,27 @@ export default function UserProfile(props) {
 
         <Row align="center">
           <Form noValidate onSubmit={formik.handleSubmit}>
+            <Form.Group
+              className="custom-group-form"
+              style={{ width: "18rem", marginTop: "0.8rem" }}
+            >
+              <Form.Label className="form-text">
+                Username (Used to login)
+              </Form.Label>
+              <Form.Control
+                id="username"
+                name="username"
+                type="text"
+                placeholder="Username"
+                value={formik.values.username}
+                onChange={formik.handleChange}
+                className="control-form-profile"
+              />
+              <p className="form-text" style={{ color: "#FADF4B" }}>
+                {" "}
+                {formik.errors.username}
+              </p>
+            </Form.Group>
             <Form.Group
               className="custom-group-form"
               style={{ width: "18rem", marginTop: "0.8rem"}}
@@ -228,41 +326,20 @@ export default function UserProfile(props) {
               className="custom-group-form"
               style={{ width: "18rem", marginTop: "0.8rem" }}
             >
-              <Form.Label className="form-text">
-                Username (Used to login)
-              </Form.Label>
-              <Form.Control
-                id="username"
-                name="username"
-                type="text"
-                placeholder="Username"
-                value={formik.values.username}
-                onChange={formik.handleChange}
-                className="control-form-profile"
-              />
-              <p className="form-text" style={{ color: "#FADF4B" }}>
-                {" "}
-                {formik.errors.username}
-              </p>
-            </Form.Group>
-            <Form.Group
-              className="custom-group-form"
-              style={{ width: "18rem", marginTop: "0.8rem" }}
-            >
-              <Form.Label className="form-text">Your bio</Form.Label>
+              <Form.Label className="form-text">My bio</Form.Label>
               <textarea
                 className="text-area"
                 id="bio"
                 name="bio"
                 type="text"
-                value={formik.values.bio}
-                placeholder="My bio..."
-                onChange={formik.handleChange}
+                value={bio}
+                placeholder="..."
+                onChange={(e) => {setBio(e.target.value); setHasChanged(true);}}
               />
             </Form.Group>
             <p className="form-text" style={{ color: "#FADF4B" }}>
               {" "}
-              {formik.errors.bio}
+              {errorBio}
             </p>
             <Form.Group className="custom-group-form">
               <Form.Label className="form-text">Country</Form.Label>
@@ -309,7 +386,7 @@ export default function UserProfile(props) {
                 value={{label : !city ? 'Search...' : city}}
                 id="city"
                 name="city"
-                onChange={(e) => setCity(e.label)}
+                onChange={(e) => {setCity(e.label); setErrorCity(undefined);}}
                 noOptionsMessage={({inputValue}) => !inputValue ? 'Type something to search ...' : "No results found"}
                 theme={(theme) => ({
                   ...theme,
@@ -350,7 +427,8 @@ export default function UserProfile(props) {
                 marginTop: "0.5rem",
                 marginBottom: "0.5rem",
               }}
-              type="submit"
+              type="button"
+              onClick={() => {onSubmitCustom(formik.values)}}
             >
               Save changes
             </button>

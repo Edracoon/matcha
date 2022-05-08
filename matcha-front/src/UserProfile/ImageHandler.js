@@ -33,7 +33,7 @@ export default function ImageHandler(props) {
     setIndex(selectedIndex);
   };
 
-  const onChange = (imageList, addUpdateIndex) => {
+  const onChange = (imageList) => {
     // data for submit
     // RESIZE IMAGE TO STOCK IN DB ?
     // let resizedImages = imageList.map(async (curr) => await resizeFile(curr));
@@ -41,15 +41,6 @@ export default function ImageHandler(props) {
     props.toUpload(imageList);
     if (imageList.length > 0) setIndex(imageList.length - 1);
   };
-
-  // useEffect(async () => {
-  //   // Recuperer list images du user dans la db
-  //   // Faire attention a boucle infinie de useEffect avec useState !
-  //   if (images.length === 0) {
-  //     const img = await resizeFile(person_icon);
-  //     setImages([img]);
-  //   }
-  // });
 
   return (
     <ImageUploading
