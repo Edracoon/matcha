@@ -26,3 +26,8 @@ user.get("/email/:email", async (req, res) => {
     res.json(value[0][0]);
   });
 });
+
+user.post("/update-user", async (req, res) => {
+  console.log(req.body);
+  res.send({'response': 'hey'});
+});

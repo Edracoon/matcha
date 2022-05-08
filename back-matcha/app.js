@@ -13,6 +13,18 @@ export const app = express();
 
 app.use(express.json());
 app.use(cors());
+/*
+ ** Using pool system to reuse connections previously released
+ */
+ export const pool = mysql.createPool({
+  connectionLimit: 100,
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
+  port: process.env.DB_PORT,
+});
+
 
 const API_COUNTRY_KEY= process.env.API_COUNTRY_KEY;
 
@@ -52,18 +64,6 @@ app.get("/all-cities/:country", (req, res) => {
         });
         res.send(result);
       });
-});
-
-/*
- ** Using pool system to reuse connections previously released
- */
-export const pool = mysql.createPool({
-  connectionLimit: 100,
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
-  port: process.env.DB_PORT,
 });
 
 /*
