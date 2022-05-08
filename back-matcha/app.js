@@ -49,6 +49,7 @@ app.get("/all-countries", (req, res) => {
 
 app.get("/all-cities/:country", (req, res) => {
   const country = req.params.country;
+  console.log(country);
   var headers = new Headers();
     headers.append("X-CSCAPI-KEY", API_COUNTRY_KEY);
     var requestOptions = {
@@ -62,6 +63,7 @@ app.get("/all-cities/:country", (req, res) => {
         result = result.map((value) => {
           return { value: value.id, label: value.name };
         });
+        console.log(result);
         res.send(result);
       });
 });
