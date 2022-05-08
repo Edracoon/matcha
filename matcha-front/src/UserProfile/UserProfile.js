@@ -91,16 +91,41 @@ export default function UserProfile(props) {
     if (locationAsk && navigator.geolocation) {
       navigator.permissions
         .query({ name: "geolocation" })
-        .then(function (result) {
+        .then(async (result) => {
           console.log('result -> ', result);
           navigator.geolocation.getCurrentPosition(success, errors, options);
           try {
-            fetch("https://geolocation-db.com/json/")
+            const result = await fetch("https://geolocation-db.com/json/")
               .then((response) => response.json())
-              .then((result) => {console.log(result);
-              setCountry(result.country_name);
+              .then((result) => result);
+            console.log('result geolocation -> ', result);
+            setCountry(result.country_name);
+            if (result.city)
               setCity(result.city);
-            });
+            console.log(result.country_code);
+            fetch(`http://localhost:3000/all-cities/${result.country_code}`, {
+              method: "GET",
+              headers: {
+                Authorization: "Bearer " + localStorage.getItem("access_token"),
+                Accept: "application/json",
+                "Content-Type": "application/json",
+              },
+              mode: "cors",
+            })
+            .then((response) => response.json())
+            .then((result) => {
+              console.log('heyaaaa', result);
+              if (result.length < 1300) {
+                setCityOption(result);
+                setCities(result);
+              }
+              if (result.length === 0) {
+                setCityOption([{value : 0, label: result.country_name}]);
+                setCities([{value : 0, label: result.country_name}]);
+              }
+              else
+                setCities(result);
+            });            
           }
           catch (e) {
             console.log(e);
@@ -160,9 +185,11 @@ export default function UserProfile(props) {
       })
       .then((response) => response.json())
       .then((result) => {
-        console.log(result);
-        if (result.length < 1300)
+        console.log('heyo',result);
+        if (result.length < 1300) {
           setCityOption(result);
+          setCities(result);
+        }
         if (result.length === 0) {
           setCityOption([{value : 0, label: e.label}]);
           setCities([{value : 0, label: e.label}]);
