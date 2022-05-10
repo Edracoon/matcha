@@ -22,10 +22,8 @@ export async function truncateDatabase() {
   await pool.query("DELETE FROM IMG;");
   await pool.query("DELETE FROM USER;");
   await pool.query("DELETE FROM TRA;");
-  await pool.query("DELETE FROM ORI;");
   await pool.query("ALTER TABLE USER AUTO_INCREMENT = 1");
   await pool.query("ALTER TABLE TRA AUTO_INCREMENT = 1");
-  await pool.query("ALTER TABLE ORI AUTO_INCREMENT = 1");
   await pool.query("ALTER TABLE IMG AUTO_INCREMENT = 1");
   await pool.query("ALTER TABLE USER_TAG AUTO_INCREMENT = 1");
   await pool.query("ALTER TABLE TAG AUTO_INCREMENT = 1");
@@ -72,7 +70,7 @@ export async function populateDatabase(nb) {
 function generateUser() {
   let gender = faker.name.gender(true).toLowerCase();
   let firstname = faker.name.firstName(gender.toLowerCase());
-  let familyname = faker.name.lastName();
+  let lastname = faker.name.lastName();
   let city = faker.address.city();
   let ADR1 = faker.address.streetAddress(false);
   let ADR2 = city + ", " + faker.address.state();
@@ -80,8 +78,8 @@ function generateUser() {
     username: faker.internet.userName(firstname).sqlizeStr(),
     password: faker.internet.password().sqlizeStr(),
     firstname: firstname.sqlizeStr(),
-    familyname: familyname.sqlizeStr(),
-    email: faker.internet.email(firstname, familyname).sqlizeStr(),
+    lastname: lastname.sqlizeStr(),
+    email: faker.internet.email(firstname, lastname).sqlizeStr(),
     genre1: gender,
     genre2: "cisgender",
     bio: faker.lorem.sentences(3).sqlizeStr(),

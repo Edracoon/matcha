@@ -9,7 +9,7 @@ export async function insertUser(User) {
       !User.password ||
       !User.username ||
       !User.firstname ||
-      !User.familyname
+      !User.lastname
     )
       throw "register content error";
     await pool

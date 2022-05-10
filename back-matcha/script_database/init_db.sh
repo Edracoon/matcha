@@ -3,19 +3,17 @@ mysql -u root --password=passwd matcha -e "CREATE TABLE IF NOT EXISTS USER (
       username VARCHAR(30) UNIQUE NOT NULL COMMENT 'username',
       password TEXT NOT NULL COMMENT 'Mot de passe crypte',
       firstname VARCHAR(30) NOT NULL COMMENT 'Prenom',
-      familyname VARCHAR(50) NOT NULL COMMENT 'Nom',
+      lastname VARCHAR(50) NOT NULL COMMENT 'Nom',
       email VARCHAR(100) UNIQUE NOT NULL COMMENT 'e-mail',
       genre1 ENUM('undefined', 'male', 'female') DEFAULT 'undefined' COMMENT 'Genre de naissance (Homme,Femme)',
-      genre2 ENUM('undefined', 'cisgender', 'transgender', 'non binary', 'queer', 'fluid') DEFAULT 'undefined' COMMENT 'Genre vecu et exprime',
+      genre2 ENUM('undefined', 'cisgender', 'transgender', 'non binary', 'fluid') DEFAULT 'undefined' COMMENT 'Genre vecu et exprime',
+      sexual_orientation ENUM('undefined', 'heterosexual', 'homosexual', 'bisexual', 'pansexual', 'asexual') DEFAULT 'undefined' COMMENT 'Orientation sexuelle',
       bio TEXT COMMENT 'Bio courte',
       last_ip TEXT COMMENT 'Derniere IP utilisee pour localisation si besoin',
-      ADR1 VARCHAR(100) COMMENT '1ere partie de l adresse',
-      ADR2 VARCHAR(100) COMMENT 'Adresse partie 2 (loc geo)',
       city VARCHAR(50) COMMENT 'Nom de la city (loc geo)',
       country VARCHAR(50) COMMENT 'Nom du pays',
       is_online tinyINT(1) DEFAULT 0 COMMENT 'En ligne',
       tra_id INT(11) COMMENT 'Id tranche d''age',
-      ori_id INT(11) COMMENT 'Id orientation sexuel',
       fake_counter INT(11) DEFAULT 0 COMMENT 'counter for reported accounts',
       refreshToken TEXT DEFAULT NULL COMMENT 'Token de refresh pour le access token'
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Liste des utilisateurs';
@@ -26,12 +24,6 @@ mysql -u root --password=passwd matcha -e "CREATE TABLE IF NOT EXISTS USER (
       max INT NOT NULL COMMENT 'age max',
       activated BOOL NOT NULL COMMENT 'Tranche d''age active ou non'
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Liste des tranches d''ages des utilisateurs';
-
-    CREATE TABLE IF NOT EXISTS ORI (
-      ID int(11) PRIMARY KEY AUTO_INCREMENT NOT NULL COMMENT 'Identifiant orientation sexuelle',
-      design varchar(100) NOT NULL COMMENT 'Designation orientation sexuelle',
-      activated tinyint(1) NOT NULL DEFAULT 1 COMMENT 'Orientation active ou non'
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Toutes les orientations sexuelles possibles et proposees';
 
     CREATE TABLE IF NOT EXISTS IMG (
       ID int(11) PRIMARY KEY AUTO_INCREMENT  NOT NULL COMMENT 'Identifiant Image',
@@ -52,11 +44,6 @@ mysql -u root --password=passwd matcha -e "CREATE TABLE IF NOT EXISTS USER (
       ID int(11) PRIMARY KEY AUTO_INCREMENT NOT NULL COMMENT 'Identifiant #tag',
       design varchar(100) NOT NULL COMMENT 'Designation du #tag'
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Liste des tags';
-
-    # CREATE TABLE IF NOT EXISTS GENDER (
-    #   ID int(11) PRIMARY KEY AUTO_INCREMENT NOT NULL COMMENT 'Identifiant genre',
-    #   design varchar(100) NOT NULL COMMENT 'Designation du genre'
-    # ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Liste des genre disponibles';
 
     CREATE TABLE IF NOT EXISTS USER_TAG (
       ID int(11) PRIMARY KEY AUTO_INCREMENT NOT NULL COMMENT 'Identifiant couple Utilisateur / #tag',
@@ -92,8 +79,7 @@ mysql -u root --password=passwd matcha -e "CREATE TABLE IF NOT EXISTS USER (
       ADD CONSTRAINT IMG_ibfk_1 FOREIGN KEY (user_id) REFERENCES USER (ID);
 
     ALTER TABLE USER
-      ADD CONSTRAINT USER_ibfk_1 FOREIGN KEY (tra_id) REFERENCES TRA (ID),
-      ADD CONSTRAINT USER_ibfk_2 FOREIGN KEY (ori_id) REFERENCES ORI (ID);
+      ADD CONSTRAINT USER_ibfk_1 FOREIGN KEY (tra_id) REFERENCES TRA (ID);
 
     ALTER TABLE USER_TAG
       ADD CONSTRAINT USER_TAG_ibfk_1 FOREIGN KEY (user_id) REFERENCES USER (ID),

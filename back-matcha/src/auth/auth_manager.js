@@ -88,7 +88,7 @@ auth.post("/register", async (req, res) => {
     username: req.body.username,
     password: encryptedPassword,
     firstname: req.body.firstname,
-    familyname: req.body.lastname,
+    lastname: req.body.lastname,
     email: req.body.email,
   });
 
