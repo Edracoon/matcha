@@ -16,6 +16,8 @@ import Alert from "react-bootstrap/Alert";
 
 import { useFormik } from "formik";
 
+import { TagPicker } from 'rsuite';
+
 // Localisation params
 var options = {
   enableHighAccuracy: true,
@@ -34,34 +36,79 @@ function errors(err) {
   console.log(`ERROR(${err.code}): ${err.message}`);
 }
 
-
 export default function UserProfile(props) {
 
-  let initialCountry = props.country === null ? undefined : props.country;
-  let initialCity = props.city === null ? undefined : props.city;
-  let initialBio = props.bio === null ? undefined : props.bio;
-  
+  // State
   const [locationAsk, setLocationAsk] = useState(true);
-
-  const [bio, setBio] = useState(initialBio);
-
   const [isExtended, setExtended] = useState(false);
   const [hasChanged, setHasChanged] = useState(false);
 
+  const [tags, setTags] = useState([]);
+  
+  // Values
   const [city, setCity] = useState(props.city === null ? undefined : props.city); // the selected city
   const [country, setCountry] = useState(props.country === null ? undefined : props.country); // the selected country
+  const [bio, setBio] = useState(props.bio === null ? undefined : props.bio);
+  const [gender1, setGender1] = useState(props.genre1 === null || props.genre1 === 'undefined' ? undefined : props.genre1);
+  const [gender2, setGender2] = useState(props.genre2 === null || props.genre2 === 'undefined'  ? undefined : props.genre2);
+  const [orientation, setOrientation] = useState(props.orientation === null ? undefined : props.orientation);
 
+  // Options selects
   const [cities, setCities] = useState([]); // all cities from the country if too much cities
   const [CityOption, setCityOption] = useState(undefined); // options cities
-
+  const [CountryOptions, setCountryOptions] = useState([]);
+  const genderOption1 = [{value: 1, label: "Male"}, {value: 2, label: "Female"}];
+  const genderOption2 = [{value: 1, label: "Cisgender"}, {value: 2, label: "Transgender"}, {value: 3, label: "Non binary"}, {value: 4, label: "Fluid"}];
+  const OrientationOption = [{value: 1, label: "Heterosexual"}, {value: 2, label: "Homosexual"}, {value: 3, label: "Bisexual"}, {value: 4, label: "Asexual"}, {value: 5, label: "Pansexual"}];
+  
+  // Utils
   const [images, setImages] = useState([]);
   const [alert, setAlert] = useState(false);
 
+  // Errors
   const [errorCity, setErrorCity] = useState('');
   const [errorCountry, setErrorCountry ] = useState('');
   const [errorBio, setErrorBio] = useState('');
+  const [errorGender1, setErrorGender1] = useState('');
+  const [errorGender2, setErrorGender2] = useState('');
+  const [errorOrientation, setErrorOrientation] = useState('');
 
-  const [CountryOptions, setCountryOptions] = useState([]);
+
+  const validationValues = () => {
+    if (country === undefined)
+        setErrorCountry('Please provide a valid country !');
+      else
+        setErrorCountry(undefined);
+
+      if (city === undefined)
+        setErrorCity('Provide a valid city from the choose country !');
+      else
+        setErrorCity(undefined);
+
+      if (bio === undefined || bio === null || bio.length === 0)
+        setErrorBio('Please provide a bio !'); 
+      else if (bio.length > 110) {
+        setErrorBio('Must be 110 characters or less !');
+        return false;
+      }
+      else
+        setErrorBio(undefined);
+  
+      if (gender1 === undefined)
+        setErrorGender1('Please provide a valid gender !');
+      else
+        setErrorGender1(undefined);
+      if (gender2 === undefined)
+        setErrorGender2('Please provide a valid gender !');
+      else 
+        setErrorGender2(undefined);
+
+      if (orientation === undefined)
+        setErrorOrientation('Please provide a valid sexual orentation !');
+      else
+        setErrorOrientation(undefined);
+    return true;
+  }
 
   const validate = (values) => {
     // setHasChanged(true);
@@ -77,17 +124,12 @@ export default function UserProfile(props) {
     } else if (values.lastname.length > 20) {
       errors.lastname = "Must be 20 characters or less.";
     }
-  
-    if (!values.username) {
-      errors.username = "Please provide an username !";
-    } else if (values.username.length > 20) {
-      errors.username = "Must be 20 characters or less.";
-    }
 
     return errors;
   };
 
   useEffect(() => {
+    console.log('useEffect() is called !\n props -> ', props);
     if (locationAsk && navigator.geolocation) {
       navigator.permissions
         .query({ name: "geolocation" })
@@ -155,9 +197,7 @@ export default function UserProfile(props) {
           setCountryOptions(result);
       });  
     }
-    // if (!hasChanged && ((city !== initialCity) || (country !== initialCountry)))
-    //   setHasChanged(true);
-  });
+  }, [locationAsk, CountryOptions]);
 
   const handleInputChange = (inputValue) => {
     const ret = cities.filter((city) => city.label.startsWith(inputValue));
@@ -201,9 +241,8 @@ export default function UserProfile(props) {
 
   const formik = useFormik({
     initialValues: {
-      firstname: !props.firstname ? "" : props.firstname,
-      lastname: !props.familyname ? "" : props.familyname,
-      username: !props.username ? "" : props.username,
+      firstname: props.firstname === null ? "" : props.firstname,
+      lastname: props.lastname === null ? "" : props.lastname,
     },
     validate,
     onSubmit: (values) => {
@@ -212,43 +251,38 @@ export default function UserProfile(props) {
   });
 
   const onSubmitCustom = (values) => {
-      console.log("OnSubmit : ", images, values, country, city);
-      if (country === undefined)
-        setErrorCountry('Please provide a valid country !');
-      else
-        setErrorCountry(undefined);
-      if (city === undefined)
-        setErrorCity('Provide a valid city from the choose country !');
-      else
-        setErrorCity(undefined);
-      if (bio === undefined || bio === null || bio.length === 0)
-        setErrorBio('Please provide a bio !'); 
-      else if (bio.length > 110)
-        setErrorBio('Must be 110 characters or less !');
-      else
-        setErrorBio(undefined);
-        
+      if (formik.errors.lastname || formik.errors.firstname)
+        return ;
+
+      if (validationValues() === false)
+        return ;
+
       setHasChanged(false);
-      console.log(country, city, values.username, values.firstname, values.lastname, bio, images);
-      let toSave = JSON.stringify({...values, bio, country, city /*,images*/});
-      fetch("http://localhost:3000/api/user/update-user", {
-      method: "POST",
-      headers: {
-        Authorization: "Bearer " + localStorage.getItem("access_token"),
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      mode: "cors",
-      body: toSave,
-    })
-    .then((response) => response.json())
-    .then((result) => console.log(result));
+      console.log({...values, bio, country, city, gender1, gender2, orientation});
+      let toSave = JSON.stringify({...values, bio, country, city, gender1, gender2, orientation/*,images*/});
+      const token = localStorage.getItem("access_token");
+      
+      console.log('token->', token);
+
+      try {
+        fetch("http://localhost:3000/api/user/update-user", {
+        method: "POST",
+        headers: {
+          Authorization: "Bearer " + token,
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        mode: "cors",
+        body: toSave,
+      })
+      .then((response) => {console.log(response); response.json();})
+      .then((result) => console.log(result));
+    }
+    catch(e) { console.log('error -> ', e); }
   }
 
   return (
     <div className="d-flex align-items-center flex-column justify-content-between">
-      <br />
-      <h1 className="title-secondary">My profile</h1>
       <br />
       {!isExtended &&
         <Alert
@@ -260,10 +294,12 @@ export default function UserProfile(props) {
           Your profile is not extended (?)
         </Alert>
        }
+      <h3 className="title-secondary">{props.username}</h3>
       <Modal show={alert}>
         <Alert
           variant="warning"
           className="alert-no-padding"
+          style={{width: "33rem"}}
           onClose={() => {
             setAlert(false);
           }}
@@ -272,7 +308,7 @@ export default function UserProfile(props) {
           <Alert.Heading>Your profile is not extended !</Alert.Heading>
           <p>You will not be able to match with other people !</p>
           <li>1 - 5 pictures of you (At least one).</li>
-          <li>Precise your birth gender and your actual gender.</li>
+          <li>Precise your gender and your sexual orientation.</li>
           <li>Fill in your bio to describe yourself in a few words. </li>
           <li>
             Precise your location to match with people around you !
@@ -290,27 +326,6 @@ export default function UserProfile(props) {
           <Form noValidate onSubmit={formik.handleSubmit}>
             <Form.Group
               className="custom-group-form"
-              style={{ width: "18rem", marginTop: "0.8rem" }}
-            >
-              <Form.Label className="form-text">
-                Username (Used to login)
-              </Form.Label>
-              <Form.Control
-                id="username"
-                name="username"
-                type="text"
-                placeholder="Username"
-                value={formik.values.username}
-                onChange={formik.handleChange}
-                className="control-form-profile"
-              />
-              <p className="form-text" style={{ color: "#FADF4B" }}>
-                {" "}
-                {formik.errors.username}
-              </p>
-            </Form.Group>
-            <Form.Group
-              className="custom-group-form"
               style={{ width: "18rem", marginTop: "0.8rem"}}
             >
               <Form.Label className="form-text"> First name</Form.Label>
@@ -321,7 +336,7 @@ export default function UserProfile(props) {
                 type="text"
                 value={formik.values.firstname}
                 placeholder="First name"
-                onChange={formik.handleChange}
+                onChange={(e) => {formik.handleChange(e); setHasChanged(true);}}
                 className="control-form-profile"
               />
               <p className="form-text" style={{ color: "#FADF4B" }}>
@@ -341,13 +356,112 @@ export default function UserProfile(props) {
                 type="text"
                 placeholder="Last name"
                 value={formik.values.lastname}
-                onChange={formik.handleChange}
+                onChange={(e) => {formik.handleChange(e); setHasChanged(true);}}
                 className="control-form-profile"
               />
               <p className="form-text" style={{ color: "#FADF4B" }}>
                 {" "}
                 {formik.errors.lastname}
               </p>
+            </Form.Group>
+            <Form.Group className="custom-group-form" style={{width: "12rem"}}>
+              <Form.Label className="form-text">Gender</Form.Label>
+              <Select
+                style={{
+                  width: "9rem",
+                  marginTop: "0.8rem",
+                }}
+                options={genderOption1}
+                placeholder={'Select...'}
+                value={{label : !gender1 ? 'Select...' : gender1}}
+                id="gender1"
+                name="gender1"
+                onChange={(e) => {setHasChanged(true); setGender1(e.label);}}
+                theme={(theme) => ({
+                  ...theme,
+                  borderRadius: 18,
+                  color: 'white',
+                  colors: {
+                    ...theme.colors,
+                    primary25: '',
+                    primary: 'black',
+                    neutral0: 'rgba(254, 136, 120, 1)',
+                    neutral80: 'white',
+                  },
+                })}
+              />
+              <p className="form-text" style={{ color: "#FADF4B" }}>
+                {" "}
+                {errorGender1}
+              </p>
+              <Select
+                style={{
+                  width: "9rem",
+                  marginTop: "0.8rem",
+                }}
+                options={genderOption2}
+                placeholder={'Select...'}
+                value={{label : !gender2 ? 'Select...' : gender2}}
+                id="gender2"
+                name="gender2"
+                onChange={(e) => {setHasChanged(true); setGender2(e.label);}}
+                theme={(theme) => ({
+                  ...theme,
+                  borderRadius: 18,
+                  color: 'white',
+                  colors: {
+                    ...theme.colors,
+                    primary25: '',
+                    primary: 'black',
+                    neutral0: 'rgba(254, 136, 120, 1)',
+                    neutral80: 'white',
+                  },
+                })}
+              />
+              <p className="form-text" style={{ color: "#FADF4B" }}>
+                {" "}
+                {errorGender2}
+              </p>
+            </Form.Group>
+            <Form.Group className="custom-group-form" style={{width: "12rem"}}>
+              <Form.Label className="form-text">Orientation</Form.Label>
+              <Select
+                style={{
+                  width: "9rem",
+                  // marginTop: "0.2rem",
+                }}
+                options={OrientationOption}
+                placeholder={'Select...'}
+                value={{label : !orientation ? 'Select...' : orientation}}
+                id="orientation"
+                name="orientation"
+                onChange={(e) => {setHasChanged(true); setOrientation(e.label);}}
+                theme={(theme) => ({
+                  ...theme,
+                  borderRadius: 18,
+                  color: 'white',
+                  colors: {
+                    ...theme.colors,
+                    primary25: '',
+                    primary: 'black',
+                    neutral0: 'rgba(254, 136, 120, 1)',
+                    neutral80: 'white',
+                  },
+                })}
+              />
+              <p className="form-text" style={{ color: "#FADF4B" }}>
+                {" "}
+                {errorOrientation}
+              </p>
+              <TagPicker
+                creatable
+                data={tags}
+                style={{ width: 300 }}
+                menuStyle={{ width: 300 }}
+                onCreate={(value, item) => {
+                  console.log(value, item);
+                }}
+              />
             </Form.Group>
             <Form.Group
               className="custom-group-form"

@@ -21,11 +21,9 @@ export default function Home() {
           "Content-Type": "application/json",
         },
         mode: "cors",
-      }).then((response) =>
-        response.json().then((json) => {
-          setUser(json);
-        })
-      );
+      })
+      .then((response) => response.json())
+      .then((json) => setUser(json))
     }
   }, [User]);
 
