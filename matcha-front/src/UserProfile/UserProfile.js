@@ -3,6 +3,8 @@ import React, { useState, useEffect } from "react";
 import Select from "react-select";
 
 import ImageHandler from "./ImageHandler";
+import TagHandler from "./TagHandler";
+
 // Styles
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../style.css";
@@ -16,6 +18,8 @@ import Alert from "react-bootstrap/Alert";
 
 import { useFormik } from "formik";
 
+// rsuite
+import "rsuite/dist/rsuite.min.css";
 import { TagPicker } from 'rsuite';
 
 // Localisation params
@@ -38,11 +42,16 @@ function errors(err) {
 
 export default function UserProfile(props) {
 
+  const fetchTags = () => {
+
+  }
   // State
   const [locationAsk, setLocationAsk] = useState(true);
   const [isExtended, setExtended] = useState(false);
   const [hasChanged, setHasChanged] = useState(false);
 
+  const [tagsOption, setTagsOption] = useState([{value: 'python', label: 'python'}, {value: 'codingame', label: 'codingame'}, {value: 'code', label: 'code'}, {value: 'space', label: 'space'}, {value: 'js', label: 'js'}, {value: 'videogames', label: 'videogames'}, {value: 'prout', label: 'prout'}])
+  
   const [tags, setTags] = useState([]);
   
   // Values
@@ -197,7 +206,7 @@ export default function UserProfile(props) {
           setCountryOptions(result);
       });  
     }
-  }, [locationAsk, CountryOptions]);
+  }, [locationAsk, CountryOptions, props]);
 
   const handleInputChange = (inputValue) => {
     const ret = cities.filter((city) => city.label.startsWith(inputValue));
@@ -295,6 +304,7 @@ export default function UserProfile(props) {
         </Alert>
        }
       <h3 className="title-secondary">{props.username}</h3>
+      <br />
       <Modal show={alert}>
         <Alert
           variant="warning"
@@ -453,15 +463,6 @@ export default function UserProfile(props) {
                 {" "}
                 {errorOrientation}
               </p>
-              <TagPicker
-                creatable
-                data={tags}
-                style={{ width: 300 }}
-                menuStyle={{ width: 300 }}
-                onCreate={(value, item) => {
-                  console.log(value, item);
-                }}
-              />
             </Form.Group>
             <Form.Group
               className="custom-group-form"
@@ -482,10 +483,63 @@ export default function UserProfile(props) {
               {" "}
               {errorBio}
             </p>
+            <Form.Group
+              className="custom-group-form"
+              style={{ width: "18rem", marginTop: "0.8rem" }}
+             >
+              <Form.Label className="form-text">My interest list</Form.Label>
+              <TagPicker
+                menuClassName="tagPicker"
+                className="tagPicker"
+                creatable
+                data={tagsOption.map((value, index) => {
+                  console.log('in map',value);
+                  return {value: value.value, label: '#' + value.value.toLowerCase()}
+                })}
+                style={{ width: 300 }}
+                menuStyle={{ width: 300 }}
+                onCreate={(value, item) => {
+                  setTags([...value, item.label]);
+                  console.log('okay', value, 'hey', item);
+                  console.log('tags -> ', tags);
+                  setTagsOption((prev) => [...prev, {value: item.value, label: item.value}]);
+                }}
+                onChange={(e) => {console.log('ONCHANGE -> ', e); setTags(e) 
+                // e.map((value) => value.toLowerCase)
+                ;}}
+              />
+              {/* <Select
+                style={{
+                  width: "18rem",
+                  marginTop: "0.8rem",
+                }}
+                options={tagsOption.map((value, index) => {
+                  return {value: value.value, label: '#' + value.label.toLocaleLowerCase()}
+                })}
+                placeholder={'Add a tag ...'}
+                id="country"
+                name="country"
+                onChange={(e) => {setTags((prev) => [...prev, e.label]);}}
+                theme={(theme) => ({
+                  ...theme,
+                  borderRadius: 18,
+                  color: 'white',
+                  colors: {
+                    ...theme.colors,
+                    primary25: '',
+                    primary: 'black',
+                    neutral0: 'rgba(254, 136, 120, 1)',
+                    neutral80: 'white',
+                  },
+                })}
+              />
+              {tags.length > 0 &&
+                tags.map((value, index) => <p key={index}>{value}</p>)
+              } */}
+            </Form.Group>
             <Form.Group className="custom-group-form">
               <Form.Label className="form-text">Country</Form.Label>
               <Select
-                // className="control-form-profile"
                 style={{
                   width: "18rem",
                   marginTop: "0.8rem",
