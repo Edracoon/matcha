@@ -1,3 +1,4 @@
+/* Modules */
 import express from "express";
 import bodyparser from "body-parser";
 import fileUpload from "express-fileupload";
@@ -5,6 +6,10 @@ import fileUpload from "express-fileupload";
 import Config from "./Config.js";
 import Database from "./Database.js"
 import { AuthMiddleware } from "./middlewares/auth.js";
+
+/* Routes */
+import AuthRouter from "./routes/auth/auth.router.js";
+import fakerRouter from "./routes/faker/faker.router.js";
 
 class Application {
 	constructor() {
@@ -24,6 +29,8 @@ class Application {
 	}
 
 	initRoutes() {
+		this.app.use(AuthRouter);
+		this.app.use(fakerRouter);
 		this.app.use("*", (req, res) => res.status(404).send());
 	}
 
