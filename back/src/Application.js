@@ -10,6 +10,7 @@ import { AuthMiddleware } from "./middlewares/auth.middleware.js";
 /* Routes */
 import AuthRouter from "./routes/auth/auth.router.js";
 import fakerRouter from "./routes/faker/faker.router.js";
+import countryRouter from "./routes/country/country.router.js";
 
 export default class Application {
 	constructor() {
@@ -20,8 +21,7 @@ export default class Application {
 	}
 
 	initMiddlewares() {
-		this.app.use(bodyparser.urlencoded({ extended: false }));
-		this.app.use(bodyparser.json());
+		this.app.use(bodyparser.json()); // https://github.com/expressjs/body-parser#bodyparserjsonoptions
 		this.app.use(fileUpload({
 			limits: { fileSize: 50 * 1024 * 1024 },
 		}));
@@ -31,6 +31,7 @@ export default class Application {
 	initRoutes() {
 		this.app.use(AuthRouter);
 		this.app.use(fakerRouter);
+		this.app.use(countryRouter);
 		this.app.use("*", (req, res) => res.status(404).send());
 	}
 

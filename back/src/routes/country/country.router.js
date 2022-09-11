@@ -3,7 +3,7 @@ import countryController from "./country.controller.js";
 
 const countryRouter = express.Router();
 
-countryRouter.get("/country/all-countries", countryController.allCountries);
-countryRouter.get("/country/all-cities/:country", countryController.allCitiesFromCountry);
+countryRouter.get("/country/countries", countryController.allCountries);
+countryRouter.get("/country/cities/:country_code", countryController.allCitiesFromCountry);
 
-export default fakerRouter;
+export default countryRouter;

@@ -43,6 +43,7 @@ function generateUser() {
 class fakerController {
 
 	async truncate(req, res) {
+		console.log("fakerController.truncate");
 		// await pool.query("DELETE FROM USER_TAG;");
 		// await pool.query("DELETE FROM TAG;");
 		// await pool.query("DELETE FROM IMG;");
@@ -57,6 +58,8 @@ class fakerController {
 	}
 
 	async populate(req, res) {
+		const nb = +req.params.nb;
+		console.log("fakerController.populate ->", nb);
 		// const nb = +req.params.nb;
 		// await insertTra({ min: "18", max: "99", activated: "1" });
 		// await insertTra({ min: "30", max: "50", activated: "1" });

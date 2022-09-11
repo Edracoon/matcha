@@ -2,7 +2,8 @@ import express from "express"
 import AuthController from "./auth.controller.js";
 
 const AuthRouter = express.Router();
-let exempleMiddleware = (req, res, next) => next();
+
+const exempleMiddleware = (req, res, next) => next();
 
 AuthRouter.post("/auth/sign-up", exempleMiddleware, AuthController.signUp);
 AuthRouter.post("/auth/sign-in", exempleMiddleware, AuthController.signIn);

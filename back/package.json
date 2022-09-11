@@ -12,6 +12,7 @@
 		"express-fileupload": "^1.4.0",
 		"jsonwebtoken": "^8.5.1",
 		"mysql2": "^2.3.3",
+		"node-fetch": "^3.2.10",
 		"nodemailer": "^6.7.8",
 		"nodemon": "^2.0.19"
 	},
