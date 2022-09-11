@@ -5,7 +5,7 @@ import fileUpload from "express-fileupload";
 
 import Config from "./Config.js";
 import Database from "./Database.js"
-import { AuthMiddleware } from "./middlewares/auth.js";
+import { AuthMiddleware } from "./middlewares/auth.middleware.js";
 
 /* Routes */
 import AuthRouter from "./routes/auth/auth.router.js";

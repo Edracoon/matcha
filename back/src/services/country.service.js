@@ -3,18 +3,18 @@ import Config from "../Config.js";
 /* Temporary file */
 
 app.get("/all-countries", (req, res) => {
-	var headers = new Headers();
+	let	headers = new Headers();
 	headers.append("X-CSCAPI-KEY", Config.API_COUNTRY_KEY);
-	var requestOptions = {
-	method: "GET",
-	headers: headers,
-	redirect: "follow",
+	let	requestOptions = {
+		method: "GET",
+		headers: headers,
+		redirect: "follow",
 	};
 	fetch("https://api.countrystatecity.in/v1/countries", requestOptions)
 	.then((response) => response.json())
 	.then((result) => {
 		result = result.map((value) => {
-		return { value: value.iso2, label: value.name };
+			return { value: value.iso2, label: value.name };
 		});
 		res.send(result);
 	})
@@ -23,19 +23,19 @@ app.get("/all-countries", (req, res) => {
   
 app.get("/all-cities/:country", (req, res) => {
 	const country = req.params.country;
-	var headers = new Headers();
-		headers.append("X-CSCAPI-KEY", Config.API_COUNTRY_KEY);
-		var requestOptions = {
-		method: 'GET',
-		headers: headers,
-		redirect: 'follow'
-		};
-		fetch(`https://api.countrystatecity.in/v1/countries/${country}/cities`, requestOptions)
-		.then(response => response.json())
-		.then(result => {
-			result = result.map((value) => {
+	let headers = new Headers();
+	headers.append("X-CSCAPI-KEY", Config.API_COUNTRY_KEY);
+	let requestOptions = {
+	method: 'GET',
+	headers: headers,
+	redirect: 'follow'
+	};
+	fetch(`https://api.countrystatecity.in/v1/countries/${country}/cities`, requestOptions)
+	.then(response => response.json())
+	.then(result => {
+		result = result.map((value) => {
 			return { value: value.id, label: value.name };
-			});
-			res.send(result);
 		});
+		res.send(result);
+	});
 });
