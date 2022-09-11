@@ -21,7 +21,7 @@ export default class Database {
 				connection.release();
 			return ;
 		});
-
+		console.log("Connected to database");
 		this.query = this.db.query;
 	}
 }

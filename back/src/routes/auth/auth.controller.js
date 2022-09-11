@@ -1,4 +1,6 @@
-export default class AuthController {
+import app from "../../app.js";
+
+class AuthController {
 
 	signUp(req, res) {
 
@@ -25,3 +27,5 @@ export default class AuthController {
 	}
 
 }
+
+export default new AuthController();

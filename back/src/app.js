@@ -1,3 +1,7 @@
 import Application from "./Application.js";
 
-Application.start();
+const app = new Application();
+
+app.start();
+
+export default app;

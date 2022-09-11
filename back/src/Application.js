@@ -11,10 +11,10 @@ import { AuthMiddleware } from "./middlewares/auth.js";
 import AuthRouter from "./routes/auth/auth.router.js";
 import fakerRouter from "./routes/faker/faker.router.js";
 
-class Application {
+export default class Application {
 	constructor() {
 		this.app = express();
-		// this.db = new Database();
+		this.db = new Database();
 		this.initMiddlewares();
 		this.initRoutes();
 	}
@@ -40,5 +40,3 @@ class Application {
 		});
 	}
 }
-
-export default new Application();
