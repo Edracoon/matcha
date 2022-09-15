@@ -8,6 +8,7 @@ class AuthController {
 
 	signUp(req, res) {
 		console.log("AuthController.signUp ->", req);
+		let userData = req.body;
 	}
 
 	signIn(req, res) {

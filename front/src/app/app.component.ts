@@ -1,10 +1,18 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 
 @Component({
 	selector: 'app-root',
 	templateUrl: './app.component.html',
 	styleUrls: ['./app.component.scss']
 })
-export class AppComponent {
-	title = 'matcha';
+export class AppComponent implements OnInit {
+	title: String;
+	constructor() {
+		this.title = "matcha";
+	}
+
+	ngOnInit(): void {
+		
+	}
+
 }
