@@ -1,0 +1,39 @@
+<div class="card vflex gap flex-align-center">
+	<div class="form-title">Register</div>
+	<form class="vflex gap" (keydown)="enterSubmit($event)">
+		<div class="vflex minigap">
+			<label for="firstname">First Name</label>
+			<input type="text" name="firstname" id="firstname" [(ngModel)]="registerUser.firstname">
+			<div class="error">{{ errors?.firstname }}</div>
+		</div>
+		<div class="vflex minigap">
+			<label for="lastname">Last Name</label>
+			<input type="text" name="lastname" id="lastname" [(ngModel)]="registerUser.lastname">
+			<div class="error">{{ errors?.lastname }}</div>
+		</div>
+		<div class="vflex minigap">
+			<label for="email">Email</label>
+			<input type="text" name="email" id="email" [(ngModel)]="registerUser.email">
+			<div class="error">{{ errors?.email }}</div>
+		</div>
+		<div class="vflex minigap">
+			<label for="username">Username (this will be used to login)</label>
+			<input type="text" name="username" id="username" [(ngModel)]="registerUser.username">
+			<div class="error">{{ errors?.username }}</div>
+		</div>
+		<div class="vflex minigap">
+			<label for="password">Password (this will be used to login)</label>
+			<input type="password" name="password" id="password" [(ngModel)]="registerUser.password">
+			<div class="error">{{ errors?.password }}</div>
+		</div>
+		<div class="vflex minigap">
+			<label for="password2">Same password</label>
+			<input type="password" name="password2" id="password2" [(ngModel)]="registerUser.password2">
+			<div class="error">{{ errors?.password2 }}</div>
+		</div>
+	</form>
+	<div class="hflex gap flex-align-center">
+		<button class="button cross" (click)="closeForm()">X</button>
+		<button class="button" (click)="submitRegister()">Register me!</button>
+	</div>
+</div>

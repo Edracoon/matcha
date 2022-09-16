@@ -1,0 +1,19 @@
+<div class="card vflex gap flex-align-center">
+	<div class="form-title">Sign In</div>
+	<form class="vflex gap" (keydown)="enterSubmit($event)">
+		<div class="vflex minigap">
+			<label for="username">Username (this will be used to login)</label>
+			<input type="text" name="username" id="username" [(ngModel)]="loginUser.username">
+			<div class="error">{{ errors?.username }}</div>
+		</div>
+		<div class="vflex minigap">
+			<label for="password">Password (this will be used to login)</label>
+			<input type="password" name="password" id="password" [(ngModel)]="loginUser.password">
+			<div class="error">{{ errors?.password }}</div>
+		</div>
+	</form>
+	<div class="hflex gap flex-align-center">
+		<button class="button cross" (click)="closeForm()">X</button>
+		<button class="button" (click)="submitSignin()">Sign in!</button>
+	</div>
+</div>

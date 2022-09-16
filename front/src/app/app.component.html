@@ -1,9 +1,11 @@
 <div class="flex-align-center glob">
-	<div class="vflex flex-align-center">
+	<div class="vflex flex-align-center gap">
 		<h1>{{ title }}</h1>
-		<div class="vflex gap">
-			<button class="button">Sign In</button>
-			<button class="button">Register</button>
+		<div *ngIf="!isSignin && !isRegister" class="vflex gap">
+			<button class="button" (click)="showSignin()">Sign In</button>
+			<button class="button" (click)="showRegister()">Register</button>
 		</div>
+		<app-sign-in *ngIf="isSignin" (isSignin)="closeForm($event)"></app-sign-in>
+		<app-register *ngIf="isRegister" (isRegister)="closeForm($event)"></app-register>
 	</div>
 </div>

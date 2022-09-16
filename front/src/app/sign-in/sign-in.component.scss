@@ -1,0 +1,31 @@
+form {
+	font-size: 17px;
+	font-weight: bold;
+}
+
+input {
+	color: #FAFAFD;
+	font-size: 15px;
+	width: 15rem;
+	height: 2rem;
+	border: 3px solid #FF6D7F;
+	border-radius: 20px;
+	background: #2f2f2f;
+}
+
+.error {
+	color: rgb(250, 77, 77);
+	font-size: 14px;
+}
+
+.minigap { gap: 0.2rem; }
+
+.cross {
+	width: 20px;
+	height: 20px;
+	padding: 0;
+}
+
+.form-title {
+	font-size: 30px;
+}

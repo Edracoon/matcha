@@ -6,8 +6,8 @@ $pink: #FF6D7F;
 $white: #FAFAFD;
 
 $text: #FAFAFD;
-$card: #272746;
-$border: #393C53;
+$card: #2f2f2f;
+$border: #454545;
 
 
 $padding: 1.5rem;
@@ -37,7 +37,10 @@ h1 { font-size: 3rem; }
 }
 
 .nogap { gap: 0; }
+
+.minigap { gap: 0.5rem; }
 .gap { gap: 1rem; }
+.biggap { gap: 2rem; }
 
 .flex-justify-center { justify-content: center }
 .flex-align-center { align-items: center }
@@ -48,6 +51,7 @@ h1 { font-size: 3rem; }
 .card {
 	background: $card;
 	padding: $padding;
+	padding-top: 1rem;
 	border-radius: $border-radius;
 	border: 5px solid $border;
 }
@@ -71,4 +75,11 @@ h1 { font-size: 3rem; }
 .button:focus-visible {
 	box-shadow: 0 0 0 2px $background,
 				0 0 0 3px $pink;
+}
+
+input:focus,
+select:focus,
+textarea:focus,
+button:focus {
+    outline: none;
 }
