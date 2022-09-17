@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { Output, EventEmitter } from '@angular/core';
 
-import { RegisterUser } from '../models/RegisterUser';
-import { InputErrors } from '../utils/InputErrors';
+import { RegisterUser } from '../../models/RegisterUser';
+import { InputErrors } from '../../utils/InputErrors';
+import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
     selector: 'app-register',
@@ -17,8 +18,7 @@ export class RegisterComponent implements OnInit {
   registerUser = new RegisterUser();
   inputErrors = new InputErrors();
   errors: any = {};
-
-  constructor() { }
+  constructor(private authService: AuthService) { }
 
   ngOnInit(): void { }
 
@@ -45,7 +45,7 @@ export class RegisterComponent implements OnInit {
     }
 
     // If no errors then submit it for real
-    console.log("-- wow no errors fpr register ! --");
+    this.authService.postRegister(this.registerUser);
   }
 
   closeForm() {

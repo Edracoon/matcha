@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Output, EventEmitter } from '@angular/core';
 
-import { LoginUser } from '../models/LoginUser';
-import { InputErrors } from '../utils/InputErrors';
+import { SignInUser } from '../../models/SignInUser';
+import { InputErrors } from '../../utils/InputErrors';
 
 @Component({
     selector: 'app-sign-in',
@@ -11,10 +11,10 @@ import { InputErrors } from '../utils/InputErrors';
 })
 export class SignInComponent implements OnInit {
 
-    // We decorate the variable to let know the parent that this will be a catchable event
+  // We decorate the variable to let know the parent that this will be a catchable event
   @Output()
   isSignin = new EventEmitter<boolean>();
-  loginUser: LoginUser = new LoginUser();
+  signInUser: SignInUser = new SignInUser();
   inputErrors = new InputErrors();
   errors: any = {};
 
@@ -28,9 +28,9 @@ export class SignInComponent implements OnInit {
   }
 
   submitSignin() {
-    console.log("submitLogin ->", this.loginUser);
-    this.errors.username = this.inputErrors.username(this.loginUser.username);
-    this.errors.password = this.inputErrors.password(this.loginUser.password);
+    console.log("submitSignin ->", this.signInUser);
+    this.errors.username = this.inputErrors.username(this.signInUser.username);
+    this.errors.password = this.inputErrors.password(this.signInUser.password);
 
     // Check if there is an error, if so, return
     for (let prop in this.errors) {

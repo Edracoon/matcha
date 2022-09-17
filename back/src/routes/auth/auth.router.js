@@ -1,17 +1,20 @@
 import express from "express"
 import AuthController from "./auth.controller.js";
 
-const AuthRouter = express.Router();
+const authRouter = express.Router();
 
-const exempleMiddleware = (req, res, next) => next();
+const exempleMiddleware = (req, res, next) => {
+    console.log("authRouter -> exempleMiddleware");
+    return next();
+}
 
-AuthRouter.post("/auth/sign-up", exempleMiddleware, AuthController.signUp);
-AuthRouter.post("/auth/sign-in", exempleMiddleware, AuthController.signIn);
+authRouter.post("/auth/sign-up", exempleMiddleware, AuthController.signUp);
+authRouter.post("/auth/sign-in", exempleMiddleware, AuthController.signIn);
 
-AuthRouter.post("/auth/send-confirm-email", exempleMiddleware, AuthController.sendConfirmEmail);
-AuthRouter.post("/auth/confirm-email", exempleMiddleware, AuthController.confirmEmail);
+authRouter.post("/auth/send-confirm-email", exempleMiddleware, AuthController.sendConfirmEmail);
+authRouter.post("/auth/confirm-email", exempleMiddleware, AuthController.confirmEmail);
 
-AuthRouter.post("/auth/forgot-password", exempleMiddleware, AuthController.forgotPassword);
-AuthRouter.post("/auth/reset-password", exempleMiddleware, AuthController.resetPassword);
+authRouter.post("/auth/forgot-password", exempleMiddleware, AuthController.forgotPassword);
+authRouter.post("/auth/reset-password", exempleMiddleware, AuthController.resetPassword);
 
-export default AuthRouter;
+export default authRouter;

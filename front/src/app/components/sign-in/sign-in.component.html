@@ -2,13 +2,13 @@
 	<div class="form-title">Sign In</div>
 	<form class="vflex gap" (keydown)="enterSubmit($event)">
 		<div class="vflex minigap">
-			<label for="username">Username (this will be used to login)</label>
-			<input type="text" name="username" id="username" [(ngModel)]="loginUser.username">
+			<label for="username">Username</label>
+			<input type="text" name="username" id="username" [(ngModel)]="signInUser.username">
 			<div class="error">{{ errors?.username }}</div>
 		</div>
 		<div class="vflex minigap">
-			<label for="password">Password (this will be used to login)</label>
-			<input type="password" name="password" id="password" [(ngModel)]="loginUser.password">
+			<label for="password">Password</label>
+			<input type="password" name="password" id="password" [(ngModel)]="signInUser.password">
 			<div class="error">{{ errors?.password }}</div>
 		</div>
 	</form>

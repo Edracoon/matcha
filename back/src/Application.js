@@ -8,7 +8,7 @@ import Database from "./Database.js"
 import { AuthMiddleware } from "./middlewares/auth.middleware.js";
 
 /* Routes */
-import AuthRouter from "./routes/auth/auth.router.js";
+import authRouter from "./routes/auth/auth.router.js";
 import fakerRouter from "./routes/faker/faker.router.js";
 import countryRouter from "./routes/country/country.router.js";
 
@@ -29,7 +29,7 @@ export default class Application {
 	}
 
 	initRoutes() {
-		this.app.use(AuthRouter);
+		this.app.use(authRouter);
 		this.app.use(fakerRouter);
 		this.app.use(countryRouter);
 		this.app.use("*", (req, res) => res.status(404).send());

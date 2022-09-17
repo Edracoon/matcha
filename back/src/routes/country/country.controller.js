@@ -4,6 +4,7 @@ import fetch, { Headers } from 'node-fetch';
 class countryController {
 
 	allCountries(req, res) {
+		console.log('country/countries');
 		try {
 			let headers = new Headers(); headers.append("X-CSCAPI-KEY", Config.API_COUNTRY_KEY);
 			const requestOptions = {

@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { RegisterUser } from './models/RegisterUser';
 
-import { RegisterComponent } from './register/register.component';
-import { SignInComponent } from './sign-in/sign-in.component';
+import { RegisterComponent } from './components/register/register.component';
+import { SignInComponent } from './components/sign-in/sign-in.component';
 
 @Component({
 	selector: 'app-root',
