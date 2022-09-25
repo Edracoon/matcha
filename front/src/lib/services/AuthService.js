@@ -1,6 +1,5 @@
 import axios from 'axios'
 
-import User from '../models/User.js';
 import RegisterUser from '../models/RegisterUser.js';
 import SignInUser from '../models/SignInUser.js';
 import { Config } from '../Config.js';

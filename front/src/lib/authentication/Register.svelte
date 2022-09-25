@@ -66,10 +66,8 @@
 			errors.password2 = "Passwords are not the same !";
 
 		// Check if there is an error, if so, return
-		for (let prop in errors) {
-			if (errors[prop] !== "")
-				return ;
-		}
+		for (let prop in errors)
+			if (errors[prop] !== "") return ;
 
 		// If no errors then submit it for real
 		AuthService.postRegister(registerUser);
@@ -85,32 +83,32 @@
 		<div class="vflex minigap">
 			<label for="firstname">First Name</label>
 			<input type="text" name="firstname" id="firstname" bind:value={registerUser.firstname}>
-			<div class="error">{ errors?.firstname }</div>
+			<div class="error">{ errors.firstname }</div>
 		</div>
 		<div class="vflex minigap">
 			<label for="lastname">Last Name</label>
 			<input type="text" name="lastname" id="lastname" bind:value={registerUser.lastname}>
-			<div class="error">{ errors?.lastname }</div>
+			<div class="error">{ errors.lastname }</div>
 		</div>
 		<div class="vflex minigap">
 			<label for="email">Email</label>
 			<input type="text" name="email" id="email" bind:value={registerUser.email}>
-			<div class="error">{ errors?.email }</div>
+			<div class="error">{ errors.email }</div>
 		</div>
 		<div class="vflex minigap">
-			<label for="username">Username (this will be used to login)</label>
+			<label for="username">Username (Used to sign in)</label>
 			<input type="text" name="username" id="username" bind:value={registerUser.username}>
-			<div class="error">{ errors?.username }</div>
+			<div class="error">{ errors.username }</div>
 		</div>
 		<div class="vflex minigap">
-			<label for="password">Password (this will be used to login)</label>
+			<label for="password">Password (Used to sign in)</label>
 			<input type="password" name="password" id="password" bind:value={registerUser.password}>
-			<div class="error">{ errors?.password }</div>
+			<div class="error">{ errors.password }</div>
 		</div>
 		<div class="vflex minigap">
 			<label for="password2">Same password</label>
 			<input type="password" name="password2" id="password2" bind:value={registerUser.password2}>
-			<div class="error">{ errors?.password2 }</div>
+			<div class="error">{ errors.password2 }</div>
 		</div>
 	</form>
 	<div class="hflex gap flex-align-center">
