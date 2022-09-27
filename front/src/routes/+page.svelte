@@ -1,35 +1,38 @@
+<style>
+	.invert-button {
+		padding: .5rem 0.5rem;
+	}
+	.little {
+		font-size: 17px;
+	}
+
+</style>
+
 <script>
-	import Register from "$lib/authentication/Register.svelte";
+	import SignUp from "$lib/authentication/SignUp.svelte";
 	import SignIn from "$lib/authentication/SignIn.svelte";
 
-	const title = "matcha";
+	const title = "Matcha";
+	let isSignIn = false;
 
-	let isSignin = false;
-	let isRegister = false;
-
-	function showSignin() {
-		isSignin = true;
-		isRegister = false;
+	function invert() {
+		isSignIn = !isSignIn;
 	}
-	function showRegister() {
-		isSignin = false;
-		isRegister = true;
-	}
-
 </script>
-
-<div class="flex-align-center glob">
-	<div class="vflex flex-align-center gap">
-		<h1>{ title }</h1>
-		{#if !isSignin && !isRegister}
-			<div class="vflex gap">
-				<button class="button" on:click={() => showSignin()}>Sign In</button>
-				<button class="button" on:click={() => showRegister()}>Register</button>
-			</div>
-		{:else if isRegister}
-			<Register bind:showed={isRegister}></Register>
-		{:else if isSignin}
-			<SignIn bind:showed={isSignin}></SignIn>
-		{/if}
-	</div>
+	
+<div class="glob vflex flex-align-center justify-between text-center">
+	<h4>{ title }</h4>
+	{#if isSignIn}
+		<SignIn></SignIn>
+		<div class="hflex flex-align-center gap">
+			<p class="little">Don't have an account yet ?</p>
+			<button class="button invert-button" on:click={() => invert()}>Sign Up →</button>
+		</div>
+	{:else}
+		<SignUp></SignUp>
+		<div class="hflex flex-align-center gap">
+			<p class="little" >Already have an account ?</p>
+			<button class="button invert-button" on:click={() => invert()}>Sign in →</button>
+		</div>
+	{/if}
 </div>

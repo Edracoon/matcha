@@ -1,4 +1,4 @@
-$background: #1A1A1D;
+$background: #29292F;
 
 $grey: #29292F;
 $gray: #33343D;
@@ -24,7 +24,16 @@ html {
 	font-size: 1.2rem;
 }
 
-h1 { font-size: 3rem; }
+h4 {
+	font-size: 3rem;
+	margin-block-end: .7rem;
+	margin-block-start: .7rem;
+}
+
+.error {
+	color: rgb(250, 77, 77);
+	font-size: 14px;
+}
 
 .hflex {
 	display: flex;
@@ -35,6 +44,9 @@ h1 { font-size: 3rem; }
 	flex-direction: column;
 }
 
+// Should be 100 but ???
+.glob {	min-height: 97vh; }
+
 .nogap { gap: 0; }
 .minigap { gap: 0.5rem; }
 .gap { gap: 1rem; }
@@ -42,9 +54,21 @@ h1 { font-size: 3rem; }
 
 .flex-justify-center { justify-content: center }
 .flex-align-center { align-items: center }
+.justify-between { justify-content: space-between }
 .space-between { justify-content: space-between }
 .grow { flex: 1 }
 .text-center { text-align: center; }
+.text-left { text-align: left; }
+.h-full { height: 100%; }
+
+.anchor {
+	color: #FAFAFD;
+	cursor: pointer;
+}
+.anchor:hover {
+	color: $pink;
+	text-decoration: underline;
+}
 
 .card {
 	background: $card;

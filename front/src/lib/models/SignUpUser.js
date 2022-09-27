@@ -1,4 +1,4 @@
-export default class RegisterUser {
+export default class SignUpUser {
     constructor() {
         this.firstname = "";
         this.lastname = "";

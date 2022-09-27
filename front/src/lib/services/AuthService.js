@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-import RegisterUser from '../models/RegisterUser.js';
+import SignUpUser from '../models/SignUpUser.js';
 import SignInUser from '../models/SignInUser.js';
 import { Config } from '../Config.js';
 
@@ -9,26 +9,26 @@ const apiUrl = `http://${Config.API_HOST}:${Config.API_PORT}/`;
 export default class AuthService {
 
 	/**
-	 * Method to register an user
-	 * @param {RegisterUser} registerUser
+	 * Method to SignUp an user
+	 * @param {SignUpUser} SignUpUser
 	 */
-	static async postRegister(registerUser) {
+	static async postSignUp(signUpUser) {
 		let response = undefined;
-		console.log('postRegister ->', apiUrl + "auth/sign-up", registerUser);
+		console.log('postSignUp ->', apiUrl + "auth/sign-up", signUpUser);
 		try {
 			response = await axios({
 				url: `${apiUrl}auth/sign-up`,
 				method: 'POST',
-				data: registerUser
+				data: signUpUser
 			});
 		}
-		catch (err) { console.log('Error occured in postRegister ->', err) }
+		catch (err) { console.log('Error occured in postSignUp ->', err) }
 		if (!response) {
-			console.error('Error occured in postRegister ->', response);
+			console.error('Error occured in postSignUp ->', response);
 			return ;
 		}
 		// if succeed set local storage etc .........
-		console.log('postRegister response =', response);
+		console.log('postSignUp response =', response);
 	}
 
 	/**
