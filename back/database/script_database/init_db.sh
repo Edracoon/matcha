@@ -5,17 +5,17 @@ mysql -u root --password=passwd matcha -e "CREATE TABLE IF NOT EXISTS USER (
       firstname VARCHAR(30) NOT NULL COMMENT 'Prenom',
       lastname VARCHAR(50) NOT NULL COMMENT 'Nom',
       email VARCHAR(100) UNIQUE NOT NULL COMMENT 'e-mail',
-      genre1 ENUM('undefined', 'male', 'female') DEFAULT 'undefined' COMMENT 'Genre de naissance (Homme,Femme)',
-      genre2 ENUM('undefined', 'cisgender', 'transgender', 'non binary', 'fluid') DEFAULT 'undefined' COMMENT 'Genre vecu et exprime',
-      sexual_orientation ENUM('undefined', 'heterosexual', 'homosexual', 'bisexual', 'pansexual', 'asexual') DEFAULT 'undefined' COMMENT 'Orientation sexuelle',
+      birthGender ENUM('undefined', 'male', 'female') DEFAULT 'undefined' COMMENT 'Genre de naissance (Homme,Femme)',
+      currGender ENUM('undefined', 'cisgender', 'transgender', 'non binary', 'fluid') DEFAULT 'undefined' COMMENT 'Genre vecu et exprime',
+      sexualOrient ENUM('undefined', 'heterosexual', 'homosexual', 'bisexual', 'pansexual', 'asexual') DEFAULT 'undefined' COMMENT 'Orientation sexuelle',
       bio TEXT COMMENT 'Bio courte',
-      last_ip TEXT COMMENT 'Derniere IP utilisee pour localisation si besoin',
+      lastIP TEXT COMMENT 'Derniere IP utilisee pour localisation si besoin',
       city VARCHAR(50) COMMENT 'Nom de la city (loc geo)',
       country VARCHAR(50) COMMENT 'Nom du pays',
-      is_online tinyINT(1) DEFAULT 0 COMMENT 'En ligne',
-      tra_id INT(11) COMMENT 'Id tranche d''age',
-      fake_counter INT(11) DEFAULT 0 COMMENT 'counter for reported accounts',
-      refreshToken TEXT DEFAULT NULL COMMENT 'Token de refresh pour le access token'
+      isOnline tinyINT(1) DEFAULT 0 COMMENT 'En ligne',
+      traMin INT(11) DEFAULT 18 COMMENT 'Age mini',
+      traMax INT(11) DEFAULT 99 COMMENT 'Age max',
+      fakeCounter INT(11) DEFAULT 0 COMMENT 'counter for reported accounts',
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Liste des utilisateurs';
 
     CREATE TABLE IF NOT EXISTS TRA (

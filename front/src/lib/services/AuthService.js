@@ -36,6 +36,21 @@ export default class AuthService {
 	 * @param {SignInUser} signInUser
 	 */
 	static postSignIn(signInUser) {
-
+		let response = undefined;
+		console.log('postSignIn ->', apiUrl + "auth/sign-up", signInUser);
+		try {
+			response = await axios({
+				url: `${apiUrl}auth/sign-up`,
+				method: 'POST',
+				data: signInUser
+			});
+		}
+		catch (err) { console.log('Error occured in postSignIn ->', err) }
+		if (!response) {
+			console.error('Error occured in postSignIn ->', response);
+			return ;
+		}
+		// if succeed set local storage etc .........
+		console.log('postSignIn response =', response);
 	}
 }
