@@ -35,7 +35,7 @@ export default class AuthService {
 	 * Method to sign in an user
 	 * @param {SignInUser} signInUser
 	 */
-	static postSignIn(signInUser) {
+	static async postSignIn(signInUser) {
 		let response = undefined;
 		console.log('postSignIn ->', apiUrl + "auth/sign-up", signInUser);
 		try {

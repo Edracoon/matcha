@@ -16,6 +16,7 @@ mysql -u root --password=passwd matcha -e "CREATE TABLE IF NOT EXISTS USER (
       traMin INT(11) DEFAULT 18 COMMENT 'Age mini',
       traMax INT(11) DEFAULT 99 COMMENT 'Age max',
       fakeCounter INT(11) DEFAULT 0 COMMENT 'counter for reported accounts',
+      emailValidationCode INT(11) COMMENT 'code de validation email',
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Liste des utilisateurs';
 
     CREATE TABLE IF NOT EXISTS TRA (

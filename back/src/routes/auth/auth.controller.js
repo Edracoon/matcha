@@ -9,13 +9,13 @@ import { User } from "../../models/user.model.js";
 class AuthController {
 
 	signUp(req, res) {
-		console.log("AuthController.signUp ->", req);
+		console.log("AuthController.signUp ->", req.body);
 		let user = new User(req.body.firstname, req.body.lastname,
-								req.body.email, req.body.username, req.body.password);
-		// if (/* Test is their is users that have this email */true) {
+					req.body.email, req.body.username, req.body.password);
+		// if (/* Test if their is users that have this email */true) {
 		// 	return res.status(400).json({ error: "form.invalid", errors: "email.unique" });
 		// }
-		// if (/* Test is their is users that have this username */true) {
+		// if (/* Test if their is users that have this username */true) {
 		// 	return res.status(400).json({ error: "form.invalid", errors: "username.unique" });
 		// }
 
@@ -26,11 +26,9 @@ class AuthController {
 		errors.username = InputErrors.username(user.username);
 		errors.password = InputErrors.password(user.password);
 		user.password === user.password2 ? undefined : errors.password2 = "Passwords are not the same !";
-		for (let prop in errors) {
-			if (errors[prop] !== undefined){
-				res.status(400).json({ error: "", errors: ""});
-			}
-		}
+		for (let prop in errors)
+			if (errors[prop])
+				res.status(400).json({ error: "form.invalid", errors});
 	}
 
 	signIn(req, res) {
