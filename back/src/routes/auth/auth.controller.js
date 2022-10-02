@@ -28,7 +28,7 @@ class AuthController {
 		let user = new User(req.body.firstname, req.body.lastname, req.body.email, req.body.username, encryptedPass);
 
 		await user.save();
-		await app.MailService.sendMail(user.email, "Confirm your registration to Matcha !", `This is your verification code ${user.emailValidationCode}`);
+		// await app.MailService.sendMail(user.email, "Confirm your registration to Matcha !", `This is your verification code ${user.emailValidationCode}`);
 		return res.status(200).json("sign-up succeeded");
 	}
 
@@ -45,12 +45,17 @@ class AuthController {
 		let same = await bcrypt.compare(req.body.password, user.password);
 		if (!same) return res.status(400).json({error: "form.invalid"});
 
+		// If this is the case, we're gonna need to re-inform the user that he need to confirm
+		if (!user.confirmEmail) return res.status(400).json({error: "email.notconfirmed"});
+
 		const accessToken = jwt.sign({ user, role: "member" }, Config.JWT_SECRET, { expiresIn: "1d" });
 		return res.status(200).json({ accessToken });
 	}
 
-	sendConfirmEmail(req, res) {
+	async sendConfirmEmail(req, res) {
 		console.log("AuthController.sendConfirmEmail ->", req);
+		
+		await app.MailService.sendMail(req.user.email, "Confirm your registration to Matcha !", `This is your verification code ${req.user.emailValidationCode}`);
 	}
 
 	confirmEmail(req, res) {

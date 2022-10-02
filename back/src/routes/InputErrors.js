@@ -46,8 +46,6 @@ export default class InputErrors {
 	 * Check for errors in inputs
 	 * This function only accepts keys that
 	 * is a defined function in this class
-	 * @param {*} inputs 
-	 * @returns 
 	 */
 	static checkMultipleInput(inputs, checkConfirm) {
 		let errors = {};
