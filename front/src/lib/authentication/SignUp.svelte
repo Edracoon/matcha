@@ -36,7 +36,7 @@
 		email: "",
 		username: "",
 		password: "",
-		password2: "",
+		confirmPassword: "",
 	};
 
 	function handleKeydown(event) {
@@ -51,9 +51,9 @@
 		errors.email = InputErrors.email(signUpUser.email);
 		errors.username = InputErrors.username(signUpUser.username);
 		errors.password = InputErrors.password(signUpUser.password);
-		errors.password2 = InputErrors.password(signUpUser.password2);
-		if (signUpUser.password !== signUpUser.password2)
-			errors.password2 = "Passwords are not the same !";
+		errors.confirmPassword = InputErrors.password(signUpUser.confirmPassword);
+		if (signUpUser.password !== signUpUser.confirmPassword)
+			errors.confirmPassword = "Passwords are not the same !";
 
 		// Check if there is an error, if so, return
 		for (let prop in errors)
@@ -95,9 +95,9 @@
 			<div class="error">{ errors.password }</div>
 		</div>
 		<div class="vflex minigap">
-			<label for="password2">Comfirm password</label>
-			<input type="password" name="password2" id="password2" bind:value={signUpUser.password2}>
-			<div class="error">{ errors.password2 }</div>
+			<label for="confirmPassword">Comfirm password</label>
+			<input type="password" name="confirmPassword" id="confirmPassword" bind:value={signUpUser.confirmPassword}>
+			<div class="error">{ errors.confirmPassword }</div>
 		</div>
 	</form>
 	<div class="hflex gap flex-align-center">

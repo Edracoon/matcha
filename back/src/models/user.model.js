@@ -1,4 +1,6 @@
 import app from "../app.js";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
 export class User {
 	constructor(firstname, lastname, email, username, password) {
@@ -13,6 +15,7 @@ export class User {
 		this.bio = "";
 		this.lastIP = "";
 		this.fakeCounter = 0; // Number of reports "fake account"
+		this.validatedEmail = false;
 		this.emailValidationCode = (Math.floor(Math.random() * (999999 - 100000) + 100000)).toString();
 	}
 
@@ -32,7 +35,7 @@ export class User {
 			emailValidationCode: this.emailValidationCode,
 			lastIP: this.lastIP,
 		};
-		app.db.query(`INSERT INTO USER SET ?`, user);
+		app.mysql.query(`INSERT INTO USER SET ?`, user);
 	}
 
 	/**
@@ -41,9 +44,14 @@ export class User {
 	 * @param {String} param
 	 * @returns true of false -> param is unique or not
 	 */
-	async isUnique(propToCheck, param) {
-		let data = await app.db.query(`SELECT COUNT(*) AS cnt FROM USER WHERE ${propToCheck} = ?`, [param]);
-		console.log(`countDocument for ${param} = ${data[0][0].cnt}`);
+	static async isUnique(propToCheck, param) {
+		let data = await app.mysql.query(`SELECT COUNT(*) AS cnt FROM USER WHERE ${propToCheck} = ?`, [param]);
+		console.log(data[0][0].cnt);
 		return data[0][0].cnt === 0 ? true : false;
+	}
+
+	static async getUser(propToGet, param) {
+		let data = await app.mysql.query(`SELECT * FROM USER WHERE ${propToGet} = '${param}';`);
+		return data[0][0];
 	}
 }

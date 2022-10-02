@@ -12,8 +12,8 @@ services:
     ports:
       - ${DB_PORT}:${DB_PORT}
     volumes:
-      - script_database:/docker-entrypoint-initdb.d
-      - mysqldata:/var/lib/mysql
+      - ./script_database:/docker-entrypoint-initdb.d
+      - ./mysqldata:/var/lib/mysql
 
   adminer:
     image: adminer:4.8.1

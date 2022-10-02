@@ -1,38 +1,52 @@
 import express from "express";
-import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
 
-import app from "../../app.js";
-import InputErrors from "../InputErrors.js";
 import { User } from "../../models/user.model.js";
+import InputErrors from "../InputErrors.js";
+import Config from "../../Config.js";
+
+const saltRounds = 10;
 
 class AuthController {
 
-	signUp(req, res) {
+	/**
+	 * /auth/sign-up
+	 * @param {*} req
+	 * @param {*} res
+	 */
+	async signUp(req, res) {
 		console.log("AuthController.signUp ->", req.body);
-		let user = new User(req.body.firstname, req.body.lastname,
-					req.body.email, req.body.username, req.body.password);
-		// if (/* Test if their is users that have this email */true) {
-		// 	return res.status(400).json({ error: "form.invalid", errors: "email.unique" });
-		// }
-		// if (/* Test if their is users that have this username */true) {
-		// 	return res.status(400).json({ error: "form.invalid", errors: "username.unique" });
-		// }
 
-		let errors = {};
-		errors.firstname = InputErrors.firstname(user.firstname);
-		errors.lastname = InputErrors.lastname(user.lastname);
-		errors.email = InputErrors.email(user.email);
-		errors.username = InputErrors.username(user.username);
-		errors.password = InputErrors.password(user.password);
-		user.password === user.password2 ? undefined : errors.password2 = "Passwords are not the same !";
-		for (let prop in errors)
-			if (errors[prop])
-				res.status(400).json({ error: "form.invalid", errors});
+		let errors = InputErrors.checkMultipleInput(req.body, true);
+		if (errors)
+			return res.status(400).json({ error: "form.invalid", errors});
+		if (await User.isUnique("email", req.body.email) === false)
+			return res.status(400).json({ error: "form.invalid", errors: {email: "This email is already taken."} });
+		if (await User.isUnique("username", req.body.username) === false)
+			return res.status(400).json({ error: "form.invalid", errors: {username: "This username is already taken."} });
+
+		let encryptedPass = await bcrypt.hash(req.body.password, saltRounds);
+		let user = new User(req.body.firstname, req.body.lastname, req.body.email, req.body.username, encryptedPass);
+
+		await user.save();
+		await app.MailService.sendMail(user.email, "Confirm your registration to Matcha !", `This is your verification code ${user.emailValidationCode}`);
+		return res.status(200).json("sign-up succeeded");
 	}
 
-	signIn(req, res) {
-		console.log("AuthController.signIn ->", req);
+	async signIn(req, res) {
+		console.log("AuthController.signIn ->", req.body);
+		if (!req.body.username || !req.body.password)
+			return res.status(400).json({error: "form.invalid"});
+
+		let user = User.getUser('username', req.body.username);
+		console.log(user);
+		if (!user)
+			return res.status(400).json({error: "form.invalid"});
+
+		let same = await bcrypt.compare(req.body.password, user.password);
+		if (!same) return res.status(400).json({error: "form.invalid"});
+
+		const accessToken = jwt.sign({ user, role: "member" }, Config.JWT_SECRET, { expiresIn: "1d" });
+		return res.status(200).json({ accessToken });
 	}
 
 	sendConfirmEmail(req, res) {

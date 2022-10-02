@@ -1,15 +1,27 @@
 const Config = {
+	ENV: "dev",
+
 	/* Server */
 	PORT: process.env.PORT,
 	JWT_SECRET: process.env.JWT_SECRET,
 	JWT_REFRESH: process.env.JWT_REFRESH,
 
 	/* Database */
-	DB_NAME: process.env.DB_NAME,
-	DB_HOST: process.env.DB_HOST,
-	DB_PORT: process.env.DB_PORT,
-	DB_USER: process.env.DB_USER,
-	DB_PASSWORD: process.env.DB_PASSWORD,
+	DB: {
+		NAME: process.env.DB_NAME,
+		HOST: process.env.DB_HOST,
+		PORT: process.env.DB_PORT,
+		USER: process.env.DB_USER,
+		PASSWORD: process.env.DB_PASSWORD,
+	},
+
+	/* Mail Service */
+	MAILER: {
+		HOST: process.env.MAIL_HOST,
+		PORT: process.env.MAIL_PORT,
+		EMAIL: process.env.MAIL_EMAIL,
+		PASSWORD: process.env.MAIL_PASSWORD,
+	},
 
 	/* Others */
 	API_COUNTRY_KEY: process.env.API_COUNTRY_KEY

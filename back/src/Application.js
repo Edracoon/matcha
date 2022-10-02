@@ -12,10 +12,15 @@ import authRouter from "./routes/auth/auth.router.js";
 import fakerRouter from "./routes/faker/faker.router.js";
 import countryRouter from "./routes/country/country.router.js";
 
+/* Services */
+import MailService from "./services/mail.service.js";
+
 export default class Application {
 	constructor() {
 		this.app = express();
 		this.db = new Database();
+		this.MailService = new MailService();
+		this.mysql = this.db.db;
 		this.initMiddlewares();
 		this.initRoutes();
 	}

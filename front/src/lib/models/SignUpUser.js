@@ -5,6 +5,6 @@ export default class SignUpUser {
         this.email = "";
         this.username = "";
         this.password = "";
-        this.password2 = "";
+        this.confirmPassword = "";
     }
 }

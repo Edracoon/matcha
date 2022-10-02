@@ -6,11 +6,11 @@ export default class Database {
 		/* Init pool connection */
 		this.db = mysql.createPool({
 			connectionLimit: 100,
-			host: Config.DB_HOST,
-			user: Config.DB_USER,
-			password: Config.DB_PASSWORD,
-			database: Config.DB_NAME,
-			port: Config.DB_PORT,
+			host: Config.DB.HOST,
+			user: Config.DB.USER,
+			password: Config.DB.PASSWORD,
+			database: Config.DB.NAME,
+			port: Config.DB.PORT,
 		});
 		/* Handle pool potential errors */
 		this.db.getConnection((err, connection) => {
