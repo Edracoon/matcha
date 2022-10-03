@@ -30,7 +30,7 @@ export default class Application {
 		this.app.use(fileUpload({
 			limits: { fileSize: 50 * 1024 * 1024 },
 		}));
-		this.app.use(AuthMiddleware);
+		// this.app.use(AuthMiddleware);
 	}
 
 	initRoutes() {

@@ -1,5 +1,6 @@
 import express from "express";
 
+import bcrypt from "bcrypt";
 import { User } from "../../models/user.model.js";
 import InputErrors from "../InputErrors.js";
 import Config from "../../Config.js";
@@ -15,17 +16,24 @@ class AuthController {
 	 */
 	async signUp(req, res) {
 		console.log("AuthController.signUp ->", req.body);
+		const b = req.body;
 
-		let errors = InputErrors.checkMultipleInput(req.body, true);
+		if (!b.firstname || !b.lastname || !b.email
+			|| !b.username || !b.password || !b.confirmPassword)
+			return res.status(400).json({ error: "form.invalid", errors: {form: "Missing inputs"}});
+
+		let errors = InputErrors.checkMultipleInput(b, true);
 		if (errors)
 			return res.status(400).json({ error: "form.invalid", errors});
-		if (await User.isUnique("email", req.body.email) === false)
+		
+		// Check if the form is unique friendly
+		if (await User.isUnique("email", b.email) === false)
 			return res.status(400).json({ error: "form.invalid", errors: {email: "This email is already taken."} });
-		if (await User.isUnique("username", req.body.username) === false)
+		if (await User.isUnique("username", b.username) === false)
 			return res.status(400).json({ error: "form.invalid", errors: {username: "This username is already taken."} });
 
-		let encryptedPass = await bcrypt.hash(req.body.password, saltRounds);
-		let user = new User(req.body.firstname, req.body.lastname, req.body.email, req.body.username, encryptedPass);
+		let encryptedPass = await bcrypt.hash(b.password, saltRounds);
+		let user = new User(b.firstname, b.lastname, b.email, b.username, encryptedPass);
 
 		await user.save();
 		// await app.MailService.sendMail(user.email, "Confirm your registration to Matcha !", `This is your verification code ${user.emailValidationCode}`);
