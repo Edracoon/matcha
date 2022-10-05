@@ -1,4 +1,4 @@
-$background: #29292F;
+$background: #23242a;
 
 $grey: #29292F;
 $gray: #33343D;
@@ -6,7 +6,7 @@ $pink: #FF6D7F;
 $white: #FAFAFD;
 
 $text: #FAFAFD;
-$card: #2f2f2f;
+$card: #28292d;
 $border: #454545;
 
 $padding: 1.5rem;
@@ -28,10 +28,11 @@ h4 {
 	font-size: 3rem;
 	margin-block-end: .7rem;
 	margin-block-start: .7rem;
+	color: #FF6D7F;
 }
 
 .error {
-	color: rgb(250, 77, 77);
+	color: #FF6D7F;
 	font-size: 14px;
 }
 
@@ -46,6 +47,9 @@ h4 {
 
 // Should be 100 but ???
 .glob {	min-height: 97vh; }
+
+.h-full { height: 100%; }
+.w-full { width: 100%; }
 
 .nogap { gap: 0; }
 .minigap { gap: 0.5rem; }
@@ -72,10 +76,10 @@ h4 {
 
 .card {
 	background: $card;
-	padding: $padding;
-	padding-top: 1rem;
-	border-radius: $border-radius;
-	border: 5px solid $border;
+	// padding: $padding;
+	// padding-top: 1rem;
+	// border-radius: $border-radius;
+	// border: 2px solid $border;
 }
 
 .button {

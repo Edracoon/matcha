@@ -1,26 +1,5 @@
-<style>
-	form {
-		font-size: 17px;
-		font-weight: bold;
-	}
-
-	.btn-signin { width: 18rem }
-
-	input {
-		color: #FAFAFD;
-		font-size: 15px;
-		width: 18rem;
-		height: 2rem;
-		border: 2px solid #FF6D7F;
-		border-radius: 10px;
-		background: #2f2f2f;
-	}
-
-	.minigap { gap: 0.2rem; }
-	.forgot-password { font-size: 15px; }
-</style>
-
 <script>
+	import "./auth.scss";
 	import InputErrors from "../InputErrors.js";
 	import SignInUser from "../models/SignInUser.js";
 	import AuthService from "../services/AuthService.js";
@@ -53,21 +32,24 @@
 
 <svelte:window on:keydown={handleKeydown}/>
 
-<div class="vflex gap flex-align-center gap">
-	<form class="vflex gap text-left">
-		<div class="vflex minigap">
-			<label for="username">Username</label>
-			<input type="text" name="username" id="username" bind:value={signInUser.username}>
-			<div class="error">{ errors.username }</div>
+<div class="card">
+	<div class="form vflex flex-align-center gap">
+		<div class="vflex gap text-left flex-align-center">
+			<h1>Sign In</h1>
+			<div class="vflex minigap">
+				<span>Username</span>
+				<input type="text" spellcheck="false" bind:value={signInUser.username}>
+				<div class="error">{ errors.username }</div>
+			</div>
+			<div class="vflex minigap">
+				<span>Password</span>
+				<input type="password" spellcheck="false" bind:value={signInUser.password}>
+				<div class="error">{ errors.password }</div>
+			</div>
 		</div>
-		<div class="vflex minigap">
-			<label for="password">Password</label>
-			<input type="password" name="password" id="password" bind:value={signInUser.password}>
-			<div class="error">{ errors.password }</div>
+		<div class="hflex gap flex-align-center">
+			<button class="button btn-signin" on:click={() => submitSignIn()}>Sign in!</button>
 		</div>
-	</form>
-	<div class="hflex gap flex-align-center">
-		<button class="button btn-signin" on:click={() => submitSignIn()}>Sign in!</button>
+		<div class="anchor forgot-password" on:click={() => goto('/forgot-password')}>You forgot your password ?</div>
 	</div>
-	<div class="anchor forgot-password" on:click={() => goto('/forgot-password')}>You forgot your password ?</div>
 </div>

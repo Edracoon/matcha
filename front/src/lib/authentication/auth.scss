@@ -1,0 +1,84 @@
+.minigap { gap: 0.2rem }
+.forgot-password { font-size: 15px }
+.btn-signin { width: 18rem }
+
+.form {
+	position: absolute;
+	font-size: 17px;
+	font-weight: bold;
+	z-index: 10;
+	inset: 4px;
+	border-radius: 8px;
+	background-color: #28292d;
+}
+
+input {
+	color: #FAFAFD;
+	font-size: 18px;
+	width: 18rem;
+	height: 2rem;
+	border: 2px solid transparent;
+	border-bottom: 2px solid #FF6D7F;
+	border-radius: 10px;
+	background: #28292d;
+	letter-spacing: 0.05em;
+}
+input:focus {
+	background: #454444;
+	border-bottom: 2px solid transparent;
+	transition: 0.5s;
+}
+
+span {
+	padding: 5px 0px 10px;
+	font-size: 1em;
+	color: #8f8f8f;
+	letter-spacing: 0.05em;
+}
+
+.card {
+	position: relative;
+	width: 460px;
+	height: 480px;
+	border: 3px solid rgb(28, 27, 27);
+	border-radius: 8px;
+	overflow: hidden;
+}
+
+.card::before {
+	content: '';
+	position: absolute;
+	top: -50%;
+	left: -50%;
+	width: 460px;
+	height: 480px;
+	background: linear-gradient(0deg, transparent, #ff6d7ece, #FF6D7F);
+	transform-origin: bottom right;
+	animation: animate 5s linear infinite;
+}
+
+.card::after {
+	content: '';
+	position: absolute;
+	top: -50%;
+	left: -50%;
+	width: 460px;
+	height: 480px;
+	background: linear-gradient(0deg, transparent, #ff6d7ece, #FF6D7F);
+	transform-origin: bottom right;
+	animation: animate 5s linear infinite;
+	animation-delay: -2.5s;
+}
+
+@keyframes animate {
+	0% { transform: rotate(0deg) }
+	100% { transform: rotate(360deg) }
+}
+
+@media only screen and (max-width: 600px) {
+	.card { width: 340px }
+	.card::before { width: 340px }
+	.card::after { width: 340px }
+	input { width: 13rem }
+	.btn-signin { width: 13rem }
+}

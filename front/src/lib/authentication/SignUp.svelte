@@ -1,30 +1,35 @@
 <style>
-	form {
-		font-size: 15px;
-		font-weight: bold;
+	.form { font-size: 15px;}
+	input { width: 16rem }
+	span { padding: 2px 0px 5px; }
+
+	.semigap { gap: 0.4rem; }
+	.minigap { gap: 0.1rem; }
+
+	.btn-signup {
+		width: 16rem;
+		margin-top: 1rem;
+		margin-bottom: 1rem;
 	}
 
-	input {
-		color: #FAFAFD;
-		font-size: 13px;
-		width: 18rem;
-		height: 1.8rem;
-		border: 2px solid #FF6D7F;
-		border-radius: 10px;
-		background: #2f2f2f;
+	.card {
+		width: 500px;
+		height: 750px;
 	}
 
-	.btn-signup { width: 18rem }
-
-	.error {
-		color: rgb(250, 77, 77);
-		font-size: 14px;
+	.card::before {
+		width: 500px;
+		height: 750px;
 	}
 
-	.minigap { gap: 0.2rem; }
+	.card::after {
+		width: 500px;
+		height: 750px;
+	}
 </style>
 
 <script>
+	import "./auth.scss";
 	import SignUpUser from "../models/SignUpUser.js";
 	import InputErrors from "../InputErrors.js";
 	import AuthService from "../services/AuthService.js";
@@ -67,40 +72,41 @@
 
 <svelte:window on:keydown={handleKeydown}/>
 
-<div class="vflex flex-align-center gap">
-	<form class="vflex gap text-left">
+<div class="card">
+	<div class="form vflex text-left flex-align-center justify-between semigap">
+		<h1>Sign Up</h1>
 		<div class="vflex minigap">
-			<label for="firstname">First Name</label>
-			<input type="text" name="firstname" id="firstname" bind:value={signUpUser.firstname}>
+			<span>First Name</span>
+			<input type="text" bind:value={signUpUser.firstname}>
 			<div class="error">{ errors.firstname }</div>
 		</div>
 		<div class="vflex minigap">
-			<label for="lastname">Last Name</label>
-			<input type="text" name="lastname" id="lastname" bind:value={signUpUser.lastname}>
+			<span>Last Name</span>
+			<input type="text" bind:value={signUpUser.lastname}>
 			<div class="error">{ errors.lastname }</div>
 		</div>
 		<div class="vflex minigap">
-			<label for="email">E-mail</label>
-			<input type="text" name="email" id="email" bind:value={signUpUser.email}>
+			<span>E-mail</span>
+			<input type="text" bind:value={signUpUser.email}>
 			<div class="error">{ errors.email }</div>
 		</div>
 		<div class="vflex minigap">
-			<label for="username">Username (Used to sign in)</label>
-			<input type="text" name="username" id="username" bind:value={signUpUser.username}>
+			<span>Username (Used to sign in)</span>
+			<input type="text" bind:value={signUpUser.username}>
 			<div class="error">{ errors.username }</div>
 		</div>
 		<div class="vflex minigap">
-			<label for="password">Password (Used to sign in)</label>
-			<input type="password" name="password" id="password" bind:value={signUpUser.password}>
+			<span>Password (Used to sign in)</span>
+			<input type="password"bind:value={signUpUser.password}>
 			<div class="error">{ errors.password }</div>
 		</div>
 		<div class="vflex minigap">
-			<label for="confirmPassword">Comfirm password</label>
-			<input type="password" name="confirmPassword" id="confirmPassword" bind:value={signUpUser.confirmPassword}>
+			<span>Comfirm password</span>
+			<input type="password" bind:value={signUpUser.confirmPassword}>
 			<div class="error">{ errors.confirmPassword }</div>
 		</div>
-	</form>
-	<div class="hflex gap flex-align-center">
-		<button class="button btn-signup" on:click={() => submitSignUp()}>Sign up for free!</button>
+		<div class="hflex gap flex-align-center">
+			<button class="button btn-signup" on:click={() => submitSignUp()}>Sign up for free!</button>
+		</div>
 	</div>
 </div>
