@@ -27,6 +27,14 @@ export default class Application {
 
 	initMiddlewares() {
 		this.app.use(bodyparser.json()); // https://github.com/expressjs/body-parser#bodyparserjsonoptions
+		this.app.use(bodyparser.urlencoded({ extended: true }));
+		// Authorize CORS
+		this.app.use((req, res, next) => {
+			res.header("Access-Control-Allow-Origin", "*");
+			res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
+			res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+			next();
+		});
 		this.app.use(fileUpload({
 			limits: { fileSize: 50 * 1024 * 1024 },
 		}));
