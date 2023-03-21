@@ -1,7 +1,7 @@
 import express from "express";
 
 import bcrypt from "bcrypt";
-import { User } from "../../models/user.model.js";
+// import { User } from "../../models/user.model.js";
 import InputErrors from "../InputErrors.js";
 import Config from "../../Config.js";
 

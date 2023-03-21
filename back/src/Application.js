@@ -4,9 +4,11 @@ import bodyparser from "body-parser";
 import fileUpload from "express-fileupload";
 
 import Config from "./Config.js";
-import Database from "./Database.js"
-import SQLib from "./SQLib.js";
 import { AuthMiddleware } from "./middlewares/auth.middleware.js";
+
+/* Models */
+import SQLib from "./SQLib.js";
+import UserSchema from "./models/user.model.js";
 
 /* Routes */
 import authRouter from "./routes/auth/auth.router.js";
@@ -22,8 +24,13 @@ export default class Application {
 		this.db = new SQLib();
 		this.MailService = new MailService();
 		this.mysql = this.db.db;
-		this.initMiddlewares();
-		this.initRoutes();
+		this.db.initDatabase().then(() => this.initModels());
+		// this.initMiddlewares();
+		// this.initRoutes();
+	}
+
+	initModels() {
+		this.db.defineModel("USER", UserSchema.schema);
 	}
 
 	initMiddlewares() {
@@ -51,7 +58,7 @@ export default class Application {
 
 	start() {
 		this.server = this.app.listen(Config.PORT, () => {
-			console.info(`Matcha server listening on port ${Config.PORT}`);
+			console.info(`Matcha server listening on port ${Config.port}`);
 		});
 	}
 }

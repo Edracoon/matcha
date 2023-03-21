@@ -1,13 +1,12 @@
 const Config = {
-	ENV: "dev",
+	env: "dev",
 
 	/* Server */
-	PORT: process.env.PORT,
-	JWT_SECRET: process.env.JWT_SECRET,
-	JWT_REFRESH: process.env.JWT_REFRESH,
+	port: process.env.PORT,
+	jwtSecret: process.env.JWT_SECRET,
 
 	/* Database */
-	DB: {
+	db: {
 		NAME: process.env.DB_NAME,
 		HOST: process.env.DB_HOST,
 		PORT: process.env.DB_PORT,
@@ -16,7 +15,7 @@ const Config = {
 	},
 
 	/* Mail Service */
-	MAILER: {
+	mailer: {
 		HOST: process.env.MAIL_HOST,
 		PORT: process.env.MAIL_PORT,
 		EMAIL: process.env.MAIL_EMAIL,

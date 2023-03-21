@@ -12,7 +12,6 @@ services:
     ports:
       - ${DB_PORT}:${DB_PORT}
     volumes:
-      - ./script_database:/docker-entrypoint-initdb.d
       - ./mysqldata:/var/lib/mysql
 
   adminer:
@@ -29,10 +28,3 @@ volumes:
       type: "none"
       o: "bind"
       device: "./mysqldata"
-  script_database:
-    name: "script_database"
-    driver: local
-    driver_opts:
-      type: "none"
-      o: "bind"
-      device: "./script_database"

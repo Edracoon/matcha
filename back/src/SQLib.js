@@ -7,24 +7,20 @@ export default class SQLib {
 		if (typeof SQLib.instance === 'object')
 			return SQLib.instance;
 		SQLib.instance = this;
-
-		// Connect to the db
-		initDatabase();
 		
 		// Keep track of defined models
 		this.models = {};
-		return this;
 	}
 
-	initDatabase() {
+	async initDatabase() {
 		/* Init pool connection */
 		this.db = mysql.createPool({
 			connectionLimit: 100,
-			host: Config.DB.HOST,
-			user: Config.DB.USER,
-			password: Config.DB.PASSWORD,
-			database: Config.DB.NAME,
-			port: Config.DB.PORT,
+			host: Config.db.HOST,
+			user: Config.db.USER,
+			password: Config.db.PASSWORD,
+			database: Config.db.NAME,
+			port: Config.db.PORT,
 		});
 		/* Handle pool potential errors */
 		this.db.getConnection((err, connection) => {
@@ -35,8 +31,7 @@ export default class SQLib {
 				connection.release();
 			return ;
 		});
-		console.log("Connected to database");
-		this.query = this.db.query;
+		console.log("[SQLib] : Connected to database");
 	}
 
 	// Define a new model
@@ -63,9 +58,8 @@ export default class SQLib {
 
 		// Generate the SQL query to create the table
 		const columns = [];
+		columns.push(`id INT NOT NULL AUTO_INCREMENT PRIMARY KEY`);
 		for (let columnName in model.columns) {
-			if (columnName === "methods")
-				continue ;
 			const column = model.columns[columnName];
 			const type = column.type;
 			const unique = column.unique ? 'UNIQUE' : '';
@@ -75,9 +69,10 @@ export default class SQLib {
 			columns.push(`${columnName} ${type} ${unique} ${required} ${defaultVal} ${comment}`);
 		}
 		const sql = `CREATE TABLE IF NOT EXISTS ${modelName} (${columns.join(', ')})`;
+		console.log(sql);
 
 		// Execute the query to create the table
-		return this.query(sql);
+		return this.db.query(sql);
 	}
 
 	/*
@@ -99,7 +94,7 @@ export default class SQLib {
 		const sql = `INSERT INTO ${model.tableName} (${columns.join(', ')}) VALUES (${placeholders.join(', ')})`;
 
 		// Execute the query
-		return this.query(sql, queryValues);
+		return this.db.query(sql, queryValues);
 	}
 
 	/*
@@ -119,7 +114,7 @@ export default class SQLib {
 		const sql = `SELECT * FROM ${model.tableName} WHERE ${conditions.join(' AND ')}`;
 
 		// Execute the query
-		return this.query(sql, queryValues);
+		return this.db.query(sql, queryValues);
 	}
 
 	/*
@@ -145,7 +140,7 @@ export default class SQLib {
 		const sql = `UPDATE ${model.tableName} SET ${setValues.join(', ')} WHERE ${conditions.join(' AND ')}`;
 
 		// Execute the query
-		return this.query(sql, queryValues);
+		return this.db.query(sql, queryValues);
 	}
 
 	/*
@@ -165,6 +160,6 @@ export default class SQLib {
 		const sql = `DELETE FROM ${model.tableName} WHERE ${conditions.join(' AND ')}`;
 
 		// Execute the query
-		return this.query(sql, queryValues);
+		return this.db.query(sql, queryValues);
 	}
 }
