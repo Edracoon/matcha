@@ -5,6 +5,7 @@ import fileUpload from "express-fileupload";
 
 import Config from "./Config.js";
 import Database from "./Database.js"
+import SQLib from "./SQLib.js";
 import { AuthMiddleware } from "./middlewares/auth.middleware.js";
 
 /* Routes */
@@ -18,7 +19,7 @@ import MailService from "./services/mail.service.js";
 export default class Application {
 	constructor() {
 		this.app = express();
-		this.db = new Database();
+		this.db = new SQLib();
 		this.MailService = new MailService();
 		this.mysql = this.db.db;
 		this.initMiddlewares();
