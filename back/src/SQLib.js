@@ -35,23 +35,13 @@ export default class SQLib {
 	}
 
 	// Define a new model
-	defineModel(modelName, schema, version = 1) {
+	async defineModel(modelName, schema, version = 1) {
 		// Create a new model object
 		const model = {
 			tableName: modelName,
-			columns: {},
+			columns: schema,
 			version: version,
 		};
-
-		// Define the columns of the model
-		for (let columnName in schema) {
-			const columnDefinition = schema[columnName];
-			model.columns[columnName] = {
-				type: columnDefinition.type,
-				required: columnDefinition.required,
-				defaultValue: columnDefinition.defaultValue,
-			};
-		}
 
 		// Save the model in the models object
 		this.models[modelName] = model;
@@ -61,25 +51,24 @@ export default class SQLib {
 		columns.push(`id INT NOT NULL AUTO_INCREMENT PRIMARY KEY`);
 		for (let columnName in model.columns) {
 			const column = model.columns[columnName];
-			if (column.array == true) {
-				const array_type = columnName;
-				const type = column.type;
-				this.db.query('CREATE TYPE ' + array_type + ' AS ' + type + '[]')
-				columns.push(`${columnName} ${array_type}`);
-			} else {
-				const type = column.type;
-				const unique = column.unique ? 'UNIQUE' : '';
-				const required = column.required ? 'NOT NULL' : '';
-				const defaultVal = column.defaultValue ? `DEFAULT ${column.defaultValue}` : '';
-				const comment = column.comment ? `COMMENT '${column.comment}'` : '';
-				columns.push(`${columnName} ${type} ${unique} ${required} ${defaultVal} ${comment}`);
-			}
+			console.log(columnName, column);
+			if (column.ref)
+				columns.push(`FOREIGN KEY (${columnName}) REFERENCES ${column.ref}(id)`);
+			const type = column.type;
+			const unique = column.unique ? 'UNIQUE' : '';
+			const required = column.required ? 'NOT NULL' : '';
+			const defaultVal = column.defaultValue ? `DEFAULT ${column.defaultValue}` : '';
+			const comment = column.comment ? `COMMENT '${column.comment}'` : '';
+			columns.push(`${columnName} ${type} ${unique} ${required} ${defaultVal} ${comment}`);
 		}
 		const sql = `CREATE TABLE IF NOT EXISTS ${modelName} (${columns.join(', ')})`;
-		console.log(sql);
 
 		// Execute the query to create the table
-		return this.db.query(sql);
+		await this.db.query(sql);
+		this.create("USER", {
+			username: "edracoon", password: "admin", firstname: "edgar", lastname: "pfennig", email: "edgar@gmail.com", birthGender: "male", ip: "1"})
+		this.create("LIKED", {likedBy: "1", gotLiked: "1"});
+		return ;
 	}
 
 	/*
@@ -123,7 +112,7 @@ export default class SQLib {
 		// Execute the query
 		return this.db.query(sql, queryValues);
 	}
-
+	 
 	/*
 	 * Update rows of the ${modelName} table using the ${query} and ${values} params
 	 */

@@ -9,6 +9,7 @@ import { AuthMiddleware } from "./middlewares/auth.middleware.js";
 /* Models */
 import SQLib from "./SQLib.js";
 import UserSchema from "./models/user.model.js";
+import LikeSchema from "./models/like.model.js";
 
 /* Routes */
 import authRouter from "./routes/auth/auth.router.js";
@@ -30,7 +31,9 @@ export default class Application {
 	}
 
 	initModels() {
+		console.log(LikeSchema.schema);
 		this.db.defineModel("USER", UserSchema.schema);
+		this.db.defineModel("LIKED", LikeSchema.schema);
 	}
 
 	initMiddlewares() {
