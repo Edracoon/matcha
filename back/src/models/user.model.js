@@ -30,7 +30,7 @@ class UserSchema {
 		ip: { type: "VARCHAR(15)", required: true }, // IP updated whenever the user sign-in ex: "204.132. 40.155"
 
 		createdAt: { type: "TIMESTAMP", default: "CURRENT_TIMESTAMP", required: true },
-		LikedBy : { array: true, type: 'INTERGER'},
+		LikedBy : { array: true, type: 'INTEGER'},
 		// ......
 	}
 
