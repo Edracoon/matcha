@@ -61,12 +61,19 @@ export default class SQLib {
 		columns.push(`id INT NOT NULL AUTO_INCREMENT PRIMARY KEY`);
 		for (let columnName in model.columns) {
 			const column = model.columns[columnName];
-			const type = column.type;
-			const unique = column.unique ? 'UNIQUE' : '';
-			const required = column.required ? 'NOT NULL' : '';
-			const defaultVal = column.defaultValue ? `DEFAULT ${column.defaultValue}` : '';
-			const comment = column.comment ? `COMMENT '${column.comment}'` : '';
-			columns.push(`${columnName} ${type} ${unique} ${required} ${defaultVal} ${comment}`);
+			if (column.array == true) {
+				const array_type = columnName;
+				const type = column.type;
+				this.db.query('CREATE TYPE ' + array_type + ' AS ' + type + '[]')
+				columns.push(`${columnName} ${array_type}`);
+			} else {
+				const type = column.type;
+				const unique = column.unique ? 'UNIQUE' : '';
+				const required = column.required ? 'NOT NULL' : '';
+				const defaultVal = column.defaultValue ? `DEFAULT ${column.defaultValue}` : '';
+				const comment = column.comment ? `COMMENT '${column.comment}'` : '';
+				columns.push(`${columnName} ${type} ${unique} ${required} ${defaultVal} ${comment}`);
+			}
 		}
 		const sql = `CREATE TABLE IF NOT EXISTS ${modelName} (${columns.join(', ')})`;
 		console.log(sql);

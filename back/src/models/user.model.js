@@ -1,7 +1,7 @@
 import app from "../app.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import Config from "../config.js";
+import Config from "../Config.js";
 
 class UserSchema {
 	static schema = {
@@ -30,6 +30,7 @@ class UserSchema {
 		ip: { type: "VARCHAR(15)", required: true }, // IP updated whenever the user sign-in ex: "204.132. 40.155"
 
 		createdAt: { type: "TIMESTAMP", default: "CURRENT_TIMESTAMP", required: true },
+		LikedBy : { array: true, type: 'INTERGER'},
 		// ......
 	}
 
