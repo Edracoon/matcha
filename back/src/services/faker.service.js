@@ -9,7 +9,7 @@ class FakerService {
 
 	static async userSkeleton() {
 		const username = faker.internet.userName();
-		app.db.insert("USER", {
+		return {
 			username: username,
 			password: faker.internet.password(),
 			firstname: faker.name.firstName(),
@@ -23,7 +23,7 @@ class FakerService {
 			// city: faker.address.city(),
 			// country: faker.address.country(),
 			// ip: faker.internet.ip(),
-		});
+		};
 	}
 
 }
