@@ -5,7 +5,7 @@ import Config from "../Config.js";
 
 class LikeSchema {
 	static schema = {
-        likedBy : { type : 'INT', ref: "USER" },
+		likedBy : { type : 'INT', ref: "USER" },
 		gotLiked : { type : 'INT', ref: "USER" },
 	};
 };

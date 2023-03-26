@@ -10,6 +10,7 @@ import { AuthMiddleware } from "./middlewares/auth.middleware.js";
 import SQLib from "./SQLib.js";
 import UserSchema from "./models/user.model.js";
 import LikeSchema from "./models/like.model.js";
+import TagSchema from "./models/tag.model.js";
 
 /* Routes */
 import authRouter from "./routes/auth/auth.router.js";
@@ -22,18 +23,19 @@ import MailService from "./services/mail.service.js";
 export default class Application {
 	constructor() {
 		this.app = express();
-		this.db = new SQLib();
 		this.MailService = new MailService();
-		this.mysql = this.db.db;
-		this.db.initDatabase().then(() => this.initModels());
-		// this.initMiddlewares();
-		// this.initRoutes();
+		this.initDatabase();
+		this.initMiddlewares();
+		this.initRoutes();
 	}
 
-	initModels() {
-		console.log(LikeSchema.schema);
+	async initDatabase() {
+		this.db = new SQLib();
+		await this.db.connectDB();
+		/* Create Models */
 		this.db.defineModel("USER", UserSchema.schema);
-		this.db.defineModel("LIKED", LikeSchema.schema);
+		this.db.defineModel("LIKE", LikeSchema.schema);
+		this.db.defineModel("TAG", TagSchema.schema);
 	}
 
 	initMiddlewares() {
@@ -49,7 +51,6 @@ export default class Application {
 		this.app.use(fileUpload({
 			limits: { fileSize: 50 * 1024 * 1024 },
 		}));
-		// this.app.use(AuthMiddleware);
 	}
 
 	initRoutes() {

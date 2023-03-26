@@ -12,7 +12,7 @@ export default class SQLib {
 		this.models = {};
 	}
 
-	async initDatabase() {
+	async connectDB() {
 		/* Init pool connection */
 		this.db = mysql.createPool({
 			connectionLimit: 100,
@@ -24,7 +24,6 @@ export default class SQLib {
 		});
 		/* Handle pool potential errors */
 		this.db.getConnection((err, connection) => {
-			console.log("pool.getConnection() called.");
 			if (err)
 				console.log("pool.getConnection Error =>". err);
 			if (connection)
@@ -74,7 +73,7 @@ export default class SQLib {
 	/*
 	 * Inserts a new row of the ${modelName} table using the ${values} params
 	 */
-	create(modelName, values) {
+	insert(modelName, values) {
 		// Get the model object
 		const model = this.models[modelName];
 

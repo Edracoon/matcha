@@ -10,6 +10,7 @@ class UserSchema {
 		firstname: { type: "VARCHAR(30)", required: true },
 		lastname: { type: "VARCHAR(50)", required: true },
 		email: { type: "VARCHAR(100)", unique: true, required: true },
+		profilePicture: { type: "VARCHAR(200)", required: true }, // https://api.dicebear.com/5.x/initials/svg?backgroundColor=45CCB7,8BF2C5,209FA6&seed=EdgarPfennig
 		birthGender: {
 			type: "ENUM('male', 'female')",
 			required: true
@@ -28,8 +29,9 @@ class UserSchema {
 		city: { type: "TEXT" },
 		country: { type: "TEXT" },
 		ip: { type: "VARCHAR(15)", required: true }, // IP updated whenever the user sign-in ex: "204.132. 40.155"
-
-		// ......
+		fakeCounter: { type: "INT", default: 0, required: true },
+		emailValidationCode: { type: "VARCHAR(6)", required: true },
+		emailValidated: { type: "BOOLEAN", default: false, required: true },
 	}
 
 	// Not inserted in the db and can be usefull just like mongoose methods schema
