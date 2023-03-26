@@ -3,11 +3,11 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import Config from "../Config.js";
 
-class LikeSchema {
+class LikesSchema {
 	static schema = {
-		likedBy : { type : 'INT', ref: "USER" },
-		gotLiked : { type : 'INT', ref: "USER" },
+		likedBy : { type : 'INT', ref: "USER", required: true },
+		gotLiked : { type : 'INT', ref: "USER", required: true },
 	};
 };
 
-export default LikeSchema;
+export default LikesSchema;

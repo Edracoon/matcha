@@ -50,7 +50,6 @@ export default class SQLib {
 		columns.push(`id INT NOT NULL AUTO_INCREMENT PRIMARY KEY`);
 		for (let columnName in model.columns) {
 			const column = model.columns[columnName];
-			console.log(columnName, column);
 			if (column.ref)
 				columns.push(`FOREIGN KEY (${columnName}) REFERENCES ${column.ref}(id)`);
 			const type = column.type;
@@ -60,20 +59,19 @@ export default class SQLib {
 			const comment = column.comment ? `COMMENT '${column.comment}'` : '';
 			columns.push(`${columnName} ${type} ${unique} ${required} ${defaultVal} ${comment}`);
 		}
-		const sql = `CREATE TABLE IF NOT EXISTS ${modelName} (${columns.join(', ')})`;
+		const sql = `CREATE TABLE IF NOT EXISTS ${modelName} (${columns.join(',')})`;
 
 		// Execute the query to create the table
-		await this.db.query(sql);
-		this.create("USER", {
-			username: "edracoon", password: "admin", firstname: "edgar", lastname: "pfennig", email: "edgar@gmail.com", birthGender: "male", ip: "1"})
-		this.create("LIKED", {likedBy: "1", gotLiked: "1"});
-		return ;
+		let result = null;
+		try { result = await this.db.query(sql) }
+		catch (err) { result = `SQL_ERROR ${err.code}:\n${err.sqlMessage}`; }
+		return result;
 	}
 
 	/*
 	 * Inserts a new row of the ${modelName} table using the ${values} params
 	 */
-	insert(modelName, values) {
+	async insert(modelName, values) {
 		// Get the model object
 		const model = this.models[modelName];
 
@@ -81,6 +79,7 @@ export default class SQLib {
 		const columns = [];
 		const placeholders = [];
 		const queryValues = [];
+		console.log('USER', values);
 		for (let columnName in values) {
 			columns.push(columnName);
 			placeholders.push('?');
@@ -89,13 +88,16 @@ export default class SQLib {
 		const sql = `INSERT INTO ${model.tableName} (${columns.join(', ')}) VALUES (${placeholders.join(', ')})`;
 
 		// Execute the query
-		return this.db.query(sql, queryValues);
+		let result;
+		try { result = await this.db.query(sql, queryValues) }
+		catch (err) { result = `SQL_ERROR ${err.code}:\n${err.sqlMessage}` }
+		return result;
 	}
 
 	/*
 	 * Find rows of the ${modelName} table using the ${query} params
 	 */
-	find(modelName, query) {
+	async find(modelName, query) {
 		// Get the model object
 		const model = this.models[modelName];
 
@@ -109,14 +111,16 @@ export default class SQLib {
 		const sql = `SELECT * FROM ${model.tableName} WHERE ${conditions.join(' AND ')}`;
 
 		// Execute the query
-		return this.db.query(sql, queryValues);
+		let result = null;
+		try { result = await this.db.query(sql, queryValues) }
+		catch (err) { result = `SQL_ERROR ${err.code}:\n${err.sqlMessage}` }
+		return result;
 	}
 	 
 	/*
 	 * Update rows of the ${modelName} table using the ${query} and ${values} params
 	 */
 	update(modelName, query, values) {
-	
 		// Get the model object
 		const model = this.models[modelName];
 

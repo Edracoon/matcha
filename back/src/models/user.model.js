@@ -28,10 +28,10 @@ class UserSchema {
 		bio: { type: "TEXT" },
 		city: { type: "TEXT" },
 		country: { type: "TEXT" },
-		ip: { type: "VARCHAR(15)", required: true }, // IP updated whenever the user sign-in ex: "204.132. 40.155"
-		fakeCounter: { type: "INT", default: 0, required: true },
+		ip: { type: "VARCHAR(15)" }, // IP updated whenever the user sign-in ex: "204.132. 40.155"
+		fakeCounter: { type: "INT", default: 0 },
 		emailValidationCode: { type: "VARCHAR(6)", required: true },
-		emailValidated: { type: "BOOLEAN", default: false, required: true },
+		emailValidated: { type: "BOOLEAN", default: false },
 	}
 
 	// Not inserted in the db and can be usefull just like mongoose methods schema

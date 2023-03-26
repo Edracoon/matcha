@@ -1,0 +1,30 @@
+version: "3.3"
+
+services:
+  db:
+    image: mysql:latest
+    restart: always
+    environment:
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - ${DB_PORT}:${DB_PORT}
+    volumes:
+      - ./mysqldata:/var/lib/mysql
+
+  adminer:
+    image: adminer:4.8.1
+    restart: always
+    ports:
+      - 8080:8080
+
+volumes:
+  mysqldata:
+    name: "mysqldata"
+    driver: local
+    driver_opts:
+      type: "none"
+      o: "bind"
+      device: "./mysqldata"

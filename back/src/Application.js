@@ -9,16 +9,21 @@ import { AuthMiddleware } from "./middlewares/auth.middleware.js";
 /* Models */
 import SQLib from "./SQLib.js";
 import UserSchema from "./models/user.model.js";
-import LikeSchema from "./models/like.model.js";
+import LikesSchema from "./models/like.model.js";
 import TagSchema from "./models/tag.model.js";
+import TagUserSchema from "./models/tag_user.model.js";
+import MessageSchema from "./models/message.model.js";
+import NotifSchema from "./models/notif.model.js";
+import BlocklistSchema from "./models/blocklist.model.js";
+import RoomSchema from "./models/room.model.js";
 
 /* Routes */
 import authRouter from "./routes/auth/auth.router.js";
-import fakerRouter from "./routes/faker/faker.router.js";
 import countryRouter from "./routes/country/country.router.js";
 
 /* Services */
 import MailService from "./services/mail.service.js";
+import FakerService from "./services/faker.service.js";
 
 export default class Application {
 	constructor() {
@@ -33,9 +38,20 @@ export default class Application {
 		this.db = new SQLib();
 		await this.db.connectDB();
 		/* Create Models */
-		this.db.defineModel("USER", UserSchema.schema);
-		this.db.defineModel("LIKE", LikeSchema.schema);
-		this.db.defineModel("TAG", TagSchema.schema);
+		await this.db.defineModel("USER", UserSchema.schema);
+		await this.db.defineModel("LIKES", LikesSchema.schema);
+		await this.db.defineModel("TAG", TagSchema.schema);
+		await this.db.defineModel("TAG_USER", TagUserSchema.schema);
+		await this.db.defineModel("NOTIF", NotifSchema.schema);
+		await this.db.defineModel("BLOCKLIST", BlocklistSchema.schema);
+		await this.db.defineModel("ROOM", RoomSchema.schema);
+		await this.db.defineModel("MESSAGE", MessageSchema.schema);
+
+		/* Fake data */
+		for (let i = 0; i < 1; i++) {
+			const user = FakerService.userSkeleton();
+			await this.db.insert("USER", user);
+		}
 	}
 
 	initMiddlewares() {
@@ -55,7 +71,6 @@ export default class Application {
 
 	initRoutes() {
 		this.app.use(authRouter);
-		this.app.use(fakerRouter);
 		this.app.use(countryRouter);
 		this.app.use("*", (req, res) => res.status(404).send());
 	}
