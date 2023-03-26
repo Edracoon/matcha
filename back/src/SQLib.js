@@ -112,7 +112,10 @@ export default class SQLib {
 
 		// Execute the query
 		let result = null;
-		try { result = await this.db.query(sql, queryValues) }
+		try {
+			result = await this.db.query(sql, queryValues);
+			result = result[0];
+		}
 		catch (err) { result = `SQL_ERROR ${err.code}:\n${err.sqlMessage}` }
 		return result;
 	}
