@@ -3,8 +3,8 @@
 @import 'tailwindcss/utilities';
 
 @font-face {
-    font-family: 'Archivo';
-    src: url('/archivo/Archivo-VariableFont_wdth,wght.ttf');
+	font-family: 'Archivo';
+	src: url('/archivo/Archivo-VariableFont_wdth,wght.ttf');
 }
 
 html {
@@ -12,17 +12,6 @@ html {
 	background: #23242a;
 	color: #FAFAFD;
 	font-size: 1.2rem;
-}
-
-h4 {
-	font-size: 3rem;
-	margin-block-end: .7rem;
-	margin-block-start: .7rem;
-	color: #FF6D7F;
-}
-
-h4 {
-	@apply text-4xl font-bold;
 }
 
 .error {
@@ -34,6 +23,7 @@ h4 {
 	display: flex;
 	flex-direction: row;
 }
+
 .vflex {
 	display: flex;
 	flex-direction: column;
@@ -76,11 +66,14 @@ h4 {
 	text-align: center;
 	padding: 1.2em 4em;
 	font-weight: 700;
-	background: #FF6D7F;
 	border: 3px solid #FF6D7F;
 	color: #23242a;
 	border-radius: .5rem;
 	transition: .4s;
+}
+/* transform the button class for tailwind */
+.button {
+	@apply cursor-pointer text-center font-bold bg-[#FF6D7F] border-[3px] rounded-lg transition duration-300 ease-in-out;
 }
 
 .button:hover {

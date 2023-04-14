@@ -2,8 +2,12 @@
 	"name": "matcha",
 	"version": "0.0.1",
 	"description": "Dating Web App",
+	"type": "module",
 	"scripts": {
-		"dev": "export $(xargs < .env) && nodemon src/app.js"
+		"dev": "export $(xargs < .env) && nodemon src/app.js",
+		"test": "node --experimental-vm-modules node_modules/.bin/jest --runInBand",
+		"test-silent": "node --experimental-vm-modules node_modules/.bin/jest --silent --runInBand",
+		"test-coverage": "node --experimental-vm-modules node_modules/.bin/jest --coverage --runInBand"
 	},
 	"dependencies": {
 		"@faker-js/faker": "^7.5.0",
@@ -17,5 +21,8 @@
 		"nodemailer": "^6.8.0",
 		"nodemon": "^2.0.19"
 	},
-	"type": "module"
+	"devDependencies": {
+		"jest": "^29.5.0",
+		"supertest": "^6.3.3"
+	}
 }

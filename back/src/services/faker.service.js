@@ -1,5 +1,4 @@
 import { faker } from '@faker-js/faker';
-import app from "../app.js";
 
 class FakerService {
 	constructor() {
@@ -24,7 +23,6 @@ class FakerService {
 			// country: faker.address.country(),
 		};
 	}
-
 }
 
 export default FakerService;

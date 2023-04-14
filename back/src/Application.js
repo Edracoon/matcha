@@ -25,7 +25,7 @@ import countryRouter from "./routes/country/country.router.js";
 import MailService from "./services/mail.service.js";
 import FakerService from "./services/faker.service.js";
 
-export default class Application {
+class Application {
 	constructor() {
 		this.app = express();
 		this.MailService = new MailService();
@@ -80,4 +80,10 @@ export default class Application {
 			console.info(`Matcha server listening on port ${Config.port}`);
 		});
 	}
+
+	stop() {
+		this.server.close();
+	}
 }
+
+export default new Application();
