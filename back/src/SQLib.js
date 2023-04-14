@@ -79,7 +79,6 @@ export default class SQLib {
 		const columns = [];
 		const placeholders = [];
 		const queryValues = [];
-		console.log('USER', values);
 		for (let columnName in values) {
 			columns.push(columnName);
 			placeholders.push('?');

@@ -1,14 +1,6 @@
-$grey: #29292F;
-$gray: #33343D;
-$pink: #FF6D7F;
-$white: #FAFAFD;
-
-$text: #FAFAFD;
-$card: #28292d;
-$border: #454545;
-
-$padding: 1.5rem;
-$border-radius: .5rem;
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
 
 @font-face {
     font-family: 'Archivo';
@@ -29,6 +21,10 @@ h4 {
 	color: #FF6D7F;
 }
 
+h4 {
+	@apply text-4xl font-bold;
+}
+
 .error {
 	color: #FF6D7F;
 	font-size: 14px;
@@ -43,7 +39,6 @@ h4 {
 	flex-direction: column;
 }
 
-// Should be 100 but ???
 .glob {	min-height: 97vh; }
 
 .h-full { height: 100%; }
@@ -68,16 +63,12 @@ h4 {
 	cursor: pointer;
 }
 .anchor:hover {
-	color: $pink;
+	color: #FF6D7F;
 	text-decoration: underline;
 }
 
 .card {
-	background: $card;
-	// padding: $padding;
-	// padding-top: 1rem;
-	// border-radius: $border-radius;
-	// border: 2px solid $border;
+	background: #28292d;
 }
 
 .button {
@@ -85,8 +76,8 @@ h4 {
 	text-align: center;
 	padding: 1.2em 4em;
 	font-weight: 700;
-	background: $pink;
-	border: 3px solid $pink;
+	background: #FF6D7F;
+	border: 3px solid #FF6D7F;
 	color: #23242a;
 	border-radius: .5rem;
 	transition: .4s;
@@ -98,7 +89,7 @@ h4 {
 
 .button:focus-visible {
 	box-shadow: 0 0 0 2px #23242a,
-				0 0 0 3px $pink;
+				0 0 0 3px #FF6D7F;
 }
 
 input:focus,

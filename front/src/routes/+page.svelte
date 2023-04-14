@@ -1,18 +1,13 @@
-<style>
+<style lang="postcss">
 	.invert-button {
 		padding: .5rem 0.5rem;
 	}
-	.little {
-		font-size: 17px;
-	}
-
 </style>
 
 <script>
 	import SignUp from "$lib/authentication/SignUp.svelte";
 	import SignIn from "$lib/authentication/SignIn.svelte";
 
-	const title = "mychatte";
 	let isSignIn = true;
 
 	function invert() {
@@ -20,19 +15,18 @@
 	}
 </script>
 
-<div class="glob vflex flex-align-center justify-between text-center">
-	<h4>{ title }</h4>
+<div class="glob vflex flex-align-center justify-between text-center ">
 	{#if isSignIn}
-	<SignIn></SignIn>
-	<div class="hflex flex-align-center gap">
-		<p class="little">Don't have an account yet ?</p>
-		<button class="button invert-button" on:click={() => invert()}>Sign Up →</button>
-	</div>
+		<SignIn></SignIn>
+		<div class="hflex flex-align-center gap">
+			<p class=" font-[17px]">Don't have an account yet ?</p>
+			<button class="button invert-button" on:click={() => invert()}>Sign Up →</button>
+		</div>
 	{:else}
-	<SignUp></SignUp>
-	<div class="hflex flex-align-center gap">
-		<p class="little" >Already have an account ?</p>
-		<button class="button invert-button" on:click={() => invert()}>Sign in →</button>
-	</div>
+		<SignUp></SignUp>
+		<div class="hflex flex-align-center gap">
+			<p class="little" >Already have an account ?</p>
+			<button class="button invert-button" on:click={() => invert()}>Sign in →</button>
+		</div>
 	{/if}
 </div>

@@ -1,11 +1,12 @@
 <script>
 	import "./auth.scss";
-	import InputErrors from "../InputErrors.js";
-	import SignInUser from "../models/SignInUser.js";
-	import AuthService from "../services/AuthService.js";
 	import { goto } from '$app/navigation';
+	import InputErrors from "$lib/InputErrors.js";
+	import AuthService from "$lib/services/auth.service.js";
 
-	let signInUser = new SignInUser();
+	let username = "";
+	let password = "";
+
 	let errors = {
 		username: "",
 		password: ""
@@ -17,9 +18,8 @@
 	}
 
 	function submitSignIn() {
-		console.log("submitSignIn ->", signInUser);
-		errors.username = InputErrors.username(signInUser.username);
-		errors.password = InputErrors.password(signInUser.password);
+		errors.username = InputErrors.username(username);
+		errors.password = InputErrors.password(password);
 
 		// Check if there is an error, if so, return
 		for (let prop in errors)
@@ -35,15 +35,15 @@
 <div class="card">
 	<div class="form vflex flex-align-center gap">
 		<div class="vflex gap text-left flex-align-center">
-			<h1>Sign In</h1>
+			<h1>matcha</h1>
 			<div class="vflex minigap">
 				<span>Username</span>
-				<input type="text" spellcheck="false" bind:value={signInUser.username}>
+				<input type="text" spellcheck="false" bind:value={username}>
 				<div class="error">{ errors.username }</div>
 			</div>
 			<div class="vflex minigap">
 				<span>Password</span>
-				<input type="password" spellcheck="false" bind:value={signInUser.password}>
+				<input type="password" spellcheck="false" bind:value={password}>
 				<div class="error">{ errors.password }</div>
 			</div>
 		</div>

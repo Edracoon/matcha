@@ -1,4 +1,4 @@
-<style>
+<style lang="postcss">
 	.home {
 		padding: 0.7rem 1.5rem;
 	}

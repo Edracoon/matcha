@@ -30,11 +30,10 @@
 
 <script>
 	import "./auth.scss";
-	import SignUpUser from "../models/SignUpUser.js";
 	import InputErrors from "../InputErrors.js";
-	import AuthService from "../services/AuthService.js";
+	import AuthService from "../services/auth.service.js";
 
-	let signUpUser = new SignUpUser();
+	let signUpUser = {};
 	let errors = {
 		firstname: "",
 		lastname: "",
@@ -50,7 +49,6 @@
 	}
 
 	function submitSignUp() {
-		console.log("submitSignUp ->", signUpUser);
 		errors.firstname = InputErrors.firstname(signUpUser.firstname);
 		errors.lastname = InputErrors.lastname(signUpUser.lastname);
 		errors.email = InputErrors.email(signUpUser.email);
