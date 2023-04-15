@@ -10,6 +10,7 @@ export default class AuthService {
 	 * @param {SignUpUser} SignUpUser
 	 */
 	static async postSignUp(signUpUser) {
+		console.log('ici');
 		try {
 			const res = await axios({
 				url: `${apiUrl}auth/sign-up`,
