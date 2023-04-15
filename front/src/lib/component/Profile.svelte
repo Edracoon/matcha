@@ -2,7 +2,7 @@
     import { onMount } from "svelte";
     import Header from "$lib/component/Header.svelte";
     import Icon from "@iconify/svelte";
-
+	import Carousel from "$lib/component/Carousel.svelte";
     onMount(() => {});
 
     let height = 0;
@@ -82,16 +82,16 @@
 
 <div class="w-[400px] bg-transparent h-full flex flex-col justify-between border">
     <div id="parent" class="flex-grow relative overflow-hidden">
-        <div class="bg-purple-800 h-full relative flex flex-row">
-            <div class="flex w-full gap-16 pb-4 bg-transparent absolute bottom-0 left-0 justify-center">
-                <button class="text-center bg-red-500 flex justify-center rounded-full h-16 w-16 items-center">
-                    <Icon icon="ph:x-bold" class="text-[40px]" />
-                </button>
-                <button class="text-center bg-green-500 flex justify-center rounded-full h-16 w-16 items-center">
-                    <Icon icon="ri:heart-line" class="text-[40px]" />
-                </button>
-            </div>
-        </div>
+        <!-- <div class="bg-purple-800 h-full relative flex flex-row"> -->
+		<Carousel class="h-full relative flex flex-row" context="profile" />
+		<div class="flex w-full gap-16 pb-4 bg-transparent absolute bottom-0 left-0 justify-center">
+			<button class="text-center bg-red-500 flex justify-center rounded-full h-16 w-16 items-center">
+				<Icon icon="ph:x-bold" class="text-[40px]" />
+			</button>
+			<button class="text-center bg-green-500 flex justify-center rounded-full h-16 w-16 items-center">
+				<Icon icon="ri:heart-line" class="text-[40px]" />
+			</button>
+		</div>
         <div class="flex absolute bottom-0 h-20 w-full z-10 bg-transparent justify-end px-5">
             <button on:click={toggleHeight}>
                 <Icon icon="ic:outline-bookmark-border" class="text-[40px]" />

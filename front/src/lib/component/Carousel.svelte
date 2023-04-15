@@ -1,4 +1,4 @@
-<div class="carousel flex flex-row relative overflow-hidden h-[500px] w-[800px]">
+<div class="carousel flex flex-row relative overflow-hidden h-full w-full">
 	<div bind:this={carousel} class="carousel-inner flex w-full">
 		{#each photosArray as photo}
 			<div style="flex: 0 0 auto" class="w-full">
@@ -14,16 +14,18 @@
 			<ChevronRightIcon />
 		</button>
 	</div>
-	<button v-if="photosArray.length" on:click={() => deleteOne()}
-		class="button-important !w-10 sm:!w-auto absolute top-2 sm:top-4 right-2 sm:right-4 z-10 !h-10 !gap-0 !px-2 sm:!px-4">
-		<TrashIcon class="h-4 w-4" />
-	</button>
-	<button on:click={() => coverInput.click()}
-		class="button-tertiary flex gap-2 !w-10 sm:!w-auto absolute bottom-2 sm:bottom-4 right-2 sm:right-4 z-10 !h-10 !px-2 sm:!px-4">
-		<CameraIcon />
-		<span class="hidden sm:flex">Add a picture</span>
-		<input bind:this={coverInput} ref="coverInput" on:change={(event) => onInputImage(event)} type="file" class="hidden">
-	</button>
+	{#if context === "account"}
+		<button v-if="photosArray.length" on:click={() => deleteOne()}
+			class="button-important !w-10 sm:!w-auto absolute top-2 sm:top-4 right-2 sm:right-4 z-10 !h-10 !gap-0 !px-2 sm:!px-4">
+			<TrashIcon class="h-4 w-4" />
+		</button>
+		<button on:click={() => coverInput.click()}
+			class="button-tertiary flex gap-2 !w-10 sm:!w-auto absolute bottom-2 sm:bottom-4 right-2 sm:right-4 z-10 !h-10 !px-2 sm:!px-4">
+			<CameraIcon />
+			<span class="hidden sm:flex">Add a picture</span>
+			<input bind:this={coverInput} ref="coverInput" on:change={(event) => onInputImage(event)} type="file" class="hidden">
+		</button>
+	{/if}
 </div>
 
 <script>
@@ -31,6 +33,8 @@
 	import ChevronRightIcon from '$lib/svg/svgChevronRight.svelte';
 	import CameraIcon from '$lib/svg/svgCamera.svelte';
 	import TrashIcon from '$lib/svg/svgTrash.svelte';
+
+	export let context;
 
 	/* Array of URL to display the images */
 	let photoIdx = 0;
