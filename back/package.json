@@ -5,9 +5,9 @@
 	"type": "module",
 	"scripts": {
 		"dev": "export $(xargs < .env) && nodemon src/app.js",
-		"test": "node --experimental-vm-modules node_modules/.bin/jest --runInBand",
-		"test-silent": "node --experimental-vm-modules node_modules/.bin/jest --silent --runInBand",
-		"test-coverage": "node --experimental-vm-modules node_modules/.bin/jest --coverage --runInBand"
+		"test": "export $(xargs < .env) && node --experimental-vm-modules node_modules/.bin/jest --runInBand --detectOpenHandles",
+		"test-silent": "export $(xargs < .env) && node --experimental-vm-modules node_modules/.bin/jest --silent --runInBand --detectOpenHandles",
+		"test-coverage": "export $(xargs < .env) && node --experimental-vm-modules node_modules/.bin/jest --coverage --runInBand --detectOpenHandles"
 	},
 	"dependencies": {
 		"@faker-js/faker": "^7.5.0",

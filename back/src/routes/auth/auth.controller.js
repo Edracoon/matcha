@@ -1,11 +1,13 @@
-import express from "express";
-
 import bcrypt from "bcrypt";
 // import { User } from "../../models/user.model.js";
-import InputErrors from "../InputErrors.js";
+import InputErrors from "./InputErrors.js";
 import Config from "../../Config.js";
+import SQLib from "../../SQLib.js";
+import MailService from "../../services/mail.service.js";
 
 const saltRounds = 10;
+
+const sql = new SQLib();
 
 class AuthController {
 
@@ -15,29 +17,45 @@ class AuthController {
 	 * @param {*} res
 	 */
 	async signUp(req, res) {
-		console.log("AuthController.signUp ->", req.body);
-		const b = req.body;
-
-		if (!b.firstname || !b.lastname || !b.email
-			|| !b.username || !b.password || !b.confirmPassword)
-			return res.status(400).json({ error: "form.invalid", errors: {form: "Missing inputs"}});
-
-		let errors = InputErrors.checkMultipleInput(b, true);
-		if (errors)
-			return res.status(400).json({ error: "form.invalid", errors});
 		
-		// Check if the form is unique friendly
-		if (await User.isUnique("email", b.email) === false)
-			return res.status(400).json({ error: "form.invalid", errors: {email: "This email is already taken."} });
-		if (await User.isUnique("username", b.username) === false)
-			return res.status(400).json({ error: "form.invalid", errors: {username: "This username is already taken."} });
+		let errors = [];
+		const keys = ["firstname", "lastname", "email", "username", "password", "confirmPassword"];
+		for (let key of keys)
+			if (!req.body[key] && req.body[key] !== "")
+				errors.push({ [key]: "This field is required." });
+		errors = [...errors, ...InputErrors.checkMultipleInput(req.body, true)]
+		if (errors.length > 0)
+			return res.status(400).json({ error: "form.invalid", errors});
 
-		let encryptedPass = await bcrypt.hash(b.password, saltRounds);
-		let user = new User(b.firstname, b.lastname, b.email, b.username, encryptedPass);
+		console.log("AuthController.signUp ->", req.body, errors);
+		// // Check if the form is unique friendly
+		// if (await User.isUnique("email", b.email) === false)
+		// 	return res.status(400).json({ error: "form.invalid", errors: {email: "This email is already taken."} });
+		// if (await User.isUnique("username", b.username) === false)
+		// 	return res.status(400).json({ error: "form.invalid", errors: {username: "This username is already taken."} });
 
-		await user.save();
-		// await app.MailService.sendMail(user.email, "Confirm your registration to Matcha !", `This is your verification code ${user.emailValidationCode}`);
-		return res.status(200).json("sign-up succeeded");
+		let encryptedPass = await bcrypt.hash(req.body.password, saltRounds);
+
+		let user;
+		try {
+			user = await sql.insert("USER", {
+				firstname: req.body.firstname,
+				lastname: req.body.lastname,
+				email: req.body.email,
+				username: req.body.username,
+				profilePicture: "https://api.dicebear.com/5.x/initials/svg?backgroundColor=FF6D7F&seed=" + req.body.firstname + " " + req.body.lastname,
+				password: encryptedPass,
+				emailValidationCode: Math.floor(Math.random() * 1000000),
+				emailValidated: false
+			});
+		} catch (e) {
+			return res.status(400).json({ error: "" });
+		}
+
+		console.log(user);
+
+		await MailService.sendMail(user.email, "Confirm your registration to Matcha !", `This is your verification code ${user.emailValidationCode}`);
+		return res.status(200).json({ user: user });
 	}
 
 	async signIn(req, res) {

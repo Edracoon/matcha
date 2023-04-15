@@ -1,8 +1,11 @@
 import nodemailer from "nodemailer";
 import Config from "../Config.js";
 
-export default class MailService {
+class MailService {
 	constructor() {
+		if (MailService.instance) return MailService.instance;
+		MailService.instance = this;
+
 		if (Config.env === "dev") {
 			this.transporter = {
 				sendMail: (obj) => {
@@ -13,18 +16,18 @@ export default class MailService {
 			return;
 		}
 		this.transporter = nodemailer.createTransport({
-			host: Config.MAILER.HOST,
-			port: Config.MAILER.PORT,
+			host: Config.mailer.HOST,
+			port: Config.mailer.PORT,
 			auth: {
-				user: Config.MAILER.EMAIL,
-				pass: Config.MAILER.PASSWORD,
+				user: Config.mailer.EMAIL,
+				pass: Config.mailer.PASSWORD,
 			},
 		});
 	}
 
 	async sendMail(email, subject, content) {
 		await this.transporter.sendMail({
-			from: Config.MAILER.EMAIL,
+			from: Config.mailer.EMAIL,
 			to: email,
 			subject,
 			text: content,
@@ -32,3 +35,5 @@ export default class MailService {
 		});
 	}
 }
+
+export default new MailService();

@@ -89,7 +89,7 @@ export default class SQLib {
 		// Execute the query
 		let result;
 		try { result = await this.db.query(sql, queryValues) }
-		catch (err) { result = `SQL_ERROR ${err.code}:\n${err.sqlMessage}` }
+		catch (err) { console.log(err); result = `SQL_ERROR ${err.code}:\n${err.sqlMessage}` }
 		return result;
 	}
 

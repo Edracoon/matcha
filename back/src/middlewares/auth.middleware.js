@@ -6,9 +6,8 @@ export const AuthMiddleware = async (req, res, next) => {
 	if (!authHeader) return res.sendStatus(401);
 
 	const token = authHeader.split(" ")[1];
-	console.log("authenticateJWT -> ", token);
 
-	jwt.verify(token, Config.JWT_SECRET, (err, user) => {
+	jwt.verify(token, Config.jwtSecret, (err, user) => {
 		if (err) return res.sendStatus(401);
 		req.user = user;
 		return next();

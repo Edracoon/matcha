@@ -4,7 +4,7 @@ import AuthController from "./auth.controller.js";
 const authRouter = express.Router();
 
 const exempleMiddleware = (req, res, next) => {
-    console.log("authRouter -> exempleMiddleware");
+    // console.log("authRouter -> exempleMiddleware");
     return next();
 }
 

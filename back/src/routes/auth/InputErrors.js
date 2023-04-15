@@ -17,9 +17,7 @@ export default class InputErrors {
 	}
 
 	static email(email) {
-		if (!email || email === "")
-			return "Provide a valid email address";
-		else if (!String(email).toLowerCase().match(/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/))
+		if (!String(email).toLowerCase().match(/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/))
 			return "Invalid email address";
 		return undefined;
 	}
@@ -48,14 +46,14 @@ export default class InputErrors {
 	 * is a defined function in this class
 	 */
 	static checkMultipleInput(inputs, checkConfirm) {
-		let errors = {};
+		let errors = [];
 		for (let key in inputs) {
 			if (!this[key]) continue ;
-			errors[key] = this[key](inputs[key]);
+			if (this[key](inputs[key]))
+				errors.push({ [key]: this[key](inputs[key]) });
 		}
 		if (checkConfirm && inputs.password !== inputs.confirmPassword)
-			errors.confirmPassword = "Passwords are not the same.";
-		for (let err in errors) if (errors[err]) return errors;
-		return undefined;
+			errors.push({ confirmPassword: "Passwords are not the same."});
+		return errors;
 	}
 }

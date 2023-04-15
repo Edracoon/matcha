@@ -2,7 +2,7 @@ const Config = {
 	env: "dev",
 
 	/* Server */
-	port: process.env.PORT,
+	port: process.env.PORT || 4242,
 	jwtSecret: process.env.JWT_SECRET,
 
 	/* Database */

@@ -22,13 +22,11 @@ import authRouter from "./routes/auth/auth.router.js";
 import countryRouter from "./routes/country/country.router.js";
 
 /* Services */
-import MailService from "./services/mail.service.js";
 import FakerService from "./services/faker.service.js";
 
 class Application {
 	constructor() {
 		this.app = express();
-		this.MailService = new MailService();
 		this.initDatabase();
 		this.initMiddlewares();
 		this.initRoutes();
@@ -75,14 +73,19 @@ class Application {
 		this.app.use("*", (req, res) => res.status(404).send());
 	}
 
-	start() {
-		this.server = this.app.listen(Config.PORT, () => {
-			console.info(`Matcha server listening on port ${Config.port}`);
+	async start() {
+		return new Promise(resolve => {
+			this.server = this.app.listen(Config.port, () => {
+				console.info(`Matcha server listening on port ${Config.port}`);
+				resolve();
+			});
 		});
 	}
 
-	stop() {
-		this.server.close();
+	async stop() {
+		return new Promise(resolve => {
+			this.server.close(() => resolve());
+		});
 	}
 }
 
