@@ -123,7 +123,6 @@
 		Preferences.interests = choosen;
 		// Make request to the back with Preferences object as data.
 	}
-
 </script>
 
 <div class="w-[600px]">

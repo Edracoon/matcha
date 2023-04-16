@@ -1,4 +1,4 @@
-<div class="carousel flex flex-row relative overflow-hidden h-full w-full">
+<div class={`carousel flex flex-row relative overflow-hidden ${height} w-full`}>
 	<div bind:this={carousel} class="carousel-inner flex w-full">
 		{#each photosArray as photo}
 			<div style="flex: 0 0 auto" class="w-full">
@@ -35,7 +35,9 @@
 	import TrashIcon from '$lib/svg/svgTrash.svelte';
 
 	export let context;
+	export let height;
 
+	console.log(height);
 	/* Array of URL to display the images */
 	let photoIdx = 0;
 	let photosArray = [];

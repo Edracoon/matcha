@@ -83,7 +83,7 @@
 <div class="w-[400px] bg-transparent h-full flex flex-col justify-between border">
     <div id="parent" class="flex-grow relative overflow-hidden">
         <!-- <div class="bg-purple-800 h-full relative flex flex-row"> -->
-		<Carousel class="h-full relative flex flex-row" context="profile" />
+		<Carousel class="h-full relative flex flex-row" context="profile" height="h-full" />
 		<div class="flex w-full gap-16 pb-4 bg-transparent absolute bottom-0 left-0 justify-center">
 			<button class="text-center bg-red-500 flex justify-center rounded-full h-16 w-16 items-center">
 				<Icon icon="ph:x-bold" class="text-[40px]" />
