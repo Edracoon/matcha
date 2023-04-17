@@ -9,7 +9,7 @@
 
 html {
 	font-family: 'Archivo', sans-serif;
-	background: #23242a;
+	background: #0f0f0f;
 	color: #FAFAFD;
 	font-size: 1.2rem;
 }
@@ -58,7 +58,7 @@ html {
 }
 
 .card {
-	background: #28292d;
+	background: #272626;
 }
 
 .button {
