@@ -24,8 +24,11 @@ export default {
 				warning: '#F5CD3D',
 				neutral: "#27302D",
 				success: '#00D890',
+				textarea: '#F5F5DC',
 			},
 		}
 	},
-	plugins: [],
+	plugins: [
+		require('tailwind-scrollbar-hide'),
+	],
 }
