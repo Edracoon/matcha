@@ -27,13 +27,6 @@ class AuthController {
 		if (errors.length > 0)
 			return res.status(400).json({ error: "form.invalid", errors});
 
-		console.log("AuthController.signUp ->", req.body, errors);
-		// // Check if the form is unique friendly
-		// if (await User.isUnique("email", b.email) === false)
-		// 	return res.status(400).json({ error: "form.invalid", errors: {email: "This email is already taken."} });
-		// if (await User.isUnique("username", b.username) === false)
-		// 	return res.status(400).json({ error: "form.invalid", errors: {username: "This username is already taken."} });
-
 		let encryptedPass = await bcrypt.hash(req.body.password, saltRounds);
 
 		let user;
@@ -49,10 +42,10 @@ class AuthController {
 				emailValidated: false
 			});
 		} catch (e) {
-			return res.status(400).json({ error: "" });
+			const trace = new Error().stack?.match(/at\s+(.+):(\d+):\d+/);
+			console.log(`${trace[1]}:${trace[2]}\n${e}`);
+			return res.status(400).json({ error: e });
 		}
-
-		console.log(user);
 
 		await MailService.sendMail(user.email, "Confirm your registration to Matcha !", `This is your verification code ${user.emailValidationCode}`);
 		return res.status(200).json({ user: user });

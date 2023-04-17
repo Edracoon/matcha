@@ -1,14 +1,7 @@
 export default class myqslHelper {
 
-	static app = null;
-
-	static async initMysqlConnection(app) {
-		this.app = app;
-	}
-
-	static async closeMysqlConnection() {
-		if (!this.app)
-			throw new Error("Mysql connection not initialized");
+	static async resetDB(app) {
+		console.log("\n------------------------\nresetDB\n------------------------\n")
 		// Drop all tables using app.db object
 		await app.db.delete('USER', { "1": 1 });
 		await app.db.delete('LIKES', { "1": 1 });

@@ -1,5 +1,6 @@
 import supertest from "supertest";
 import Application from "../../../src/Application";
+import myqslHelper from "../../mysql-helper";
 
 const test_server = supertest(Application.app);
 
@@ -8,7 +9,10 @@ const usleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 describe("POST sign-up", () => {
 	beforeAll(async () => await Application.start());
 	afterEach(async () => await usleep(100));
-	afterAll(async () => await Application.stop());
+	afterAll(async () => {
+		await Application.stop();
+		await myqslHelper.resetDB(Application);
+	});
 
 	describe("Error", () => {
 		it("Should return all the missing fields", async () => {
@@ -26,7 +30,7 @@ describe("POST sign-up", () => {
 				]
 			});
 		});
-	
+
 		it("should give emails errors", async () => {
 			let res = await test_server.post("/auth/sign-up")
 				.send({
@@ -127,7 +131,6 @@ describe("POST sign-up", () => {
 					password: "1234567",
 					confirmPassword: "1234567"
 				});
-			console.log(res.body);
 			expect(res.status).toBe(200);
 		});
 	});

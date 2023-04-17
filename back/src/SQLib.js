@@ -89,7 +89,12 @@ export default class SQLib {
 		// Execute the query
 		let result;
 		try { result = await this.db.query(sql, queryValues) }
-		catch (err) { console.log(err); result = `SQL_ERROR ${err.code}:\n${err.sqlMessage}` }
+		catch (err) {
+			if (err.code === 'ER_DUP_ENTRY')
+				throw `This ${err.sqlMessage.match(/'([^']+)'\s+for\s+key\s+'(?:[^.']+\.)([^']+)'/)[2]} is already taken`;
+			else
+				throw err.sqlMessage;
+		}
 		return result;
 	}
 
