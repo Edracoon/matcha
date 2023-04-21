@@ -118,6 +118,34 @@ describe("POST sign-up", () => {
 				],
 			});
 		});
+
+		it("should give already used errors", async () => {
+			const res = await test_server.post("/auth/sign-up")
+				.send({
+					firstname: "John12",
+					lastname: "Doe12",
+					email: "johndoe123@gmail.com",
+					username: "johndoe69123",
+					password: "1234567",
+					confirmPassword: "1234567"
+				});
+			expect(res.status).toBe(200);
+		
+			const res2 = await test_server.post("/auth/sign-up")
+				.send({
+					firstname: "Test",
+					lastname: "Test2",
+					email: "johndoe123@gmail.com",
+					username: "johndoe69123",
+					password: "1234567",
+					confirmPassword: "1234567"
+				});
+			console.log(res2.body);
+			expect(res2.status).toBe(400);
+			expect(res2.body).toStrictEqual({
+				error: 'This username is already taken',
+			});
+		});		
 	});
 
 	describe("Success", () => {
