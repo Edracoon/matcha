@@ -14,7 +14,7 @@ class MailService {
 		// In dev mode, we don't want to send real mails, so we mock the transporter
 		if (Config.env === "dev")
 			this.transporter = {
-				sendMail: (obj) => { console.log(obj) }
+				sendMail: (obj) => { console.log(`--- email to ${obj.email} ---\n`, obj) }
 			};
 		// Else we instantiate the transporter of nodemailer with the config
 		else 

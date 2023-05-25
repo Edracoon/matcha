@@ -20,6 +20,7 @@ import RoomSchema from "./models/room.model.js";
 /* Routes */
 import authRouter from "./routes/auth/auth.router.js";
 import countryRouter from "./routes/country/country.router.js";
+import accountRouter from "./routes/account/account.router.js";
 
 /* Services */
 import FakerService from "./services/faker.service.js";
@@ -70,6 +71,7 @@ class Application {
 	initRoutes() {
 		this.app.use(authRouter);
 		this.app.use(countryRouter);
+		this.app.use(accountRouter);
 		this.app.use("*", (req, res) => res.status(404).send());
 	}
 

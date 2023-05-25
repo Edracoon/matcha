@@ -25,7 +25,7 @@ class AuthController {
 		for (let key of keys)
 			if (!req.body[key] && req.body[key] !== "")
 				errors.push({ [key]: "This field is required." });
-		errors = [...errors, ...InputErrors.checkMultipleInput(req.body, true)]
+		errors = [...errors, ...InputErrors.checkMultipleInput(req.body, true)];
 		if (errors.length > 0)
 			return res.status(400).json({ error: "form.invalid", errors});
 
@@ -128,10 +128,7 @@ class AuthController {
 	 * @returns { message: "Password reset" }
 	 */
 	static async resetPassword(req, res) {
-		const email = req.body.email;
-		const resetPasswordCode = req.body.resetPasswordCode;
-		const password = req.body.password;
-		const confirmPassword = req.body.confirmPassword;
+		const { email, resetPasswordCode, password, confirmPassword } = req.body;
 
 		if (!email)
 			return res.status(400).json({ error: "Invalid email" });
