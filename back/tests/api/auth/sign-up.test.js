@@ -140,7 +140,6 @@ describe("POST sign-up", () => {
 					password: "1234567",
 					confirmPassword: "1234567"
 				});
-			console.log(res2.body);
 			expect(res2.status).toBe(400);
 			expect(res2.body).toStrictEqual({
 				error: 'This username is already taken',
