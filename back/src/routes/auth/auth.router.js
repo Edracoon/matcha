@@ -23,7 +23,7 @@ authRouter.post("/auth/sign-in", AuthController.signIn);
  * /auth/send-confirm-email
  * @returns { message: "Email sent" }
  */
-authRouter.post("/auth/send-confirm-email", AuthMiddleware, AuthController.sendConfirmEmail);
+authRouter.get("/auth/send-confirm-email", AuthMiddleware, AuthController.sendConfirmEmail);
 
 /**
  * /auth/confirm-email

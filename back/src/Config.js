@@ -1,6 +1,8 @@
 const Config = {
 	env: "dev",
 
+	frontUrl: process.env.FRONT_URL,
+
 	/* Server */
 	port: process.env.PORT || 4242,
 	jwtSecret: process.env.JWT_SECRET,

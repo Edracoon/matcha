@@ -17,6 +17,7 @@ class AuthController {
 	 * @param { body: { firstname, lastname, email, username, password, confirmPassword }}
 	 * @param {*} req
 	 * @param {*} res
+	 * Tested on Postman
 	 */
 	static async signUp(req, res) {
 
@@ -49,7 +50,7 @@ class AuthController {
 			return res.status(400).json({ error: e });
 		}
 
-		await MailService.sendMail(user.email, "Confirm your registration to Matcha !", `This is your verification code ${user.emailValidationCode}`);
+		await MailService.sendMail(user.email, "Confirm your registration to Matcha !", `Click this link ${Config.frontUrl + "/verify-account/?validationCode=" + user.emailValidationCode} or use your code: ${user.emailValidationCode}`);
 		return res.status(200).json({ user: user, accessToken: jwt.sign({ user }, Config.jwtSecret, { expiresIn: "7d" }) });
 	}
 
@@ -57,6 +58,7 @@ class AuthController {
 	 ** /auth/sign-in
 	 * @param { body: { username, password }}
 	 * @returns { accessToken: jwt }
+	 * Tested on Postman
 	 */
 	static async signIn(req, res) {
 		if (!req.body.username)
@@ -78,9 +80,15 @@ class AuthController {
 	/**
 	 * /auth/send-confirm-email
 	 * @returns { message: "Email sent" }
+	 * Tested on Postman
 	 */
 	static async sendConfirmEmail(req, res) {
-		await MailService.sendMail(req.user.email, "Confirm your registration to Matcha !", `This is your verification code ${req.user.emailValidationCode}`);
+		const newValidationCode = Math.floor(Math.random() * 1000000);
+
+		// Update the user validationCode
+		sql.update("USER", { id: req.user.id }, { emailValidationCode: newValidationCode });
+
+		await MailService.sendMail(req.user.email, "Confirm your registration to Matcha !", `Click this link ${Config.frontUrl + "/verify-account/?validationCode=" + newValidationCode} or use your code: ${newValidationCode}`);
 		return res.status(200).json({ message: "Email sent" });
 	}
 
@@ -88,11 +96,12 @@ class AuthController {
 	 * /auth/confirm-email
 	 * @param { body: { emailValidationCode }}
 	 * @returns { accessToken: jwt }
+	 * Tested on Postman
 	 */
 	static async confirmEmail(req, res) {
 		if (req.body.emailValidationCode === req.user.emailValidationCode) {
 			await sql.update("USER", { id: req.user.id }, { emailValidated: true });
-			return res.status(200).json({ accessToken: jwt.sign({ user }, Config.jwtSecret, { expiresIn: "7d" }) });
+			return res.status(200).json({ accessToken: jwt.sign({ user: req.user }, Config.jwtSecret, { expiresIn: "7d" }) });
 		}
 		return res.status(400).json({ error: "Wrong email validation code" });
 	}
@@ -101,6 +110,7 @@ class AuthController {
 	 * /auth/forgot-password
 	 * @param { body: { email } }
 	 * @returns { message: "We sent you an email to reset your password" }
+	 * Tested on Postman
 	 */
 	static async forgotPassword(req, res) {
 		const email = req.body.email;
@@ -118,14 +128,15 @@ class AuthController {
 		try { await sql.update("USER", { id: user.id }, { resetPasswordCode }); }
 		catch (e) { return res.status(400).json({ error: e }); }
 
-		await MailService.sendMail(user.email, "Reset your password", `This is your reset password code ${resetPasswordCode}. Click here to reset your password: " http://localhost:80/reset-password/${resetPasswordCode} "`);
-		return res.status(200).json({ message: "We sent you an email to reset your password" });
+		await MailService.sendMail(email, "Reset your password", `This is your reset password code ${resetPasswordCode}. Click here to reset your password: " http://localhost:80/reset-password/${resetPasswordCode} "`);
+		return res.status(200).json({ message: `We sent an email to ${email} to reset your password` });
 	}
 
 	/**
 	 * /auth/reset-password
 	 * @param { body: { email, resetPasswordCode, password, confirmPassword } }
 	 * @returns { message: "Password reset" }
+	 * Tested on Postman
 	 */
 	static async resetPassword(req, res) {
 		const { email, resetPasswordCode, password, confirmPassword } = req.body;
@@ -143,7 +154,7 @@ class AuthController {
 
 		let user = await sql.findOne("USER", { email, resetPasswordCode });
 		if (!user)
-			return res.status(400).json({ error: "Invalid reset password code" });
+			return res.status(400).json({ error: "Invalid reset password code or email" });
 
 		const encryptedPass = await bcrypt.hash(password, saltRounds);
 		try {

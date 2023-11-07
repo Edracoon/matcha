@@ -145,7 +145,7 @@ export default class SQLib {
 	 */
 	async findOne(modelName, query) {
 		const result = await this.find(modelName, query);
-		return result[0];
+		return result[0][0];
 	}
 
 	/*
@@ -175,13 +175,15 @@ export default class SQLib {
 		const conditions = [];
 		const setValues = [];
 		const queryValues = [];
-		for (let columnName in query) {
-			conditions.push(`${columnName} = ?`);
-			queryValues.push(query[columnName]);
-		}
+
 		for (let columnName in values) {
 			setValues.push(`${columnName} = ?`);
 			queryValues.push(values[columnName]);
+		}
+
+		for (let columnName in query) {
+			conditions.push(`${columnName} = ?`);
+			queryValues.push(query[columnName]);
 		}
 		// Example of an update query:
 		// UPDATE users SET username = ?, password = ? WHERE id = ?
