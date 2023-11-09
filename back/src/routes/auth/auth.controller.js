@@ -39,7 +39,6 @@ class AuthController {
 				lastname: req.body.lastname,
 				email: req.body.email,
 				username: req.body.username,
-				profilePicture: "https://api.dicebear.com/5.x/initials/svg?backgroundColor=FF6D7F&seed=" + req.body.firstname + " " + req.body.lastname,
 				password: encryptedPass,
 				emailValidationCode: Math.floor(Math.random() * 1000000),
 				emailValidated: false

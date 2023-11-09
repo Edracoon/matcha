@@ -4,7 +4,6 @@ import bodyparser from "body-parser";
 import fileUpload from "express-fileupload";
 
 import Config from "./Config.js";
-import { AuthMiddleware } from "./middlewares/auth.middleware.js";
 
 /* Models */
 import SQLib from "./SQLib.js";
@@ -16,11 +15,14 @@ import MessageSchema from "./models/message.model.js";
 import NotifSchema from "./models/notif.model.js";
 import BlocklistSchema from "./models/blocklist.model.js";
 import RoomSchema from "./models/room.model.js";
+import ViewSchema from "./models/view.model.js";
+import PictureSchema from "./models/picture.model.js";
 
 /* Routes */
 import authRouter from "./routes/auth/auth.router.js";
 import countryRouter from "./routes/country/country.router.js";
 import accountRouter from "./routes/account/account.router.js";
+import fileRouter from "./routes/files/file.router.js";
 
 /* Services */
 import FakerService from "./services/faker.service.js";
@@ -45,6 +47,8 @@ class Application {
 		await this.db.defineModel("BLOCKLIST", BlocklistSchema.schema);
 		await this.db.defineModel("ROOM", RoomSchema.schema);
 		await this.db.defineModel("MESSAGE", MessageSchema.schema);
+		await this.db.defineModel("VIEW", ViewSchema.schema);
+		await this.db.defineModel("PICTURE", PictureSchema.schema);
 
 		/* Fake data */
 		for (let i = 0; i < 1; i++) {
@@ -72,6 +76,7 @@ class Application {
 		this.app.use(authRouter);
 		this.app.use(countryRouter);
 		this.app.use(accountRouter);
+		this.app.use(fileRouter);
 		this.app.use("*", (req, res) => res.status(404).send());
 	}
 

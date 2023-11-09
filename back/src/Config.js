@@ -2,6 +2,7 @@ const Config = {
 	env: "dev",
 
 	frontUrl: process.env.FRONT_URL,
+	backUrl: process.env.BACK_URL,
 
 	/* Server */
 	port: process.env.PORT || 4242,

@@ -2,8 +2,8 @@ import Config from "../Config.js";
 
 class TagUserSchema {
 	static schema = {
-		tagId : { type : 'INT', ref: "TAG" },
 		userId : { type : 'INT', ref: "USER" },
+		tag : { type: "VARCHAR(30)", required: true }
 	};
 };
 
