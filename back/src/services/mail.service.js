@@ -12,15 +12,17 @@ class MailService {
 		this.template = "";
 
 		// In dev mode, we don't want to send real mails, so we mock the transporter
-		if (Config.env === "dev")
-			this.transporter = {
-				sendMail: (obj) => { console.log(`--- email to ${obj.to} ---\n`, obj) }
-			};
-		// Else we instantiate the transporter of nodemailer with the config
-		else 
+		// if (Config.env === "dev")
+		// 	this.transporter = {
+		// 		sendMail: (obj) => { console.log(`--- email to ${obj.to} ---\n`, obj) }
+		// 	};
+		// // Else we instantiate the transporter of nodemailer with the config
+		// else 
 			this.transporter = nodemailer.createTransport({
-				host: Config.mailer.HOST,
-				port: Config.mailer.PORT,
+				service: 'gmail',
+				host: 'smtp.gmail.com',
+				port: 587,
+				secure: false,
 				auth: {
 					user: Config.mailer.EMAIL,
 					pass: Config.mailer.PASSWORD,
@@ -30,11 +32,14 @@ class MailService {
 
 	async sendMail(email, subject, content) {
 		await this.transporter.sendMail({
-			from: Config.mailer.EMAIL,
+			from: {
+				name: "Matcha",
+				address: Config.mailer.EMAIL,
+			},
 			to: email,
 			subject: subject,
 			text: content,
-			html: this.template.replace("{{subject}}", subject).replace("{{content}}", content),
+			// html: this.template.replace("{{subject}}", subject).replace("{{content}}", content),
 		});
 	}
 }

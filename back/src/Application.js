@@ -4,23 +4,26 @@ import bodyparser from "body-parser";
 import fileUpload from "express-fileupload";
 
 import Config from "./Config.js";
-import { AuthMiddleware } from "./middlewares/auth.middleware.js";
 
 /* Models */
 import SQLib from "./SQLib.js";
 import UserSchema from "./models/user.model.js";
-import LikesSchema from "./models/like.model.js";
-import TagSchema from "./models/tag.model.js";
+import LikeSchema from "./models/like.model.js";
+import TagSchema, { TagList } from "./models/tag.model.js";
 import TagUserSchema from "./models/tag_user.model.js";
 import MessageSchema from "./models/message.model.js";
 import NotifSchema from "./models/notif.model.js";
 import BlocklistSchema from "./models/blocklist.model.js";
 import RoomSchema from "./models/room.model.js";
+import ViewSchema from "./models/view.model.js";
+import PictureSchema from "./models/picture.model.js";
 
 /* Routes */
 import authRouter from "./routes/auth/auth.router.js";
 import countryRouter from "./routes/country/country.router.js";
 import accountRouter from "./routes/account/account.router.js";
+import fileRouter from "./routes/files/file.router.js";
+import adminRouter from "./routes/admin/admin.router.js";
 
 /* Services */
 import FakerService from "./services/faker.service.js";
@@ -38,18 +41,21 @@ class Application {
 		await this.db.connectDB();
 		/* Create Models */
 		await this.db.defineModel("USER", UserSchema.schema);
-		await this.db.defineModel("LIKES", LikesSchema.schema);
 		await this.db.defineModel("TAG", TagSchema.schema);
 		await this.db.defineModel("TAG_USER", TagUserSchema.schema);
 		await this.db.defineModel("NOTIF", NotifSchema.schema);
 		await this.db.defineModel("BLOCKLIST", BlocklistSchema.schema);
 		await this.db.defineModel("ROOM", RoomSchema.schema);
 		await this.db.defineModel("MESSAGE", MessageSchema.schema);
+		await this.db.defineModel("LIKES", LikeSchema.schema);
+		await this.db.defineModel("VIEW", ViewSchema.schema);
+		await this.db.defineModel("PICTURE", PictureSchema.schema);
 
-		/* Fake data */
-		for (let i = 0; i < 1; i++) {
-			const user = FakerService.userSkeleton();
-			await this.db.insert("USER", user);
+		// Insert static tags in db if not already there
+		for (const tag of TagList) {
+			const tagInDb = await this.db.findOne("TAG", { content: tag });
+			if (!tagInDb)
+				await this.db.insert("TAG", { content: tag });
 		}
 	}
 
@@ -72,6 +78,8 @@ class Application {
 		this.app.use(authRouter);
 		this.app.use(countryRouter);
 		this.app.use(accountRouter);
+		this.app.use(fileRouter);
+		this.app.use(adminRouter);
 		this.app.use("*", (req, res) => res.status(404).send());
 	}
 

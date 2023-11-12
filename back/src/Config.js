@@ -1,8 +1,14 @@
 const Config = {
 	env: "dev",
 
+	/* Client */
+	frontUrl: process.env.FRONT_URL,
+	
 	/* Server */
+	backUrl: process.env.BACK_URL,
 	port: process.env.PORT || 4242,
+	
+	adminKey: process.env.ADMIN_KEY,
 	jwtSecret: process.env.JWT_SECRET,
 
 	/* Database */

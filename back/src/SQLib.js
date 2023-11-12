@@ -68,7 +68,7 @@ export default class SQLib {
 		// 	password VARCHAR(255) NOT NULL,
 		// 	FOREIGN KEY (profileId) REFERENCES profiles(id)
 		// )
-		const sql = `CREATE TABLE IF NOT EXISTS ${modelName} (${columns.join(',')})`;
+		const sql = `CREATE TABLE ${modelName} (${columns.join(',')})`;
 
 		// Execute the query to create the table
 		let result = null;
@@ -175,13 +175,15 @@ export default class SQLib {
 		const conditions = [];
 		const setValues = [];
 		const queryValues = [];
-		for (let columnName in query) {
-			conditions.push(`${columnName} = ?`);
-			queryValues.push(query[columnName]);
-		}
+
 		for (let columnName in values) {
 			setValues.push(`${columnName} = ?`);
 			queryValues.push(values[columnName]);
+		}
+
+		for (let columnName in query) {
+			conditions.push(`${columnName} = ?`);
+			queryValues.push(query[columnName]);
 		}
 		// Example of an update query:
 		// UPDATE users SET username = ?, password = ? WHERE id = ?
