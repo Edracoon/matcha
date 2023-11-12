@@ -19,6 +19,7 @@ export default class AuthService {
 			});
 			// Success
 			console.log('AuthService.postSignUp() ->', res);
+            return "success";
 		}
 		catch (err) {
 			console.log('AuthService.postSignUp() ->', err);
@@ -32,15 +33,34 @@ export default class AuthService {
 	static async postSignIn(signInUser) {
 		try {
 			const res = await axios({
-				url: `${apiUrl}auth/sign-up`,
+				url: `${apiUrl}auth/sign-in`,
 				method: 'POST',
 				data: signInUser
 			});
 			// Success
 			console.log('AuthService.postSignIn() ->', res);
+            localStorage.setItem('token', res.data.accessToken);
+            return "success";
 		}
 		catch (err) {
 			console.log('AuthService.postSignIn() ->', err);
 		}
 	}
+
+    static async getVerifyToken() {
+        try {
+            const res = await axios({
+                url: `${apiUrl}auth/verify-token`,
+                method: 'GET',
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('token')}`
+                }
+            });
+            // Success
+            console.log('AuthService.getVerifyToken() ->', res);
+            return "success";
+        } catch (err) {
+            console.log('AuthService.getVerifyToken() ->', err);
+        }
+    }
 }

@@ -145,7 +145,7 @@ export default class SQLib {
 	 */
 	async findOne(modelName, query) {
 		const result = await this.find(modelName, query);
-		return result[0];
+		return result[0][0];
 	}
 
 	/*

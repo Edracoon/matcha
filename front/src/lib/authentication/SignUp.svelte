@@ -2,6 +2,7 @@
     import "./auth.scss";
     import InputErrors from "../InputErrors.js";
     import AuthService from "../services/auth.service.js";
+    import { goto } from "$app/navigation";
 
     let signUpUser = {};
     let errors = {
@@ -17,7 +18,7 @@
         if (event.key === "Enter") submitSignUp();
     }
 
-    function submitSignUp() {
+    async function submitSignUp() {
         console.log("test");
         errors.firstname = InputErrors.firstname(signUpUser.firstname);
         errors.lastname = InputErrors.lastname(signUpUser.lastname);
@@ -34,7 +35,8 @@
         for (let prop in errors) if (errors[prop] !== "") return;
 
         // If no errors then submit it for real
-        AuthService.postSignUp(signUpUser);
+        let res = await AuthService.postSignUp(signUpUser);
+        if (res === "succes") goto('/home');
     }
 </script>
 
@@ -77,6 +79,11 @@
             <button class="button btn-signup" on:click={() => submitSignUp()}
                 >Sign up for free!</button
             >
+        </div>
+    </div>
+    <div>
+        <div class="anchor forgot-password" on:click={() => goto("/signIn")}>
+            Already have an account ?
         </div>
     </div>
 </div>

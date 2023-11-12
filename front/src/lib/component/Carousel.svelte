@@ -1,4 +1,4 @@
-<div class={`carousel flex flex-row relative overflow-hidden ${height} w-full`}>
+<div id="picture" class={`carousel flex flex-row relative overflow-hidden ${height} w-full`}>
 	<div bind:this={carousel} class="carousel-inner flex w-full">
 		{#each photosArray as photo}
 			<div style="flex: 0 0 auto" class="w-full">
