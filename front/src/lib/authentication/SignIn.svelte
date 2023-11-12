@@ -4,8 +4,10 @@
 	import InputErrors from "$lib/InputErrors.js";
 	import AuthService from "$lib/services/auth.service.js";
 
-	let username = "";
-	let password = "";
+    let signInUser = {
+        username: "",
+        password: ""
+    };
 
 	let errors = {
 		username: "",
@@ -17,16 +19,18 @@
 			submitSignIn();
 	}
 
-	function submitSignIn() {
-		errors.username = InputErrors.username(username);
-		errors.password = InputErrors.password(password);
+	async function submitSignIn() {
+		// errors.username = InputErrors.username(username);
+		// errors.password = InputErrors.password(password);
 
 		// Check if there is an error, if so, return
 		for (let prop in errors)
 			if (errors[prop] !== "") return ;
 
 		// If no errors then submit it for real
-		AuthService.postSignIn(signInUser);
+		let res = await AuthService.postSignIn(signInUser);
+        if (res === "succes")
+            goto('/home');
 	}
 </script>
 
@@ -38,17 +42,17 @@
 			<h1>matcha</h1>
 			<div class="vflex minigap">
 				<span>Username</span>
-				<input type="text" spellcheck="false" bind:value={username}>
+				<input type="text" spellcheck="false" bind:value={signInUser.username}>
 				<div class="error">{ errors.username }</div>
 			</div>
 			<div class="vflex minigap">
 				<span>Password</span>
-				<input type="password" spellcheck="false" bind:value={password}>
+				<input type="password" spellcheck="false" bind:value={signInUser.password}>
 				<div class="error">{ errors.password }</div>
 			</div>
 		</div>
 		<div class="hflex gap flex-align-center">
-			<button class="button btn-signin" on:click={() => submitSignIn()}>Sign in!</button>
+			<button class="button btn-signin" on:click={async () => await submitSignIn()}>Sign in!</button>
 		</div>
 		<div class="anchor forgot-password" on:click={() => goto('/forgot-password')}>You forgot your password ?</div>
 	</div>

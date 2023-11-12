@@ -46,4 +46,8 @@ authRouter.post("/auth/forgot-password", AuthController.forgotPassword);
  */
 authRouter.post("/auth/reset-password", AuthController.resetPassword);
 
+authRouter.get("/auth/verify-token", AuthMiddleware, AuthController.verifyToken);
+
+authRouter.get("/auth/preferences-set", AuthMiddleware, AuthController.preferencesSet);
+
 export default authRouter;

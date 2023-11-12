@@ -68,7 +68,7 @@ class AuthController {
 		let user = await sql.findOne("USER", { username: req.body.username });
 		if (!user)
 			return res.status(400).json({ error: "Username or password is invalid" });
-
+        console.log('req body ->', req.body, 'user ->', user);
 		let same = await bcrypt.compare(req.body.password, user.password);
 		if (!same)
 			return res.status(400).json({ error: "Username or password is invalid" });
@@ -162,6 +162,24 @@ class AuthController {
 		catch (e) { return res.status(400).json({ error: e }); }
 		return res.status(200).json({ message: "Password changed" });
 	}
+
+    static async verifyToken(req, res) {
+        return res.status(200).json({ user: req.user });
+    }
+
+    static async preferencesSet(req, res) {
+        let user = await sql.findOne("USER", { username: req.body.username });
+
+        if (!user.currGender || !user.sexualOrient || !user.bio)
+            return res.status(400).json({ error: "You must set your preferences before continuing" });
+
+        let tags = await sql.findAll("TAG", {id : user.id});
+        if (tags.length === 0)
+            return res.status(400).json({ error: "You must set your preferences before continuing" });
+        // Do not forget to check profile picture
+
+        return res.status(200).json({ message: "Preferences set" });
+    }
 }
 
 export default AuthController;
