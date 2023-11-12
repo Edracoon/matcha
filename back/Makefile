@@ -1,10 +1,8 @@
 VOLUMES=mysqldata
 
 run:
+	mkdir -p ${VOLUMES}
 	docker-compose up
-
-docker:
-	./docker.sh
 
 fclean:
 	rm -rf ${VOLUMES}/*

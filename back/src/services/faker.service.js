@@ -53,16 +53,24 @@ class FakerService {
 		}
 
 		// Store a random number of random views
+		const viewersalreadyseen = [];
 		const numberOfViews = Math.floor(Math.random() * viewers.length);
 		for (let i = 0; i < numberOfViews; i++) {
-			const randomViewer = viewers[Math.floor(Math.random() * viewers.length)];
+			let randomViewer = viewers[Math.floor(Math.random() * viewers.length)];
+			while (viewersalreadyseen.includes(randomViewer.id))
+				randomViewer = viewers[Math.floor(Math.random() * viewers.length)];
+			viewersalreadyseen.push(randomViewer.id);
 			await this.fakeViewSomeone(randomViewer, user);
 		}
 
 		// Store a random number of random likes
+		const likersalreadyseen = [];
 		const numberOfLikes = Math.floor(Math.random() * likers.length);
 		for (let i = 0; i < numberOfLikes; i++) {
-			const randomLiker = likers[Math.floor(Math.random() * likers.length)];
+			let randomLiker = likers[Math.floor(Math.random() * likers.length)];
+			while (likersalreadyseen.includes(randomLiker.id))
+				randomLiker = likers[Math.floor(Math.random() * likers.length)];
+			likersalreadyseen.push(randomLiker.id);
 			await this.fakeLikeSomeone(randomLiker, user);
 		}
 

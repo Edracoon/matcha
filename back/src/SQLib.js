@@ -53,7 +53,7 @@ export default class SQLib {
 		for (let columnName in model.columns) {
 			const column = model.columns[columnName];
 			if (column.ref)
-				columns.push(`FOREIGN KEY (${columnName}) REFERENCES ${column.ref}(id)`);
+				columns.push(`FOREIGN KEY (${columnName}) REFERENCES ${column.ref}(id) ${column.onDeleteCascade ? 'ON DELETE CASCADE' : ''}`);
 			const type = column.type;
 			const unique = column.unique ? 'UNIQUE' : '';
 			const required = column.required ? 'NOT NULL' : '';

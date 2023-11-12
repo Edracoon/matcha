@@ -43,9 +43,10 @@ class AccountController {
 			return res.status(401).json({ error: "Unauthorized" });
 
 		try {
-			sql.delete("USER", { isFake: 1 });
+			await sql.delete("USER", { isFake: 1 });
 		}
 		catch (e) {
+			console.log(e);
 			return res.status(500).json({ error: "Internal server error" });
 		}
 
