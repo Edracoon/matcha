@@ -36,7 +36,7 @@
 
         // If no errors then submit it for real
         let res = await AuthService.postSignUp(signUpUser);
-        if (res === "succes") goto('/home');
+        if (res.emailValidated === 0) goto('/email-confirmation');
     }
 </script>
 

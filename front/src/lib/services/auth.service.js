@@ -19,6 +19,7 @@ export default class AuthService {
 			});
 			// Success
 			console.log('AuthService.postSignUp() ->', res);
+            localStorage.setItem('token', res.data.accessToken);
             return "success";
 		}
 		catch (err) {

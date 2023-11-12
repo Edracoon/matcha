@@ -5,6 +5,8 @@
     import Description from "$lib/component/Description.svelte";
     import Carrousel from "$lib/component/Carousel.svelte";
     
+    let description;
+
     onMount(() => {
         description = document.getElementById("description");
     });

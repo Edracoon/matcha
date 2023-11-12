@@ -12,7 +12,3 @@
         if (res === "success") goto("/home");
     });
 </script>
-
-<div>
-    test
-</div>

@@ -29,7 +29,7 @@
 
 		// If no errors then submit it for real
 		let res = await AuthService.postSignIn(signInUser);
-        if (res === "succes")
+        if (res === "success")
             goto('/home');
 	}
 </script>
