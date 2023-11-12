@@ -49,9 +49,7 @@ class UserSchema {
 		formatSafeUser(user) {
 			// Delete properties that should not be sent to the client
 			delete user.password;
-			delete user.email;
 			delete user.emailValidationCode;
-			delete user.emailValidated;
 			delete user.resetPasswordCode;
 			delete user.fakeCounter;
 			delete user.ip;

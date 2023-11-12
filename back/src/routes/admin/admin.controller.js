@@ -4,7 +4,7 @@ import Config from "../../Config.js";
 
 const sql = new SQLib(); // Singleton
 
-class AccountController {
+class AdminController {
 
 	/**
 	 * Populate the database with fake data users
@@ -42,11 +42,8 @@ class AccountController {
 		if (adminkey !== Config.adminKey)
 			return res.status(401).json({ error: "Unauthorized" });
 
-		try {
-			await sql.delete("USER", { isFake: 1 });
-		}
+		try { await sql.delete("USER", { isFake: 1 }); }
 		catch (e) {
-			console.log(e);
 			return res.status(500).json({ error: "Internal server error" });
 		}
 
@@ -54,4 +51,4 @@ class AccountController {
 	}
 }
 
-export default AccountController;
+export default AdminController;
