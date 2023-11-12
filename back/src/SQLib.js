@@ -68,7 +68,7 @@ export default class SQLib {
 		// 	password VARCHAR(255) NOT NULL,
 		// 	FOREIGN KEY (profileId) REFERENCES profiles(id)
 		// )
-		const sql = `CREATE TABLE IF NOT EXISTS ${modelName} (${columns.join(',')})`;
+		const sql = `CREATE TABLE ${modelName} (${columns.join(',')})`;
 
 		// Execute the query to create the table
 		let result = null;

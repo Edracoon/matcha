@@ -260,7 +260,6 @@ class AccountController {
 		}
 		return res.status(200).json({ users });
 	}
-
 }
 
 export default AccountController;

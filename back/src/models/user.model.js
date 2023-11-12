@@ -31,6 +31,7 @@ class UserSchema {
 		emailValidationCode: { type: "VARCHAR(6)", required: true },
 		emailValidated: { type: "BOOLEAN", default: false },
 		resetPasswordCode: { type: "VARCHAR(6)" },
+		isFake: { type: "BOOLEAN", default: false },
 	}
 
 	// Not inserted in the db and can be usefull just like mongoose methods schema
