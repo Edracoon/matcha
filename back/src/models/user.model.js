@@ -11,21 +11,21 @@ class UserSchema {
 		email: { type: "VARCHAR(100)", unique: true, required: true },
 		birthGender: {
 			type: "ENUM('male', 'female')",
+			default: "NULL",
 			required: false
 		},
 		currGender: {
 			type: "ENUM('cisgender', 'transgender', 'non binary', 'fluid')",
-			default: "NULL",
-			required: false
+			default: "cisgender",
+			required: true
 		},
 		sexualOrient: {
 			type: "ENUM('heterosexual', 'homosexual', 'bisexual', 'pansexual', 'asexual')",
-			default: "NULL",
-			required: false,
+			default: "bisexual",
+			required: true,
 		},
 		bio: { type: "VARCHAR(300)", required: false },
 		interestTagAdded: { type: "BOOLEAN", default: false },
-		picturesAdded: { type: "BOOLEAN", default: false },
 		city: { type: "TEXT" },
 		country: { type: "TEXT" },
 		ip: { type: "VARCHAR(15)" }, // IP updated whenever the user sign-in ex: "204.132. 40.155"

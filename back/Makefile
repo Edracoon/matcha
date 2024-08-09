@@ -6,6 +6,7 @@ run:
 
 fclean:
 	rm -rf ${VOLUMES}/*
+	rm -rf ${VOLUMES}
 	docker-compose down -v
 	docker system prune -a -f
 

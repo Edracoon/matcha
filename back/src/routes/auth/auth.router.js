@@ -48,6 +48,11 @@ authRouter.post("/auth/reset-password", AuthController.resetPassword);
 
 authRouter.get("/auth/verify-token", AuthMiddleware, AuthController.verifyToken);
 
+
+/**
+ * /auth/preferences-set
+ * @returns { message: "Preferences set" }
+ */
 authRouter.get("/auth/preferences-set", AuthMiddleware, AuthController.preferencesSet);
 
 export default authRouter;

@@ -4,10 +4,10 @@
 	"description": "Dating Web App",
 	"type": "module",
 	"scripts": {
-		"dev": "export $(xargs < .env) && nodemon src/app.js",
-		"test": "export $(xargs < .env) && node --experimental-vm-modules node_modules/.bin/jest --runInBand --detectOpenHandles",
-		"test-silent": "export $(xargs < .env) && node --experimental-vm-modules node_modules/.bin/jest --silent --runInBand --detectOpenHandles",
-		"test-coverage": "export $(xargs < .env) && node --experimental-vm-modules node_modules/.bin/jest --coverage --runInBand --detectOpenHandles"
+		"dev": "nodemon -r dotenv/config src/app.js",
+		"test": "node -r dotenv/config --experimental-vm-modules node_modules/.bin/jest --runInBand --detectOpenHandles",
+		"test-silent": "node --experimental-vm-modules node_modules/.bin/jest --silent --runInBand --detectOpenHandles",
+		"test-coverage": "node --experimental-vm-modules node_modules/.bin/jest --coverage --runInBand --detectOpenHandles"
 	},
 	"dependencies": {
 		"@faker-js/faker": "^7.5.0",
@@ -24,6 +24,7 @@
 		"nodemon": "^2.0.22"
 	},
 	"devDependencies": {
+		"dotenv": "^16.4.5",
 		"jest": "^29.5.0",
 		"supertest": "^6.3.3"
 	}

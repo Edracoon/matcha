@@ -28,7 +28,7 @@ class AuthController {
 				errors.push({ [key]: "This field is required." });
 		errors = [...errors, ...InputErrors.checkMultipleInput(req.body, true)];
 		if (errors.length > 0)
-			return res.status(400).json({ error: "form.invalid", errors});
+			return res.status(400).json({ error: "All fields are required", errors});
 
 		let encryptedPass = await bcrypt.hash(req.body.password, saltRounds);
 
@@ -68,12 +68,11 @@ class AuthController {
 		let user = await sql.findOne("USER", { username: req.body.username });
 		if (!user)
 			return res.status(400).json({ error: "Username or password is invalid" });
-        console.log('req body ->', req.body, 'user ->', user);
 		let same = await bcrypt.compare(req.body.password, user.password);
 		if (!same)
 			return res.status(400).json({ error: "Username or password is invalid" });
 
-		return res.status(200).json({ accessToken: jwt.sign({ user }, Config.jwtSecret, { expiresIn: "7d" }) });
+		return res.status(200).json({ accessToken: jwt.sign({ user }, Config.jwtSecret, { expiresIn: "7d" }), user: user });
 	}
 
 	/**
@@ -127,7 +126,17 @@ class AuthController {
 		try { await sql.update("USER", { id: user.id }, { resetPasswordCode }); }
 		catch (e) { return res.status(400).json({ error: e }); }
 
-		await MailService.sendMail(email, "Reset your password", `This is your reset password code ${resetPasswordCode}. Click here to reset your password: " http://localhost:80/reset-password/${resetPasswordCode} "`);
+		try {
+			await MailService.sendMail(email, "Reset your password", `This is your reset password code ${resetPasswordCode}. Click here to reset your password: " http://localhost:80/reset-password/${resetPasswordCode} "`);
+		}
+		catch (e) {
+			console.log(e);
+			// Unregister the user
+			try { await sql.delete("USER", { id: user.id }); }
+			catch (e) { }
+			return res.status(400).json({ error: e });
+		}
+
 		return res.status(200).json({ message: `We sent an email to ${email} to reset your password` });
 	}
 
@@ -177,6 +186,10 @@ class AuthController {
         if (tags.length === 0)
             return res.status(400).json({ error: "You must set your preferences before continuing" });
         // Do not forget to check profile picture
+
+		let pictures = await sql.findAll("PICTURE", {userId : user.id});
+		if (pictures.length === 0)
+			return res.status(400).json({ error: "You must set your preferences before continuing" });
 
         return res.status(200).json({ message: "Preferences set" });
     }

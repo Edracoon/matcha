@@ -145,6 +145,12 @@ class AccountController {
 			catch (e) { return res.status(400).json({ error: e }); }
 		}
 
+		// Update the user to say that he has added his tags
+		try {
+			await sql.update("USER", { id: req.user.id }, { interestTagAdded: true });
+		}
+		catch (e) { return res.status(400).json({ error: e }); }
+
 		return res.status(200).json({ tags });
 	}
 
@@ -186,6 +192,7 @@ class AccountController {
 		const tags = await sql.find("TAG_USER", { userId: req.user.id });
 		const pictures = await sql.find("PICTURE", { userId: req.user.id });
 		const viewsCount = (await sql.find("VIEW", { viewed: req.user.id })).length;
+		const likes = (await sql.find("LIKES", { gotLiked: req.user.id })).length;
 
 		// Create an array with only pictures url
 		const pictureUrls = [];
@@ -193,11 +200,21 @@ class AccountController {
 			pictureUrls.push(picture.url);
 		}
 
+		// Collect tags content in db
+		const realTags = [];
+		for (const tag of tags) {
+			realTags.push((await sql.findOne("TAG", { id: tag.tagId })));
+		}
+
+		const fameRating = likes * 10 + viewsCount;
+
 		return res.status(200).json({ user: {
 			...UserSchema.methods.formatSafeUser(req.user),
 			tags,
 			pictures: pictureUrls,
 			views: viewsCount,
+			fameRating,
+			likes,
 		}});
 	}
 
@@ -224,9 +241,20 @@ class AccountController {
 			pictureUrls.push(picture.url);
 		}
 
+		// Collect tags content in db
+		const realTags = [];
+		for (const tag of tags) {
+			realTags.push((await sql.findOne("TAG", { id: tag.tagId })));
+		}
+
+		const likes = (await sql.find("LIKES", { gotLiked: user.id })).length;
+		const views = (await sql.find("VIEW", { viewed: user.id })).length;
+		const fameRating = likes * 10 + views;
+
 		user.tags = tags;
 		user.pictures = pictureUrls;
 		user.views = viewsCount;
+		user.fameRating = fameRating;
 
 		return res.status(200).json({
 			user: UserSchema.methods.formatSafeUser(user)

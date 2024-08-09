@@ -13,6 +13,7 @@ export default class SQLib {
 	}
 
 	connectDB() {
+		console.log(Config);
 		/* Init pool connection */
 		this.db = mysql.createPool({
 			connectionLimit: 100,
