@@ -5,14 +5,12 @@
 // import { useAuth } from '../contexts/authProvider';
 import Navbar from '../components/Navbar';
 
-export default function HomePage() {
-
-	// const { user, logout } = useAuth();
+export default function ChatPage() {
 
 	return (
 		<>
 			<Navbar />
-			<h1>Home</h1>
+			<h1>Chat</h1>
 		</>
 	);
 }

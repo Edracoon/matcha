@@ -110,7 +110,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 			options: { data: { emailValidationCode } },
 			onSuccess: (data) => {
 				console.log(data);
-				navigate("/profile");
+				navigate("/my-profile");
 			},
 			onError: (error) => {
 				console.log("onError: ", error);
