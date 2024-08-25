@@ -15,18 +15,16 @@ interface User {
 	currGender: string,
 	email: string,
 	emailValidated: boolean,
-	emailValidationCode: string,
-	fakeCounter: number,
 	firstname: string,
-	interestTagAdded: boolean,
-	ip: string,
-	isFake: boolean,
 	lastname: string,
-	password: string,
-	resetPasswordCode: string,
 	sexualOrient: string,
 	username: string
 }
+
+type ProfileNotComplete = {
+	key: string,
+	message: string
+} | null;
 
 interface AuthContextType {
 	user: User | undefined,
@@ -35,7 +33,8 @@ interface AuthContextType {
 	logout: () => void,
 	register: (data: { email: string, firstname: string, lastname: string, username: string, password: string, confirmPassword: string }) => void,
 	confirmEmailWithCode: () => {},
-	isLogged: () => Promise<boolean>
+	isLogged: () => Promise<boolean>,
+	isProfileNotComplete: () => Promise<ProfileNotComplete>
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -45,7 +44,8 @@ const AuthContext = createContext<AuthContextType>({
 	logout: () => {},
 	register: async () => {},
 	confirmEmailWithCode: async () => {},
-	isLogged: async () => false
+	isLogged: async () => false,
+	isProfileNotComplete: async () => null
 });
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
@@ -110,7 +110,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 			options: { data: { emailValidationCode } },
 			onSuccess: (data) => {
 				console.log(data);
-				navigate("/my-profile");
+				showNotification(NotifType.SUCCESS, 'Welcome to Matcha !', 'You can now complete your profile');
+				navigate("/profile-steps?step=1");
 			},
 			onError: (error) => {
 				console.log("onError: ", error);
@@ -134,6 +135,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 		return logged;
 	};
 
+	const isProfileNotComplete = async () : Promise<ProfileNotComplete> => {
+		let profileComplete = null;
+		await apiService({
+			method: "GET",
+			path: "/auth/profile-complete",
+			token: cookies.accessToken,
+			onSuccess: () => { profileComplete = null },
+			onError: (error) => { profileComplete = error.data }
+		});
+		return profileComplete as ProfileNotComplete;
+	}
+
     const value = useMemo(
         () => ({
 			user,
@@ -142,7 +155,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             logout,
 			register,
 			confirmEmailWithCode,
-			isLogged
+			isLogged,
+			isProfileNotComplete
         }),
         // eslint-disable-next-line react-hooks/exhaustive-deps
         [user, cookies]

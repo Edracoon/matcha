@@ -50,9 +50,9 @@ authRouter.get("/auth/verify-token", AuthMiddleware, AuthController.verifyToken)
 
 
 /**
- * /auth/preferences-set
- * @returns { message: "Preferences set" }
+ * /auth/profile-complete
+ * @returns { key: "", message: "" }
  */
-authRouter.get("/auth/preferences-set", AuthMiddleware, AuthController.preferencesSet);
+authRouter.get("/auth/profile-complete", AuthMiddleware, AuthController.profileComplete);
 
 export default authRouter;

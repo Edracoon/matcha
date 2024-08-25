@@ -5,6 +5,7 @@ import Config from "../../Config.js";
 import SQLib from "../../SQLib.js";
 import MailService from "../../services/mail.service.js";
 import jwt from "jsonwebtoken";
+import UserSchema from "../../models/user.model.js";
 
 const saltRounds = 10;
 
@@ -50,15 +51,16 @@ class AuthController {
 		}
 
 		await MailService.sendMail(user.email, "Confirm your registration to Matcha !", `Click this link ${Config.frontUrl + "/verify-account/?validationCode=" + user.emailValidationCode} or use your code: ${user.emailValidationCode}`);
-		return res.status(200).json({ user: user, accessToken: jwt.sign({ user }, Config.jwtSecret, { expiresIn: "7d" }) });
+
+		return res.status(200).json({ accessToken: jwt.sign({ user }, Config.jwtSecret, { expiresIn: "7d" }), user: UserSchema.methods.formatSafeUser(user) });
 	}
 
 	/**
 	 ** /auth/sign-in
-	 * @param { body: { username, password }}
-	 * @returns { accessToken: jwt }
-	 * Tested on Postman
-	 */
+	* @param { body: { username, password }}
+	* @returns { accessToken: jwt }
+	* Tested on Postman
+	*/
 	static async signIn(req, res) {
 		if (!req.body.username)
 			return res.status(400).json({ error: "Invalid username" });
@@ -72,7 +74,7 @@ class AuthController {
 		if (!same)
 			return res.status(400).json({ error: "Username or password is invalid" });
 
-		return res.status(200).json({ accessToken: jwt.sign({ user }, Config.jwtSecret, { expiresIn: "7d" }), user: user });
+		return res.status(200).json({ accessToken: jwt.sign({ user }, Config.jwtSecret, { expiresIn: "7d" }), user: UserSchema.methods.formatSafeUser(user) });
 	}
 
 	/**
@@ -172,27 +174,33 @@ class AuthController {
 		return res.status(200).json({ message: "Password changed" });
 	}
 
-    static async verifyToken(req, res) {
-        return res.status(200).json({ user: req.user });
-    }
+	static async verifyToken(req, res) {
+		return res.status(200).json({ user: UserSchema.methods.formatSafeUser(req.user) });
+	}
 
-    static async preferencesSet(req, res) {
-        let user = await sql.findOne("USER", { username: req.body.username });
+	static async profileComplete(req, res) {
+		let user = req.user;
 
-        if (!user.currGender || !user.sexualOrient || !user.bio)
-            return res.status(400).json({ error: "You must set your preferences before continuing" });
+		if (!user.city)
+			return res.status(400).json({ key: "1", error: "You must complete your profile before continuing" });
 
-        let tags = await sql.findAll("TAG", {id : user.id});
-        if (tags.length === 0)
-            return res.status(400).json({ error: "You must set your preferences before continuing" });
-        // Do not forget to check profile picture
+		if (!user.currGender || !user.sexualOrient)
+			return res.status(400).json({ key: "2", error: "You must complete your profile before continuing" });
 
+		if (!user.bio)
+			return res.status(400).json({ key: "3", error: "You must complete your profile before continuing" });
+
+		let tags = await sql.findAll("TAG", {id : user.id});
+		if (tags.length === 0)
+			return res.status(400).json({ key: "4", error: "You must complete your profile before continuing" });
+
+		// Do not forget to check profile picture
 		let pictures = await sql.findAll("PICTURE", {userId : user.id});
 		if (pictures.length === 0)
-			return res.status(400).json({ error: "You must set your preferences before continuing" });
+			return res.status(400).json({ key: "5", error: "You must complete your profile before continuing" });
 
-        return res.status(200).json({ message: "Preferences set" });
-    }
+		return res.status(200).json();
+	}
 }
 
 export default AuthController;

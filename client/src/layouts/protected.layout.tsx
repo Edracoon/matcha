@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { showNotification, NotifType } from '../components/Notif';
 
 export default function ProtectedLayout({ children }: { children: React.ReactNode }) {
-	const { isLogged, user } = useAuth();
+	const { isLogged, isProfileNotComplete, user } = useAuth();
 	const navigate = useNavigate();
 
 	const [loading, setLoading] = useState(true);
@@ -18,10 +18,9 @@ export default function ProtectedLayout({ children }: { children: React.ReactNod
 			setLoading(true);
 
 			const islogged = await isLogged();
+			const isNotComplete = await isProfileNotComplete();
 
 			setLoading(false);
-
-			console.log(window.location.pathname.startsWith("/verify-account"), user);
 
 			if (!islogged)
 				navigate("/");
@@ -29,6 +28,10 @@ export default function ProtectedLayout({ children }: { children: React.ReactNod
 			else if (user?.emailValidated == false && window.location.pathname.startsWith("/verify-account") === false) {
 				showNotification(NotifType.INFO, "Please verify your email to continue", "")
 				navigate("/verify-account");
+			}
+
+			else if (isNotComplete) {
+				navigate("/profile-steps?step=" + isNotComplete.key);
 			}
 
 			else if (user?.emailValidated == true && window.location.pathname.startsWith("/verify-account") === true) {

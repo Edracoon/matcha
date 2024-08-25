@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/authProvider';
 
-export default function LoginPage() {
+export default function LoginView() {
 
 	const { login } = useAuth();
 
@@ -23,9 +23,9 @@ export default function LoginPage() {
 	<div className="flex min-h-full flex-1 flex-col justify-center px-6 lg:px-8">
 		<div className="sm:mx-auto sm:w-full sm:max-w-sm">
 			<img
-			className="mx-auto h-24 w-auto"
-			src="/matcha-logo.png"
-			alt="Matcha"
+				className="mx-auto h-24 w-auto"
+				src="/matcha-logo.png"
+				alt="Matcha"
 			/>
 			<h2 className="mt-4 text-center text-2xl font-bold leading-9 tracking-tight text-white">
 				Sign in to your account

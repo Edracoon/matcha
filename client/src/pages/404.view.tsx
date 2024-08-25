@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { HomeIcon } from '@heroicons/react/24/outline'
 
-export default function NotFound404Page() {
+export default function NotFound404View() {
 
 	const nav = useNavigate();
 

@@ -1,5 +1,5 @@
 // Auth Layout to protect routes from already logged users,
-// and redirect them to the home page or the verify-account page if their email is not validated
+// and redirect them to the home View or the verify-account View if their email is not validated
 // This layout will be used for all the routes like login and register that require no authentication
 
 import { useEffect, useState } from 'react';	

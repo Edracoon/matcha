@@ -11,7 +11,7 @@ export enum NotifType {
 	INFO
 }
 
-function Notif({ type = NotifType.SUCCESS, headline = "Notification", message = "No content provided.", onClose = () => {} }) {
+function Notif({ type = NotifType.SUCCESS, headline = "Notification", message = "", onClose = () => {} }) {
 	const [show, setShow] = useState(true);
 	const [icon, setIcon] = useState(<></>);
 
@@ -83,7 +83,7 @@ function Notif({ type = NotifType.SUCCESS, headline = "Notification", message = 
 }
 
 // Function to render the notification
-export const showNotification = (type: NotifType, headline: string, message: string) => {
+export const showNotification = (type: NotifType, headline: string, message?: string) => {
   const container = document.createElement('div');
   document.body.appendChild(container);
 

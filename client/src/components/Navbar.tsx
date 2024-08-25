@@ -18,7 +18,7 @@ export default function Navbar() {
 	const navigate = useNavigate();
 
 	const [navigation, setNavigation] = useState<navItem[]>([
-		{ name: 'Home', icon: HeartIcon, path: '/home', current: true },
+		{ name: 'Home', icon: HeartIcon, path: '/home', current: false },
 		{ name: 'Matchs', icon: UsersIcon, path: '/matchs', current: false },
 		{ name: 'Chat', icon: ChatBubbleOvalLeftEllipsisIcon, path: '/chat', current: false },
 	])
@@ -67,10 +67,10 @@ export default function Navbar() {
 					  <item.icon
 						key={item.name}
 						onClick={() => {item.current = true; navigate(item.path)}}
-						aria-current={item.current ? 'page' : undefined}
+						aria-current={item.current ? 'View' : undefined}
 						className={classNames(
 						  item.current ? 'bg-indigo-800 text-white' : 'text-gray-300 hover:bg-indigo-700 hover:text-white',
-						  'rounded-md px-2 py-2 text-sm font-medium h-10 w-10',
+						  'rounded-md px-2 py-2 text-sm font-medium h-10 w-10 cursor-pointer',
 						)}
 					  >
 						{item.name}
@@ -131,7 +131,7 @@ export default function Navbar() {
 				  key={item.name}
 				  as="button"
 				  onClick={() => {item.current = true; navigate(item.path)}}
-				  aria-current={item.current ? 'page' : undefined}
+				  aria-current={item.current ? 'View' : undefined}
 				  className={classNames(
 					item.current ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white',
 					'block rounded-md px-3 py-2 text-base font-medium',

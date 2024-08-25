@@ -1,48 +1,52 @@
 import { Routes, Route } from 'react-router-dom'
 import './App.css'
 
-import ProtectedLayout from './layouts/protected.layout.tsx'
-import RedirectLayout from './layouts/redirect.layout.tsx'
-import LoginPage from './pages/Login.tsx'
-import RegisterPage from './pages/Register.tsx'
-import VerifyAccountPage from './pages/VerifyAccount.tsx'
-import HomePage from './pages/Home.tsx'
-import MyProfilePage from './pages/MyProfile.tsx'
-import NotFound404Page from './pages/404.tsx'
-import ProfilePage from './pages/Profile.tsx'
-import MatchsPage from './pages/Matchs.tsx'
-import ChatPage from './pages/Chat.tsx'
+import ProtectedLayout from './layouts/protected.layout'
+import RedirectLayout from './layouts/redirect.layout'
+import LoginView from './pages/Login.view.tsx'
+import RegisterView from './pages/Register.view'
+import VerifyAccountView from './pages/VerifyAccount.view'
+import HomeView from './pages/Home.view'
+import MyProfileView from './pages/MyProfile.view'
+import NotFound404View from './pages/404.view'
+import ProfileView from './pages/Profile.view'
+import MatchsView from './pages/Matchs.view'
+import ChatView from './pages/Chat.view'
+import ProfileSteps from './pages/ProfileSteps/ProfileSteps.view'
 
 function App() {
 	return (
 		<>
 			<Routes>
 				{/* Login */}
-				<Route path="/" element={<RedirectLayout> <LoginPage /> </RedirectLayout>}/>
+				<Route path="/" element={<RedirectLayout> <LoginView /> </RedirectLayout>}/>
 				
 				{/* Register */}
-				<Route path="/register" element={<RedirectLayout> <RegisterPage /> </RedirectLayout>} />
+				<Route path="/register" element={<RedirectLayout> <RegisterView /> </RedirectLayout>} />
 				
 				{/* VerifyAccount */}
-				<Route path="/verify-account" element={<ProtectedLayout> <VerifyAccountPage /> </ProtectedLayout>} />
+				<Route path="/verify-account" element={<ProtectedLayout> <VerifyAccountView /> </ProtectedLayout>} />
 				
+				{/* Profile Steps Completion */}
+				<Route path="/profile-steps" element={<ProtectedLayout> <ProfileSteps /> </ProtectedLayout>} />
+
 				{/* Home */}
-				<Route path="/home" element={<ProtectedLayout> <HomePage /> </ProtectedLayout>} />
+				<Route path="/home" element={<ProtectedLayout> <HomeView /> </ProtectedLayout>} />
 				
 				{/* Matchs */}
-				<Route path="/matchs" element={<ProtectedLayout> <MatchsPage /> </ProtectedLayout>} />
+				<Route path="/matchs" element={<ProtectedLayout> <MatchsView /> </ProtectedLayout>} />
 
 				{/* Chat */}
-				<Route path="/chat" element={<ProtectedLayout> <ChatPage /> </ProtectedLayout>} />
+				<Route path="/chat" element={<ProtectedLayout> <ChatView /> </ProtectedLayout>} />
 				
 				{/* My Profile */}
-				<Route path="/my-profile" element={<ProtectedLayout> <MyProfilePage /> </ProtectedLayout>} />
+				<Route path="/my-profile" element={<ProtectedLayout> <MyProfileView /> </ProtectedLayout>} />
 				
 				{/* Profile */}
-				<Route path="/profile/:id" element={<ProtectedLayout> <ProfilePage /> </ProtectedLayout>} />
+				<Route path="/profile/:id" element={<ProtectedLayout> <ProfileView /> </ProtectedLayout>} />
 
 				{/* 404 */}
-				<Route path="*" element={<NotFound404Page />} />
+				<Route path="*" element={<NotFound404View />} />
 			</Routes>
 		</>
 	)

@@ -5,15 +5,12 @@
 // import { useAuth } from '../contexts/authProvider';
 import Navbar from '../components/Navbar';
 
-export default function MyProfilePage() {
-
-	// const { user, logout } = useAuth();
-
+export default function ChatView() {
 
 	return (
 		<>
 			<Navbar />
-			<h1>My Profile</h1>
+			<h1>Chat</h1>
 		</>
 	);
 }

@@ -26,6 +26,7 @@ class UserSchema {
 		},
 		bio: { type: "VARCHAR(300)", required: false },
 		interestTagAdded: { type: "BOOLEAN", default: false },
+		picturesAdded: { type: "BOOLEAN", default: false },
 		city: { type: "TEXT" },
 		country: { type: "TEXT" },
 		ip: { type: "VARCHAR(15)" }, // IP updated whenever the user sign-in ex: "204.132. 40.155"
@@ -53,6 +54,10 @@ class UserSchema {
 			delete user.resetPasswordCode;
 			delete user.fakeCounter;
 			delete user.ip;
+
+			if (!user.city || !user.bio || !user.birthGender || !user.interestTagAdded || !user.picturesAdded)
+				user.completeness = false;
+
 			return user;
 		}
 	}

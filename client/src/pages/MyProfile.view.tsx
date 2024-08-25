@@ -5,14 +5,15 @@
 // import { useAuth } from '../contexts/authProvider';
 import Navbar from '../components/Navbar';
 
-export default function MatchsPage() {
+export default function MyProfileView() {
 
 	// const { user, logout } = useAuth();
+
 
 	return (
 		<>
 			<Navbar />
-			<h1>Matchs</h1>
+			<h1>My Profile</h1>
 		</>
 	);
 }

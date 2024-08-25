@@ -8,7 +8,8 @@ class NotifSchema {
 			type: "ENUM('liked', 'visited', 'message', 'liked_back', 'unliked')",
 			required: true
 		},
-		date: { type: "TIMESTAMP", default: "CURRENT_TIMESTAMP", required: true }
+		date: { type: "TIMESTAMP", default: "CURRENT_TIMESTAMP", required: true },
+		seen: { type: "BOOLEAN", default: false },
 	};
 }
 
