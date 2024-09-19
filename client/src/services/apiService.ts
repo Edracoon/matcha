@@ -13,11 +13,11 @@ async function apiService(
 	try {
 		const res = await axios({
 			method: method,
-			url: apiUrl + path,
+			url: path.startsWith("http") ? path : apiUrl + path,
 			credentials: "include",
 			headers: {
 				Authorization: "Bearer " + token,
-				referer: frontUrl,
+				// referer: frontUrl,
 				accept: "application/json",
 			},
 			...options,
@@ -27,6 +27,9 @@ async function apiService(
 		onSuccess(res.data);
 	}
 	catch (error: any) {
+		//  redirect to "/login" if 401
+		if (error.response.status === 401 && window.location.pathname !== "/")
+			window.location.href = "/";
 		console.log("apiService error => ", error.response)
 		onError(error.response)
 	}

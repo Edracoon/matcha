@@ -6,12 +6,12 @@ export default function Register() {
 
 	const { register } = useAuth();
 
-	const [email, setEmail] = useState("edgar1@gmail.com");
+	const [email, setEmail] = useState("edgar.pfennig@gmail.com");
 
-	const [firstname, setFirstname] = useState("edgar1");
-	const [lastname, setLastname] = useState("pfennig1");
+	const [firstname, setFirstname] = useState("Edgar");
+	const [lastname, setLastname] = useState("Pfennig");
 
-	const [username, setUsername] = useState("Edracoon1");
+	const [username, setUsername] = useState("Edracoon");
 	const [password, setPassword] = useState("password");
 
 	const uNavigate = useNavigate();

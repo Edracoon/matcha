@@ -14,9 +14,12 @@ export async function AuthMiddleware(req, res, next) {
 
 		const data = jwt.verify(token, Config.jwtSecret);
 	
-		if (!data)
+		if (!data.user)
 			return res.status(401).send();
 		req.user = await sql.findOne("USER", { id: data.user.id });
+
+		if (!req.user)
+			return res.status(401).send();
 		
 		return next();
 	}

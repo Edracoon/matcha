@@ -9,16 +9,17 @@ import apiService from '../services/apiService';
 interface User {
 	id: number,
 	bio: string,
-	birthGender: string,
+	gender: string,
 	city: string,
 	country: string,
-	currGender: string,
 	email: string,
 	emailValidated: boolean,
 	firstname: string,
 	lastname: string,
-	sexualOrient: string,
-	username: string
+	wantToMeet: string,
+	username: string,
+	longitude: number,
+	latitude: number,
 }
 
 type ProfileNotComplete = {

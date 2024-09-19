@@ -9,27 +9,19 @@ class UserSchema {
 		firstname: { type: "VARCHAR(30)", required: true },
 		lastname: { type: "VARCHAR(50)", required: true },
 		email: { type: "VARCHAR(100)", unique: true, required: true },
-		birthGender: {
-			type: "ENUM('male', 'female')",
+		gender: {
+			type: "ENUM('man', 'woman')",
 			default: "NULL",
 			required: false
 		},
-		currGender: {
-			type: "ENUM('cisgender', 'transgender', 'non binary', 'fluid')",
-			default: "cisgender",
-			required: true
+		wantToMeet: {
+			type: "ENUM('men', 'women', 'anyone')",
+			default: "NULL",
+			required: false,
 		},
-		sexualOrient: {
-			type: "ENUM('heterosexual', 'homosexual', 'bisexual', 'pansexual', 'asexual')",
-			default: "bisexual",
-			required: true,
-		},
-		bio: { type: "VARCHAR(300)", required: false },
-		interestTagAdded: { type: "BOOLEAN", default: false },
-		picturesAdded: { type: "BOOLEAN", default: false },
-		city: { type: "TEXT" },
-		country: { type: "TEXT" },
-		ip: { type: "VARCHAR(15)" }, // IP updated whenever the user sign-in ex: "204.132. 40.155"
+		latitude: { type: "FLOAT", required: false },
+		longitude: { type: "FLOAT", required: false },
+		bio: { type: "VARCHAR(200)", required: false },
 		fakeCounter: { type: "INT", default: 0 },
 		emailValidationCode: { type: "VARCHAR(6)", required: true },
 		emailValidated: { type: "BOOLEAN", default: false },
@@ -54,9 +46,6 @@ class UserSchema {
 			delete user.resetPasswordCode;
 			delete user.fakeCounter;
 			delete user.ip;
-
-			if (!user.city || !user.bio || !user.birthGender || !user.interestTagAdded || !user.picturesAdded)
-				user.completeness = false;
 
 			return user;
 		}

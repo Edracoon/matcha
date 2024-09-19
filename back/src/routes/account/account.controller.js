@@ -46,56 +46,68 @@ class AccountController {
 		return res.status(200).json({ user: user });
 	}
 
-
 	/**
-	 * Update the genders of the user
-	 * @param { body: { birthGender, currGender } }
+	 * POST to update the user location
+	 * @param {
+	 * 		body: { lat, lng },
+	 * }
+	 * Return the new session data info
 	 */
-	static async upsertGender(req, res) {
-		const { birthGender, currGender } = req.body;
+	static async upsertLocation(req, res) {
+		const { lat, lng } = req.body;
 
-		const birthGenders = ["male", "female"];
-		const currGenders = ['cisgender', 'transgender', 'non binary', 'fluid']
-
-		if (!birthGender || !currGender)
-			return res.status(400).json({ error: "invalid genders" });
-
-		if (birthGender && !birthGenders.includes(birthGender))
-			return res.status(400).json({ error: "invalid birth gender" });
-
-		if (currGender && !currGenders.includes(currGender))
-			return res.status(400).json({ error: "invalid current gender" });
+		if (!lng || !lat)
+			return res.status(400).json({ error: "Invalid location" });
 
 		try {
-			await sql.update("USER", { id: req.user.id }, { birthGender, currGender });
-		} catch (e) {
-			return res.status(400).json({ error: e });
+			await sql.update("USER", { id: req.user.id }, { longitude: lng, latitude: lat });
 		}
-		return res.status(200).json({ birthGender, currGender });
+		catch (e) { return res.status(400).json({ error: e }); }
+
+		return res.status(200).json({ lat, lng });
 	}
 
 	/**
-	 * Update the sexual orientation of the user
-	 * @param { body: { sexualOrient } }
+	 * Get the preferences of the user
+	 * @returns { body: { gender, wantToMeet } }
 	 */
-	static async upsertSexualOrient(req, res) {
-		const { sexualOrient } = req.body;
+	static async getPreferences(req, res) {
+		return res.status(200).json({ gender: req.user.gender, wantToMeet: req.user.wantToMeet });
+	}
 
-		const orientations = ['heterosexual', 'homosexual', 'bisexual', 'pansexual', 'asexual'];
+	/**
+	 * Update the preferences of the user
+	 * @param { body: { gender, wantToMeet } }
+	 */
+	static async upsertPreferences(req, res) {
+		const { gender, wantToMeet } = req.body;
 
-		if (!sexualOrient)
-			return res.status(400).json({ error: "invalid sexual orientation" });
+		const gendersOptions = ['man', 'woman'];
+		const wantsOptions = ['men', 'women', 'anyone'];
 
-		if (!orientations.includes(sexualOrient))
-			return res.status(400).json({ error: "invalid sexual orientation" });
+		if (!gender || !wantToMeet)
+			return res.status(400).json({ error: "invalid preferences" });
+
+		if (gender && !gendersOptions.includes(gender))
+			return res.status(400).json({ error: "invalid gender" });
+
+		if (wantToMeet && !wantsOptions.includes(wantToMeet))
+			return res.status(400).json({ error: "invalid orientation" });
 
 		try {
-			await sql.update("USER", { id: req.user.id }, { sexualOrient });
+			await sql.update("USER", { id: req.user.id }, { gender, wantToMeet });
 		} catch (e) {
 			return res.status(400).json({ error: e });
 		}
+		return res.status(200).json({ gender, wantToMeet });
+	}
 
-		return res.status(200).json({ sexualOrient });
+	/**
+	 * Get the bio of the user
+	 * @returns { body: { bio } }
+	 */
+	static async getBio(req, res) {
+		return res.status(200).json({ bio: req.user.bio });
 	}
 
 	/**
@@ -105,8 +117,8 @@ class AccountController {
 	static async upsertBio(req, res) {
 		const { bio } = req.body;
 
-		if (bio && bio.length > 300)
-			return res.status(400).json({ error: "Bio must be less than 300 characteres" });
+		if (bio && bio.length > 200)
+			return res.status(400).json({ error: "Bio must be less than 200 characteres" });
 
 		try {
 			await sql.update("USER", { id: req.user.id }, { bio });
@@ -118,14 +130,32 @@ class AccountController {
 	}
 
 	/**
-	 * Post to update the interests tags of the user
+	 * Get all tags in the db
+	 * @returns { body: { tags: [] } } 
+	 */
+	static async getAllTags(req, res) {
+		const tags = await sql.findAll("TAG");
+		return res.status(200).json({ tags });
+	}
+
+	/**
+	 * Get the interests tags of the user
 	 * @param { body: { tags: ["tag1", ...] } } 
 	 */
+	static async getInterestTags(req, res) {
+		const tags = await sql.find("TAG_USER", { userId: req.user.id });
+		const realTags = [];
+		for (const tag of tags) {
+			realTags.push((await sql.findOne("TAG", { id: tag.tagId })));
+		}
+		return res.status(200).json({ tags: realTags });
+	}
+
+	/**
+	 * Post to update the interests tags of the user
+	 * @param { body: { tags: ["tag1", ...] } }
+	 */
 	static async upsertInterestTags(req, res) {
-		const allConstantsTags = ["tag1", "tag2", "tag3"];
-		// Get the tag list from frontend and put it backend in accordance
-		// Check if the tags are valid
-		// then update the user tags
 		const tags = req.body.tags;
 
 		// Delete all currents tags from user
@@ -137,19 +167,9 @@ class AccountController {
 
 		// Insert the new tags
 		for (const tag of tags) {
-			if (!allConstantsTags.includes(tag)) {
-				console.log(`Unkown tag: '${tag}'`);
-				continue;
-			}
-			try { await sql.insert("TAG_USER", { userId: req.user.id, tag }); }
+			try { await sql.insert("TAG_USER", { userId: req.user.id, tagId: tag.id }); }
 			catch (e) { return res.status(400).json({ error: e }); }
 		}
-
-		// Update the user to say that he has added his tags
-		try {
-			await sql.update("USER", { id: req.user.id }, { interestTagAdded: true });
-		}
-		catch (e) { return res.status(400).json({ error: e }); }
 
 		return res.status(200).json({ tags });
 	}

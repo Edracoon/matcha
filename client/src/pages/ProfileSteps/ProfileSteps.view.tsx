@@ -1,15 +1,13 @@
 import { useState, useEffect, ReactElement } from 'react';
-// import { showNotification } from '../components/Notif';
-import apiService from '../../services/apiService';
-import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/authProvider';
-import { NotifType, showNotification } from '../../components/Notif';
 import { useSearchParams } from 'react-router-dom';
 import { CheckIcon, ArrowRightStartOnRectangleIcon } from '@heroicons/react/24/solid'
-import CircularProgress from '@mui/material/CircularProgress';
-import { InfoWindow, Map, Marker } from '@vis.gl/react-google-maps';
+
 import StepLocation from './Location';
 import StepPreferences from './Preferences';
+import StepBiography from './Biography';
+import StepInterests from './Interests';
+import StepPictures from './Pictures';
 
 type Step = {
 	id: string;
@@ -29,9 +27,9 @@ export default function ProfileSteps() {
 	const [steps, setSteps] = useState([
 		{ id: '1', name: 'Location', status: 'current', element: <StepLocation /> },
 		{ id: '2', name: 'Preferences', status: 'upcoming', element: <StepPreferences /> },
-		{ id: '3', name: 'Biography', status: 'upcoming' },
-		{ id: '4', name: 'Interests', status: 'upcoming' },
-		{ id: '5', name: 'Pictures', status: 'upcoming' },
+		{ id: '3', name: 'Biography', status: 'upcoming', element: <StepBiography /> },
+		{ id: '4', name: 'Interests', status: 'upcoming', element: <StepInterests /> },
+		{ id: '5', name: 'Pictures', status: 'upcoming', element: <StepPictures /> },
 	]);
 
 	useEffect(() => {
@@ -71,7 +69,12 @@ export default function ProfileSteps() {
 
 function StepsIndicator({ steps }: { steps: Step[] }) {
 
-	const [searchParams, setURLSearchParams] = useSearchParams();
+	const [_, setURLSearchParams] = useSearchParams();
+
+	function clickOnStep(step: Step) {
+		if (step.status === 'upcoming' || step.status === 'current') return;
+		setURLSearchParams({ step: step.id });
+	}
 
 	return (
 		<nav aria-label="Progress">
@@ -79,7 +82,7 @@ function StepsIndicator({ steps }: { steps: Step[] }) {
 				{steps.map((step, stepIdx) => (
 					<li key={step.name} className="relative flex flex-1">
 						{step.status === 'complete' ? (
-							<a onClick={() => setURLSearchParams({ step: step.id })} className="group flex w-full items-center">
+							<a onClick={() => clickOnStep(step)} className="group flex w-full items-center cursor-pointer">
 								<span className="flex items-center px-6 py-4 text-sm font-medium">
 									<span className="flex h-8 w-10 flex-shrink-0 items-center justify-center rounded-full bg-indigo-500 group-hover:bg-indigo-500">
 										<CheckIcon aria-hidden="true" className="h-6 w-6 text-white" />
@@ -88,14 +91,14 @@ function StepsIndicator({ steps }: { steps: Step[] }) {
 								</span>
 							</a>
 						) : step.status === 'current' ? (
-							<a onClick={() => setURLSearchParams({ step: step.id })} aria-current="step" className="flex items-center px-6 py-4 text-sm font-medium">
+							<a onClick={() => clickOnStep(step)} aria-current="step" className="flex items-center px-6 py-4 text-sm font-medium">
 								<span className="flex h-8 w-10 flex-shrink-0 items-center justify-center rounded-full border-2 border-indigo-400">
 									<span className="text-indigo-400">{step.id}</span>
 								</span>
 								<span className="ml-4 text-sm font-medium text-indigo-400">{step.name}</span>
 							</a>
 						) : (
-							<a onClick={() => setURLSearchParams({ step: step.id })} className="group flex items-center">
+							<a onClick={() => clickOnStep(step)} className="group flex items-center">
 								<span className="flex items-center px-6 py-4 text-sm font-medium">
 									<span className="flex h-8 w-10 flex-shrink-0 items-center justify-center rounded-full border-2 border-gray-500 group-hover:border-gray-400">
 										<span className="text-gray-500 group-hover:text-gray-400">{step.id}</span>

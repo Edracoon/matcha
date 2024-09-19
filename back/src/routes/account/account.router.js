@@ -20,22 +20,42 @@ accountRouter.post(
 
 /**
  * Update the genders of the user
- * @param { body: { birthGender, currGender } }
+ * @param { body: { lng, lat } }
  */
 accountRouter.post(
-	"/account/upsert-gender",
+	"/account/location",
 	AuthMiddleware,
-	AccountController.upsertGender
+	AccountController.upsertLocation
 );
 
 /**
- * Update the sexual orientation of the user
- * @param { body: { sexualOrient } }
+ * Get the preferences of the user
+ * @returns { body: { gender, wantToMeet } }
+ */
+accountRouter.get(
+	"/account/preferences",
+	AuthMiddleware,
+	AccountController.getPreferences
+);
+
+/**
+ * Update the preferences of the user
+ * @param { body: { gender, wantToMeet } }
  */
 accountRouter.post(
-	"/account/upsert-sexual-orient",
+	"/account/upsert-preferences",
 	AuthMiddleware,
-	AccountController.upsertSexualOrient
+	AccountController.upsertPreferences
+);
+
+/**
+ * Get the bio of the user
+ * @returns { body: { bio } }
+ */
+accountRouter.get(
+	"/account/biography",
+	AuthMiddleware,
+	AccountController.getBio
 );
 
 /**
@@ -43,9 +63,29 @@ accountRouter.post(
  * @param { body: { bio } }
  */
 accountRouter.post(
-	"/account/upsert-bio",
+	"/account/upsert-biography",
 	AuthMiddleware,
 	AccountController.upsertBio
+);
+
+/**
+ * Get all tags in the db
+ * @returns { body: { tags: [] } } 
+ */
+accountRouter.get(
+	"/account/all-tags",
+	AuthMiddleware,
+	AccountController.getAllTags
+);
+
+/**
+ * Get the interests tags of the user
+ * @param { body: { tags: ["tag1", ...] } } 
+ */
+accountRouter.get(
+	"/account/interest-tags",
+	AuthMiddleware,
+	AccountController.getInterestTags
 );
 
 /**
@@ -53,7 +93,7 @@ accountRouter.post(
  * @param { body: { tags: ["tag1", ...] } } 
  */
 accountRouter.post(
-	"/account/upsert-tags",
+	"/account/upsert-interest-tags",
 	AuthMiddleware,
 	AccountController.upsertInterestTags
 );

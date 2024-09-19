@@ -181,21 +181,21 @@ class AuthController {
 	static async profileComplete(req, res) {
 		let user = req.user;
 
-		if (!user.city)
+		if (!user.longitude || !user.latitude)
 			return res.status(400).json({ key: "1", error: "You must complete your profile before continuing" });
 
-		if (!user.currGender || !user.sexualOrient)
+		if (!user.gender != null && !user.wantToMeet)
 			return res.status(400).json({ key: "2", error: "You must complete your profile before continuing" });
 
 		if (!user.bio)
 			return res.status(400).json({ key: "3", error: "You must complete your profile before continuing" });
 
-		let tags = await sql.findAll("TAG", {id : user.id});
+		let tags = await sql.find("TAG_USER", {userId : user.id});
 		if (tags.length === 0)
 			return res.status(400).json({ key: "4", error: "You must complete your profile before continuing" });
 
 		// Do not forget to check profile picture
-		let pictures = await sql.findAll("PICTURE", {userId : user.id});
+		let pictures = await sql.find("PICTURE", {userId : user.id});
 		if (pictures.length === 0)
 			return res.status(400).json({ key: "5", error: "You must complete your profile before continuing" });
 

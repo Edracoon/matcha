@@ -132,13 +132,15 @@ export default class SQLib {
 		// Example of a select query:
 		// SELECT * FROM users WHERE id = ? AND username = ?
 		// queryValues = [1, 'John']
-		const sql = `SELECT * FROM ${model.tableName} WHERE ${conditions.join(' AND ')}`;
+		let sql = `SELECT * FROM ${model.tableName} WHERE ${conditions.join(' AND ')}`;
+		if (conditions.length === 0 || queryValues.length === 0)
+			sql = `SELECT * FROM ${model.tableName}`;
 
 		// Execute the query
 		let result = null;
 		try { result = await this.db.query(sql, queryValues); }
 		catch (err) { throw err.sqlMessage; }
-		return result;
+		return result[0];
 	}
 
 	/*
@@ -146,21 +148,23 @@ export default class SQLib {
 	 */
 	async findOne(modelName, query) {
 		const result = await this.find(modelName, query);
-		return result[0][0];
+		return result[0];
 	}
 
 	/*
 	 * Find one row by id
 	 */
 	findById(modelName, id) {
-		return this.findOne(modelName, { id: id });
+		const result = this.findOne(modelName, { id: id });
+		return result[0];
 	}
 
 	/*
 	 * Find all rows of a table (without any condition)
 	 */
-	findAll(modelName) {
-		return this.find(modelName, {});
+	async findAll(modelName) {
+		const result = await this.find(modelName, {});
+		return result;
 	}
 
 	/*
