@@ -19,6 +19,7 @@ class UserSchema {
 			default: "NULL",
 			required: false,
 		},
+		age: { type: "INT", required: false },
 		latitude: { type: "FLOAT", required: false },
 		longitude: { type: "FLOAT", required: false },
 		bio: { type: "VARCHAR(200)", required: false },

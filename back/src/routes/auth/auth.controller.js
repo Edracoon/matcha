@@ -23,7 +23,7 @@ class AuthController {
 	static async signUp(req, res) {
 
 		let errors = [];
-		const keys = ["firstname", "lastname", "email", "username", "password", "confirmPassword"];
+		const keys = ["firstname", "lastname", "email", "age", "username", "password", "confirmPassword"];
 		for (let key of keys)
 			if (!req.body[key] && req.body[key] !== "")
 				errors.push({ [key]: "This field is required." });
@@ -39,6 +39,7 @@ class AuthController {
 				firstname: req.body.firstname,
 				lastname: req.body.lastname,
 				email: req.body.email,
+				age: req.body.age,
 				username: req.body.username,
 				password: encryptedPass,
 				emailValidationCode: Math.floor(100000 + Math.random() * 900000),
