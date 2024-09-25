@@ -4,9 +4,11 @@ import { showNotification, NotifType } from "./Notif";
 
 interface CarouselProps {
 	urlsArray: string[];
+	onAdd: (files: File) => void;
+	onDelete: (id: string) => void;
 }
 
-export default function Carousel({ urlsArray = [] }: CarouselProps) {
+export default function Carousel({ urlsArray = [], onAdd, onDelete }: CarouselProps) {
 
 	const [photosArray, setPhotosArray] = useState(urlsArray);
 	const [photoIdx, setPhotoIdx] = useState(0);
@@ -18,12 +20,15 @@ export default function Carousel({ urlsArray = [] }: CarouselProps) {
 	const [isImageModif, setIsImageModif] = useState(false);
 
 	useEffect(() => {
-		console.log("[Carousel] photoIdx: ", photoIdx);
-		console.log("[Carousel] photosArray: ", photosArray);
-		console.log("[Carousel] covers: ", covers);
-	}, [photosArray, covers, photoIdx]);
+		setPhotosArray(urlsArray);
+		const newIdx = urlsArray.length - 1;
+		setTimeout(() => {
+			carousel.style.transform = `translateX(-${newIdx}00%)`;
+			setPhotoIdx(newIdx);
+		}, 1000);
+	}, [urlsArray]);
 	
-	const maxPhotos = 10;
+	const maxPhotos = 5;
 
 	function onClickNext() {
 		const newIdx = photoIdx >= photosArray.length - 1 ? 0 : photoIdx + 1;
@@ -41,28 +46,18 @@ export default function Carousel({ urlsArray = [] }: CarouselProps) {
 		let image = e?.target?.files?.[0];
 		if (!image) return;
 		if (image.type.startsWith('image') === false)
-			0;// toaster.error("Please select a valid image");
+			showNotification(NotifType.WARNING, "Careful", "Please select a valid image");
 		else if (image.size / 1000000 >= 10.0)
-			0;// toaster.error("Please select an image smaller than 10 MB");
+			showNotification(NotifType.WARNING, "Careful", "Please select an image smaller than 10 MB");
 		else {
-			if (covers.length >= maxPhotos)
-				showNotification(NotifType.WARNING, "Careful", "You can't upload more than 10 images");
+			if (photosArray.length >= maxPhotos)
+				showNotification(NotifType.WARNING, "Careful", "You can't upload more than 5 images");
 			else {
-				const newIdx = photosArray.length;
-				
-				// Generate a URL for the image and push it to photosArray
-				setPhotosArray((prevPhotosArray) => [...prevPhotosArray, URL.createObjectURL(image)]);
-				// Push the image to covers array
-				setCovers((prevCovers) => [...prevCovers, image]);
-
-				setIsImageModif(true);
-				setPhotoIdx(newIdx);
-				
-				carousel.style.transform = `translateX(-${newIdx}00%)`;
+				onAdd(image);
 			}
 		}
 	}
-	
+
 	function deleteOne() {
 
 		const newPhotos = photosArray.filter((_, index) => index !== photoIdx);
@@ -75,7 +70,9 @@ export default function Carousel({ urlsArray = [] }: CarouselProps) {
 		const newIdx = photoIdx === 0 ? 0 : photoIdx - 1;
 		setPhotoIdx(newIdx);
 		
-			carousel.style.transform = `translateX(-${newIdx}00%)`;
+		carousel.style.transform = `translateX(-${newIdx}00%)`;
+
+		onDelete(photosArray[photoIdx]);
 	}
 
 	const handleClick = () => {
@@ -85,7 +82,7 @@ export default function Carousel({ urlsArray = [] }: CarouselProps) {
 	}
 
 	return (
-		<div className="carousel w-[40%] flex flex-row relative overflow-hidden h-[500px] my-10">
+		<div className="carousel w-[360px] sm:w-[500px] flex flex-row relative overflow-hidden h-[500px] sm:h-[600px] my-10">
 			<div className="carousel-inner flex w-full">
 				{photosArray.length === 0 &&
 					<div style={{ flex: '0 0 auto' }} className="w-full">
@@ -105,8 +102,13 @@ export default function Carousel({ urlsArray = [] }: CarouselProps) {
 							alt="carousel"
 							className="rounded-lg w-full h-full block object-cover"
 						/>
+						
 					</div>
 				))}
+				
+			</div>
+			<div className="absolute text-white bg-indigo-500/60 px-1 py-1 rounded-lg text-lg bottom-2 sm:bottom-4 left-4 sm:left-6 z-1">
+				{photosArray.length > 0 ? photoIdx + 1 : 0} / 5
 			</div>
 
 			{/* Left and Right Navigation Arrows */}

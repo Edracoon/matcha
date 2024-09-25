@@ -1,88 +1,99 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '../../contexts/authProvider';
-import { useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import ConfirmModal from '../../components/ConfirmModal';
 import apiService from '../../services/apiService';
-import { showNotification, NotifType } from '../../components/Notif';
-import { ArrowRightIcon, ArrowLeftIcon } from '@heroicons/react/24/outline'
-import DropComponent from '../../components/DropComponent';
+import { ArrowLeftIcon } from '@heroicons/react/24/outline'
 import Carousel from '../../components/Carousel';
+import { showNotification, NotifType } from '../../components/Notif';
 
 export default function StepPictures() {
 
 	const { cookies } = useAuth();
+	const navigate = useNavigate();
+
 	const [_, setSearchParams] = useSearchParams();
 	const [isConfirmOpen, setIsConfirmOpen] = useState(false);
 
-	const [biography, setPictures] = useState('');
+	const [pictures, setPictures] = useState<string[]>([]);
 
-	const [alreadySet, setAlreadySet ] = useState(false);
-
-	function onChangePictures(e: React.ChangeEvent<HTMLTextAreaElement>) {
-		if (e.target.value.length > 200)
-			return ;
-		setPictures(e.target.value);
+	function finish() {
+		if (pictures.length <= 0) {
+			showNotification(NotifType.ERROR, 'You must add at least one picture', '');
+			setIsConfirmOpen(false);
+			return;
+		}
+		navigate('/home');
 	}
 
-	function confirm() {
-		console.log(biography);
-		apiService({
-			method: 'POST',
-			path: '/account/upsert-pictures',
-			token: cookies.accessToken,
-			options: { data: { bio: biography } },
-			onSuccess: () => {
-				setSearchParams({ step: '4' });
-				showNotification(NotifType.SUCCESS, 'Pictures saved', '');
-			},
-			onError: () => {
-				showNotification(NotifType.ERROR, 'Pictures is not valid', '');
-			}
-		})
-	}
-
-	useEffect(() => {
+	function getPictureUrls() {
 		apiService({
 			method: 'GET',
 			path: '/account/pictures',
 			token: cookies.accessToken,
 			onSuccess: (data) => {
-				if (!data.bio || data.bio === '')
-					return ;
-				setPictures(data.bio);
-				setAlreadySet(true);
+				console.log(data);
+				setPictures(data.pictures);
 			},
-			onError: () => { setAlreadySet(false) }
+			onError: () => { }
 		})
+	}
+
+	function addPicture(pic: File) {
+		const formData = new FormData();
+		formData.append('picture', pic);
+		apiService({
+			method: 'POST',
+			path: '/account/add-picture',
+			token: cookies.accessToken,
+			options: { data: formData, headers: { 'Content-Type': 'multipart/form-data' } },
+			onSuccess: (data) => {
+				getPictureUrls();
+			},
+			onError: () => { }
+		})
+	}
+
+	function deletePicture(id: string) {
+		apiService({
+			method: 'DELETE',
+			path: '/account/delete-picture/' + id.split("/").pop(),
+			token: cookies.accessToken,
+			onSuccess: (data) => {
+				getPictureUrls();
+			},
+			onError: () => { }
+		})
+	}
+
+
+	useEffect(() => {
+		getPictureUrls();
 	}, []);
 
 	return (
 		<div className='flex py-4 flex-col gap-8 min-h-[450px] justify-center'>
 			<h1 className="text-2xl">Choose the best pictures to show you off !</h1>
-			<div className='h-96 w-full !rounded-lg flex flex-col gap-4 justify-center'>
+			<div className='h-96 sm:h-[600px] w-full !rounded-lg flex flex-col gap-4 justify-center'>
 				<div className="flex sm:flex-row flex-col justify-center gap-4">
-					<Carousel urlsArray={[]} />
-					{/* <DropComponent id={1} onDropped={(files) => console.log(files)} /> */}
+					<Carousel urlsArray={pictures} onAdd={addPicture} onDelete={deletePicture} />
 				</div>
 			
 			</div>
 			
 			<div className='flex justify-center gap-2'>
-				{<button className='bg-indigo-500 text-white rounded-lg text-sm' onClick={() => setSearchParams({ step: '2' })}>
+				{<button className='bg-indigo-500 text-white rounded-lg text-sm' onClick={() => setSearchParams({ step: '4' })}>
 					<ArrowLeftIcon className='rounded-md px-2 py-2 text-sm font-medium h-8 w-8 cursor-pointer' />
 				</button>}
 				<button className='bg-indigo-500 text-white px-8 py-2 rounded-lg text-sm' onClick={() => setIsConfirmOpen(true)}>
-					Save
+					Finish
 				</button>
-				{alreadySet && <button className='bg-indigo-500 text-white rounded-lg text-sm' onClick={() => setSearchParams({ step: '4' })}>
-					<ArrowRightIcon className='rounded-md px-2 py-2 text-sm font-medium h-8 w-8 cursor-pointer' />
-				</button>}
 			</div>
 			<ConfirmModal
 				isOpen={isConfirmOpen}
-				text='Save your biography ?'
-				littleText='You can always change it later'
-				onConfirm={confirm}
+				text='We are done setting up your profile !'
+				littleText=''
+				onConfirm={finish}
 				onCancel={() => setIsConfirmOpen(false)}
 			/>
 		</div>

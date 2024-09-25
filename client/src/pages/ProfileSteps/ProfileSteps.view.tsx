@@ -59,7 +59,7 @@ export default function ProfileSteps() {
 			<button className="absolute top-4 right-6 " onClick={() => logout()}>
 				<ArrowRightStartOnRectangleIcon className="h-6 w-6 text-gray-200" />
 			</button>
-			<div className="min-h-screen py-4 px-16 flex flex-col justify-between">
+			<div className="min-h-screen py-4 px-2 sm:px-16 flex flex-col justify-between">
 					{currStep}
 					<StepsIndicator steps={steps} />
 			</div>

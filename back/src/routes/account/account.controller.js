@@ -174,19 +174,13 @@ class AccountController {
 		return res.status(200).json({ tags });
 	}
 
-	/**
-	 * Delete the picture of the user
-	 * @param { params: { id } }
-	 */
-	static async deletePicture(req, res) {
-		const { id } = req.params;
-		if (!id)
-			return res.status(400).json({ error: "Invalid id" });
-
-		try { await sql.delete("PICTURE", { id, userId: req.user.id }); }
-		catch (e) { return res.status(400).json({ error: e }); }
-
-		return res.status(200).json({ id });
+	static async getPictures(req, res) {
+		const pictures = await sql.find("PICTURE", { userId: req.user.id });
+		const pictureUrls = [];
+		for (const picture of pictures) {
+			pictureUrls.push(picture.url);
+		}
+		return res.status(200).json({ pictures: pictureUrls });
 	}
 
 	/**
@@ -203,6 +197,21 @@ class AccountController {
 			return res.status(400).json({ error: "Invalid picture" });
 
 		return res.status(200).json({ pictureUrl });
+	}
+
+	/**
+	 * Delete the picture of the user
+	 * @param { params: { id } }
+	 */
+	static async deletePicture(req, res) {
+		const { id } = req.params;
+		if (!id)
+			return res.status(400).json({ error: "Invalid id" });
+
+		try { await sql.delete("PICTURE", { uid: id, userId: req.user.id }); }
+		catch (e) { return res.status(400).json({ error: e }); }
+
+		return res.status(200).json({ id });
 	}
 
 	/**

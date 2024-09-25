@@ -1,4 +1,6 @@
 import { Routes, Route } from 'react-router-dom'
+import { useEffect } from 'react'
+
 import './App.css'
 
 import ProtectedLayout from './layouts/protected.layout'
@@ -14,7 +16,21 @@ import MatchsView from './pages/Matchs.view'
 import ChatView from './pages/Chat.view'
 import ProfileSteps from './pages/ProfileSteps/ProfileSteps.view'
 
+// Socket.io
+import { socket } from './socket';
+
 function App() {
+
+	useEffect(() => {
+		socket.on('connect', () => {
+			console.log('[socketIO] Connected to server');
+		});
+
+		socket.on('disconnect', () => {
+			console.log('[socketIO] Disconnected from server');
+		});
+	}, []);
+
 	return (
 		<>
 			<Routes>

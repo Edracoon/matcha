@@ -18,7 +18,7 @@ class FakerService {
 			lastname,
 			email: faker.internet.email(firstname, lastname),
 			gender: ['male', 'female'][Math.floor(Math.random() * 2)],
-			wantToMeet: ['male', 'woman', 'both'][Math.floor(Math.random() * 3)],
+			wantToMeet: ['male', 'woman', 'anyone'][Math.floor(Math.random() * 3)],
 			bio: faker.lorem.paragraph().slice(0, 299),
 			ip: faker.internet.ip(),
 			emailValidated: true,
