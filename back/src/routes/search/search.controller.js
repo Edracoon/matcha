@@ -162,15 +162,27 @@ class SearchController {
             return true;
         })
 
-        allUsers = allUsers.map(user => {
-            return UserSchema.methods.formatSafeUser(user);
-        });
+
 
         allUsers = allUsers.sort((a, b) => b.Score - a.Score);
 
         allUsers = allUsers.slice(0, 32);
 
-        return res.status(200).json({ users: allUsers });
+        // allUsers =  allUsers.map(async user => {
+        //     const pictures = await sql.find("PICTURE", { userId: user.id });
+
+        //     user.pictures = pictures.map(picture => picture.url);
+
+        //     return UserSchema.methods.formatSafeUser(user); 
+        // });
+
+        for (let i = 0; i < allUsers.length; i++) {
+            const pictures = await sql.find("PICTURE", { userId: allUsers[i].id });
+            allUsers[i].pictures = pictures.map(picture => picture.url);
+        }
+
+
+        return res.status(200).json({ users: allUsers.map(user => UserSchema.methods.formatSafeUser(user)) });
 
     }
 }
