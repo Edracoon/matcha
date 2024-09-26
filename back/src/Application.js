@@ -17,7 +17,7 @@ import NotifSchema from "./models/notif.model.js";
 import BlocklistSchema from "./models/blocklist.model.js";
 import ViewSchema from "./models/view.model.js";
 import PictureSchema from "./models/picture.model.js";
-
+import ReportSchema from "./models/report.model.js";
 /* Routes */
 import authRouter from "./routes/auth/auth.router.js";
 import countryRouter from "./routes/country/country.router.js";
@@ -51,7 +51,7 @@ class Application {
 		await this.db.defineModel("LIKES", LikeSchema.schema);
 		await this.db.defineModel("VIEW", ViewSchema.schema);
 		await this.db.defineModel("PICTURE", PictureSchema.schema);
-
+        await this.db.defineModel("REPORT", ReportSchema.schema);
 		// Insert static tags in db if not already there
 		for (const tag of TagList) {
 			const tagInDb = await this.db.findOne("TAG", { content: tag });

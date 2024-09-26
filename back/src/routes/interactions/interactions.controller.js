@@ -3,6 +3,8 @@ import SQLib from "../../SQLib.js";
 import SocketService from "../../services/socket.service.js";
 import NotifSchema from "../../models/notif.model.js";
 import ViewSchema from "../../models/view.model.js";
+import UserSchema from "../../models/user.model.js";
+import { Socket } from "socket.io";
 
 const db = new SQLib();
 
@@ -144,6 +146,48 @@ class interactionsController {
             const notifs = await db.find("NOTIF", { receiverId: userId });
 
             return res.status(200).json(notifs);
+        } catch (e) {
+            return res.status(400).json({ error: e });
+        }
+
+        return res.status(200).json();
+    }
+
+    static async ReportUser(req, res) {
+        const userId = req.user.id;
+        const reportedId = req.body.reportedId;
+
+        const reportToInsert = {
+            reporter: userId,
+            reported: reportedId,
+        };
+
+        try {
+            await db.insert("REPORT", reportToInsert);
+        } catch (e) {
+            return res.status(400).json({ error: e });
+        }
+        return res.status(200).json();
+    }
+
+    static async GetMatches(req, res) {
+        const userId = req.user.id;
+
+        try {
+            const likes = await db.find("LIKES", { likedBy: userId });
+            const matches = likes.filter(like => {
+                return likes.find(l => l.likedBy === like.gotLiked && l.gotLiked === like.likedBy);
+            });
+
+            matches.map(likes => {
+                const user = likes.gotLiked === userId ? likes.likedBy : likes.gotLiked;
+                
+                user.isConnected = SocketService.isConnected(user);
+
+                return UserSchema.methods.formatSafeUser(user);
+            });
+
+            return res.status(200).json(matches);
         } catch (e) {
             return res.status(400).json({ error: e });
         }

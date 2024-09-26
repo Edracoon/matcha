@@ -31,7 +31,26 @@ export default class SocketService {
         }
     }
 
+    static async isConnected(userId) {
+        return UsersSocket[userId] ? true : false;
+    }
+
     static async Handler(socket, io) {
+
+        socket.on('auth', async (token) => {
+            const user = await Authenticate(token, socket);
+            if (!user)
+                return;
+            io.emit('userConnected', user.id);
+        });
+
+        socket.on('disconnect', async () => {
+            const user = await Authenticate(socket.handshake.query.token, socket);
+            if (!user)
+                return;
+            io.emit('userDisconnected', user.id);
+            delete UsersSocket[user.id];
+        });
 
         socket.on('sendMessage', async (data) => {
             const user = await Authenticate(data.token, socket);

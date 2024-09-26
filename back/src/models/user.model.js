@@ -28,7 +28,7 @@ class UserSchema {
 		emailValidated: { type: "BOOLEAN", default: false },
 		resetPasswordCode: { type: "VARCHAR(6)" },
 		isFake: { type: "BOOLEAN", default: false },
-        fameRating: { type: "FLOAT", required: false, default: 0.0 },
+        fameRating: { type: "FLOAT", required: false, default: 1.0 },
 	}
 
 	// Not inserted in the db and can be usefull just like mongoose methods schema

@@ -45,4 +45,8 @@ interactionsRouter.post('/block', AuthMiddleware, interactionsController.BlockIn
 
 interactionsRouter.get('/getNotifs', AuthMiddleware, interactionsController.GetNotifs);
 
+interactionsRouter.post('/report', AuthMiddleware, interactionsController.ReportUser);
+
+interactionsRouter.get('/getMatches', AuthMiddleware, interactionsController.GetMatches);
+
 export default interactionsRouter;
