@@ -147,9 +147,10 @@ class SearchController {
                 if (user.fameRating > fameGap.max || user.fameRating < fameGap.min)
                     return false;
             }
-            if (distanceGap && (distanceGap.max || distanceGap.min)) {
+            if (distanceGap && (distanceGap.max)) {
+                distanceGap.min = 0;
                 user.Distance = Distance(req.user.latitude, req.user.longitude, user.latitude, user.longitude);
-                if (user.Distance > distanceGap.max || user.Distance < distanceGap.min)
+                if (user.Distance > distanceGap.max)
                     return false;
             }
             const currentTag = tagUsers.filter(tagUser => tagUser.userId === user.id);

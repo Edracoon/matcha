@@ -49,6 +49,7 @@ export default class SocketService {
             if (!user)
                 return;
             io.emit('userDisconnected', user.id);
+            await db.update("USER", { id: user.id }, { lastConnection: new Date() });
             delete UsersSocket[user.id];
         });
 

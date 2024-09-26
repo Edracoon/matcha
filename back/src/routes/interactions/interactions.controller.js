@@ -191,8 +191,6 @@ class interactionsController {
         } catch (e) {
             return res.status(400).json({ error: e });
         }
-
-        return res.status(200).json();
     }
 }
 

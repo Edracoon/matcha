@@ -29,6 +29,7 @@ class UserSchema {
 		resetPasswordCode: { type: "VARCHAR(6)" },
 		isFake: { type: "BOOLEAN", default: false },
         fameRating: { type: "FLOAT", required: false, default: 1.0 },
+        lastConnection: { type: "DATETIME", required: false },
 	}
 
 	// Not inserted in the db and can be usefull just like mongoose methods schema
