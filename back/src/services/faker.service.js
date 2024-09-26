@@ -18,6 +18,7 @@ class FakerService {
 			password: faker.internet.password(),
 			firstname,
 			lastname,
+            age: Math.floor(Math.random() * 100),
 			email: faker.internet.email(firstname, lastname),
             latitude: faker.address.latitude(),
             longitude : faker.address.longitude(),

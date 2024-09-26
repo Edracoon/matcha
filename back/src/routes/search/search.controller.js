@@ -1,3 +1,4 @@
+import UserSchema from "../../models/user.model.js";
 import SQLib from "../../SQLib.js";
 
 const sql = new SQLib(); // Singleton
@@ -51,40 +52,25 @@ class SearchController {
                 return false;
             else if (req.user.wantToMeet === "women" && user.gender !== "woman")
                 return false;
+            else if (user.wantToMeet === "men" && req.user.gender !== "man")
+                return false;
+            else if (user.wantToMeet === "women" && req.user.gender !== "woman")
+                return false;
 
             return true;
         })
 
-        // Add Distance and CommonTags to each user
-        // allUsers.map(user => {
-        //     user.Distance = Distance(req.user.latitude, req.user.longitude, user.latitude, user.longitude);
-        //     const userTags = tagUsers.filter(tagUser => tagUser.userId === user.id);
-            
-        //     // Calculer les tags en commun
-        //     const commonTags = userTags.filter(userTag => 
-        //         currentUserTags.some(currentTag => currentTag.tagId === userTag.tagId)
-        //     ).length;
+        const fameWeight = 0.3;
+        const distanceWeight = 0.7;
+        const tagWeight = 0.1;
 
-        //     user.CommonTags = commonTags;
-            
-        //     user.Score = getScore(user.fameRating, user.Distance, user.CommonTags);
-        //     return user;
-        // })
-        // Define weights for the score calculation
-        const fameWeight = 0.5;
-        const distanceWeight = 0.3;
-        const tagWeight = 0.2;
-
-        // Calculate fame rating and score for each user
         allUsers = allUsers.map(user => {
-            // Calculate Fame Rating (likes / views)
             const fameRating = (user.likesCounter / user.viewCounter) || 0;
 
-            // Calculate Distance (already done in previous code)
             user.Distance = Distance(req.user.latitude, req.user.longitude, user.latitude, user.longitude);
-            const distanceScore = 1 / (user.Distance || 1); // Avoid division by zero
-
-            // Calculate common tags
+            const maxDistance = 10000; 
+            const distanceScore = 1 - Math.min(user.Distance / maxDistance, 1);
+            
             const userTags = tagUsers.filter(tagUser => tagUser.userId === user.id);
             const commonTags = userTags.filter(userTag => 
                 currentUserTags.some(currentTag => currentTag.tagId === userTag.tagId)
@@ -92,18 +78,13 @@ class SearchController {
 
             user.CommonTags = commonTags;
 
-            // Calculate total score with weighted factors
-            const totalScore = (fameRating * fameWeight) + (distanceScore * distanceWeight) + (commonTags * tagWeight);
+            const totalScore = (fameRating * fameWeight) + (distanceScore * distanceWeight) + (commonTags / (currentUserTags.length || 1) * tagWeight);
             user.Score = totalScore;
 
-            return user;
+            return UserSchema.methods.formatSafeUser(user);
         });
 
-        // Sort users by their score
         allUsers = allUsers.sort((a, b) => b.Score - a.Score);
-
-        allUsers = allUsers.sort((a, b) => a.Score - b.Score);
-
 
         return res.status(200).json({ users: allUsers });
     }
