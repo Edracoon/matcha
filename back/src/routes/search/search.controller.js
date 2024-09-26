@@ -40,7 +40,6 @@ class SearchController {
 
         allUsers = allUsers.filter(user => user.id !== req.user.id);
 
-        // Filter users that are not blocked, not liked or not according sexuality
         allUsers = allUsers.filter(user => {
             if (likedUsers.find(like => like.likedBy === req.user.id)) 
                 return false;
@@ -106,7 +105,6 @@ class SearchController {
 
         allUsers = allUsers.filter(user => user.id !== req.user.id);
 
-        // Filter users that are not blocked, not liked or not according sexuality
         allUsers = allUsers.filter(user => {
             if (likedUsers.find(like => like.likedBy === req.user.id)) 
                 return false;
@@ -157,10 +155,6 @@ class SearchController {
             const currentTag = tagUsers.filter(tagUser => tagUser.userId === user.id);
             user.tags = currentTag.map(tag => tags.find(t => t.id === tag.tagId).content);
             if (tagsFilter && tagsFilter.length) {
-
-                
-                // if (tagsFilter.length > currentTag.length)
-                //     return false;
                 if (!tagsFilter.every(t => user.tags.includes(t)))
                     return false;
             }
@@ -168,21 +162,6 @@ class SearchController {
         })
 
         allUsers = allUsers.map(user => {
-            // const fameRating = (user.likesCounter / user.viewCounter) || 0;
-
-            // const maxDistance = 10000; 
-            // const distanceScore = 1 - Math.min(user.Distance / maxDistance, 1);
-            
-            // const userTags = tagUsers.filter(tagUser => tagUser.userId === user.id);
-            // const commonTags = userTags.filter(userTag => 
-            //     currentUserTags.some(currentTag => currentTag.tagId === userTag.tagId)
-            // ).length;
-
-            // user.CommonTags = commonTags;
-
-            // const totalScore = (fameRating * fameWeight) + (distanceScore * distanceWeight) + (commonTags / (currentUserTags.length || 1) * tagWeight);
-            // user.Score = totalScore;
-
             return UserSchema.methods.formatSafeUser(user);
         });
 
