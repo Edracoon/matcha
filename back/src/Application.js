@@ -2,8 +2,9 @@
 import express from "express";
 import bodyparser from "body-parser";
 import fileUpload from "express-fileupload";
-
 import Config from "./Config.js";
+import http from 'http';
+import { Server } from 'socket.io';
 
 /* Models */
 import SQLib from "./SQLib.js";
@@ -14,7 +15,6 @@ import TagUserSchema from "./models/tag_user.model.js";
 import MessageSchema from "./models/message.model.js";
 import NotifSchema from "./models/notif.model.js";
 import BlocklistSchema from "./models/blocklist.model.js";
-import RoomSchema from "./models/room.model.js";
 import ViewSchema from "./models/view.model.js";
 import PictureSchema from "./models/picture.model.js";
 
@@ -24,9 +24,10 @@ import countryRouter from "./routes/country/country.router.js";
 import accountRouter from "./routes/account/account.router.js";
 import fileRouter from "./routes/files/file.router.js";
 import adminRouter from "./routes/admin/admin.router.js";
-
+import searchRouter from "./routes/search/search.router.js";
 /* Services */
 import FakerService from "./services/faker.service.js";
+import SocketService from "./services/socket.service.js"
 
 class Application {
 	constructor() {
@@ -45,7 +46,6 @@ class Application {
 		await this.db.defineModel("TAG_USER", TagUserSchema.schema);
 		await this.db.defineModel("NOTIF", NotifSchema.schema);
 		await this.db.defineModel("BLOCKLIST", BlocklistSchema.schema);
-		await this.db.defineModel("ROOM", RoomSchema.schema);
 		await this.db.defineModel("MESSAGE", MessageSchema.schema);
 		await this.db.defineModel("LIKES", LikeSchema.schema);
 		await this.db.defineModel("VIEW", ViewSchema.schema);
@@ -57,6 +57,8 @@ class Application {
 			if (!tagInDb)
 				await this.db.insert("TAG", { content: tag });
 		}
+        // for (let i = 0; i < 10000; i++)
+        //     FakerService.generatefakeUser();
 	}
 
 	initMiddlewares() {
@@ -80,19 +82,47 @@ class Application {
 		this.app.use(accountRouter);
 		this.app.use(fileRouter);
 		this.app.use(adminRouter);
+        this.app.use(searchRouter);
 		this.app.use("*", (req, res) => res.status(404).send());
 	}
 
 	async start() {
 		return new Promise(resolve => {
-			this.server = this.app.listen(Config.port, () => {
-				console.info(`Matcha server listening on port ${Config.port}`);
-				resolve();
-			});
+            const httpserver = http.createServer(this.app);
+
+            // Initialiser Socket.IO sur ce serveur HTTP
+            const io = new Server(httpserver, {
+                cors: {
+                    origin: "*",  // Permettre les connexions depuis toutes les origines
+                    methods: ["GET", "POST"]
+                }
+            });
+
+            // Gérer les connexions WebSocket
+            io.on('connection', async (socket) => {
+                console.log('Nouvelle connexion WebSocket :', socket.id);
+                // Utiliser ton service SocketService pour les événements WebSocket
+                await SocketService.Handler(socket, io);
+            });
+
+            // this.server = this.app.listen(Config.port, () => {
+            //     console.info(`Matcha server listening on port ${Config.port}`);
+            //     resolve();
+            // });
+            this.server = httpserver;
+
+            this.server.listen(Config.port, () => {
+                console.log(`Serveur WebSocket démarré sur le port ${Config.port}`);
+                resolve();
+            });
+
+            
 		});
 	}
 
 	async stop() {
+        console.log("Stopping server ...");
+        
 		return new Promise(resolve => {
 			this.server.close(() => resolve());
 		});

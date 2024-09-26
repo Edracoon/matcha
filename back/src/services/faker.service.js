@@ -7,6 +7,8 @@ const sql = new SQLib();
 class FakerService {
 
 	static async generatefakeUser(viewers = [], likers = []) {
+        console.log("Generating fake user ...");
+        
 		const firstname = faker.name.firstName();
 		const lastname = faker.name.lastName();
 
@@ -17,13 +19,15 @@ class FakerService {
 			firstname,
 			lastname,
 			email: faker.internet.email(firstname, lastname),
-			gender: ['male', 'female'][Math.floor(Math.random() * 2)],
-			wantToMeet: ['male', 'woman', 'both'][Math.floor(Math.random() * 3)],
-			bio: faker.lorem.paragraph().slice(0, 299),
-			ip: faker.internet.ip(),
+            latitude: faker.address.latitude(),
+            longitude : faker.address.longitude(),
+			gender: ['man', 'woman'][Math.floor(Math.random() * 2)],
+			wantToMeet: ['men', 'women', 'anyone'][Math.floor(Math.random() * 3)],
+			bio: faker.lorem.paragraph().slice(0, 199),
 			emailValidated: true,
 			emailValidationCode: faker.random.numeric(6),
 			isFake: true,
+            fameRating: Math.random()
 		};
 
 		// Store the user in db

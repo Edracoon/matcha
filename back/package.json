@@ -21,7 +21,8 @@
 		"mysql2": "^2.3.3",
 		"node-fetch": "^3.2.10",
 		"nodemailer": "^6.8.0",
-		"nodemon": "^2.0.22"
+		"nodemon": "^2.0.22",
+		"socket.io": "^4.8.0"
 	},
 	"devDependencies": {
 		"dotenv": "^16.4.5",

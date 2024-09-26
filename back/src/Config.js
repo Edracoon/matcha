@@ -6,6 +6,7 @@ const Config = {
 	
 	/* Server */
 	backUrl: process.env.BACK_URL,
+    wsPort: process.env.WS_PORT || 4243,
 	port: process.env.PORT || 4242,
 	
 	adminKey: process.env.ADMIN_KEY,

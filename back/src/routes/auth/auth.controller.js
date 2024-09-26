@@ -21,7 +21,6 @@ class AuthController {
 	 * Tested on Postman
 	 */
 	static async signUp(req, res) {
-
 		let errors = [];
 		const keys = ["firstname", "lastname", "email", "username", "password", "confirmPassword"];
 		for (let key of keys)
