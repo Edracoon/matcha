@@ -60,4 +60,5 @@ Object.defineProperty(UserSchema.prototype, 'password', {
     }
 });
 
+
 export default UserSchema;

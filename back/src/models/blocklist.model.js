@@ -1,10 +1,10 @@
 import Config from "../Config.js";
 
-class NotifSchema {
+class BlockSchema {
 	static schema = {
 		didBlockId: { type : 'INT', ref: "USER", required: true, onDeleteCascade: true },
 		gotBlockId: { type : 'INT', ref: "USER", required: true, onDeleteCascade: true },
 	}
 }
 
-export default NotifSchema;
+export default BlockSchema;

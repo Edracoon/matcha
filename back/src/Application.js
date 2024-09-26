@@ -25,6 +25,7 @@ import accountRouter from "./routes/account/account.router.js";
 import fileRouter from "./routes/files/file.router.js";
 import adminRouter from "./routes/admin/admin.router.js";
 import searchRouter from "./routes/search/search.router.js";
+import interactionsRouter from "./routes/interactions/interactions.router.js";
 /* Services */
 import FakerService from "./services/faker.service.js";
 import SocketService from "./services/socket.service.js"
@@ -83,6 +84,7 @@ class Application {
 		this.app.use(fileRouter);
 		this.app.use(adminRouter);
         this.app.use(searchRouter);
+        this.app.use(interactionsRouter);
 		this.app.use("*", (req, res) => res.status(404).send());
 	}
 
