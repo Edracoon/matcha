@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/authProvider';
+import { showNotification, NotifType } from '../components/Notif';
 
 export default function Register() {
 
@@ -11,13 +12,18 @@ export default function Register() {
 	const [firstname, setFirstname] = useState("Edgar");
 	const [lastname, setLastname] = useState("Pfennig");
 
+	const [age, setAge] = useState(18);
 	const [username, setUsername] = useState("Edracoon");
 	const [password, setPassword] = useState("password");
 
 	const uNavigate = useNavigate();
 
 	async function handleSubmit() {
-		register({ email, firstname, lastname, username, password, confirmPassword: password });
+		if (age < 18) {
+			showNotification(NotifType.ERROR, 'You must be at least 18 years old to register', '');
+			return ;
+		}
+		register({ email, firstname, lastname, age, username, password, confirmPassword: password });
 	}
 
 	function navigate(path: string) {
@@ -100,6 +106,24 @@ export default function Register() {
 									name="lastname"
 									type="lastname"
 									value={lastname}
+									required
+									className="block w-full rounded-md border-0 bg-white/5 px-4 py-1.5 text-white shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6"
+								/>
+							</div>
+						</div>
+						<div>
+							<div className="flex flex-row justify-between">
+								<label className="block text-sm font-medium leading-6 text-white">
+								Age
+								</label>
+							</div>
+							<div className="mt-2">
+								<input
+									onChange={(e) => setAge(e.target.value as unknown as number)}
+									id="age"
+									name="age"
+									type="age"
+									value={age}
 									required
 									className="block w-full rounded-md border-0 bg-white/5 px-4 py-1.5 text-white shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6"
 								/>

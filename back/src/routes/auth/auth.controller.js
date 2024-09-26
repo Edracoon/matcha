@@ -22,7 +22,7 @@ class AuthController {
 	 */
 	static async signUp(req, res) {
 		let errors = [];
-		const keys = ["firstname", "lastname", "email", "username", "password", "confirmPassword"];
+		const keys = ["firstname", "lastname", "email", "age", "username", "password", "confirmPassword"];
 		for (let key of keys)
 			if (!req.body[key] && req.body[key] !== "")
 				errors.push({ [key]: "This field is required." });
@@ -38,9 +38,10 @@ class AuthController {
 				firstname: req.body.firstname,
 				lastname: req.body.lastname,
 				email: req.body.email,
+				age: req.body.age,
 				username: req.body.username,
 				password: encryptedPass,
-				emailValidationCode: Math.floor(Math.random() * 1000000),
+				emailValidationCode: Math.floor(100000 + Math.random() * 900000),
 				emailValidated: false
 			});
 		} catch (e) {
@@ -49,7 +50,7 @@ class AuthController {
 			return res.status(400).json({ error: e });
 		}
 
-		await MailService.sendMail(user.email, "Confirm your registration to Matcha !", `Click this link ${Config.frontUrl + "/verify-account/?validationCode=" + user.emailValidationCode} or use your code: ${user.emailValidationCode}`);
+		await MailService.sendMail(user.email, "Confirm your registration to Matcha !", `Using your code: ${user.emailValidationCode}`);
 
 		return res.status(200).json({ accessToken: jwt.sign({ user }, Config.jwtSecret, { expiresIn: "7d" }), user: UserSchema.methods.formatSafeUser(user) });
 	}
@@ -119,9 +120,9 @@ class AuthController {
 
 		const user = await sql.findOne("USER", { email });
 		if (!user)
-			return res.status(400).json({ error: "No user is registered with this email." });
+			return res.status(400).json({ error: "No account is registered with this email." });
 
-		const resetPasswordCode = Math.floor(Math.random() * 1000000);
+		const resetPasswordCode =  Math.floor(100000 + Math.random() * 900000);
 
 		// Update user with resetPasswordCode
 		try { await sql.update("USER", { id: user.id }, { resetPasswordCode }); }

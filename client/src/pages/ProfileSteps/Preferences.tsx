@@ -30,6 +30,11 @@ export default function StepPreferences() {
 	]
 
 	function confirm() {
+		if (!gender?.value || !wantToMeet?.value) {
+			showNotification(NotifType.ERROR, 'You must fill all fields', '');
+			setIsConfirmOpen(false);
+			return;
+		}
 		apiService({
 			method: 'POST',
 			path: '/account/upsert-preferences',

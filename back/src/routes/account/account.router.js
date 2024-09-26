@@ -99,13 +99,13 @@ accountRouter.post(
 );
 
 /**
- * Delete the picture of the user
+ * Get all pictures url of the user
  * @param { params: { id } }
  */
-accountRouter.delete(
-	"/account/delete-picture/:id",
+accountRouter.get(
+	"/account/pictures",
 	AuthMiddleware,
-	AccountController.deletePicture
+	AccountController.getPictures
 );
 
 /**
@@ -118,6 +118,17 @@ accountRouter.post(
 	// FileService.uploadFileMiddleWare.single('file'),
 	AccountController.addPicture
 );
+
+/**
+ * Delete the picture of the user
+ * @param { params: { id } }
+ */
+accountRouter.delete(
+	"/account/delete-picture/:id",
+	AuthMiddleware,
+	AccountController.deletePicture
+);
+
 
 /**
  * Get the session data info of myself

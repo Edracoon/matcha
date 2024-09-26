@@ -42,6 +42,11 @@ export default function StepLocation() {
 	}
 
 	function confirm() {
+		if (!pos) {
+			showNotification(NotifType.ERROR, 'You must select a location', '');
+			setIsConfirmOpen(false);
+			return
+		}
 		apiService({
 			method: 'POST',
 			path: '/account/location',

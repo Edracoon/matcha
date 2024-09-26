@@ -32,7 +32,7 @@ interface AuthContextType {
 	cookies: { [key: string]: string },
 	login: (username: string, password: string) => Promise<unknown>,
 	logout: () => void,
-	register: (data: { email: string, firstname: string, lastname: string, username: string, password: string, confirmPassword: string }) => void,
+	register: (data: { email: string, firstname: string, lastname: string, age: number, username: string, password: string, confirmPassword: string }) => void,
 	confirmEmailWithCode: () => {},
 	isLogged: () => Promise<boolean>,
 	isProfileNotComplete: () => Promise<ProfileNotComplete>
@@ -82,13 +82,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     };
 
 	const register = (
-		{ email, firstname, lastname, username, password, confirmPassword }:
-		{ email: string, firstname: string, lastname: string, username: string, password: string, confirmPassword: string }
+		{ email, firstname, lastname, age, username, password, confirmPassword }:
+		{ email: string, firstname: string, lastname: string, age: number, username: string, password: string, confirmPassword: string }
 	) => {
 		apiService({
 			method: "POST",
 			path: "/auth/sign-up",
-			options: { data: { email, firstname, lastname, username, password, confirmPassword } },
+			options: { data: { email, firstname, lastname, age, username, password, confirmPassword } },
 			onSuccess: (data) => {
 				console.log(data);
 				setUser(data.user);

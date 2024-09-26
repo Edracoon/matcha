@@ -5,10 +5,13 @@ const frontUrl: string = "http://127.0.0.1:80";
 
 async function apiService(
 	{ method, path, token, options, params, onSuccess, onError }:
-	{ method: string, path: string, token?: string, options?: object, params?: object, onSuccess: (data: any) => void, onError: (error: any) => void }
+	{ method: string, path: string, token?: string, options?: any, params?: object, onSuccess: (data: any) => void, onError: (error: any) => void }
 ) {
 
 	method = method.toLowerCase();
+
+	const heads = (options?.headers || {});
+	delete options?.headers;
 
 	try {
 		const res = await axios({
@@ -19,6 +22,7 @@ async function apiService(
 				Authorization: "Bearer " + token,
 				// referer: frontUrl,
 				accept: "application/json",
+				...heads
 			},
 			...options,
 			params,

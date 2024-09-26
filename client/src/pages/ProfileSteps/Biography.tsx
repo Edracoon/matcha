@@ -23,7 +23,11 @@ export default function StepBiography() {
 	}
 
 	function confirm() {
-		console.log(biography);
+		if (biography.length === 0) {
+			showNotification(NotifType.ERROR, 'Biography cannot be empty', '');
+			setIsConfirmOpen(false);
+			return;
+		}
 		apiService({
 			method: 'POST',
 			path: '/account/upsert-biography',

@@ -37,6 +37,11 @@ export default function StepInterests() {
 
 	function confirm() {
 		const selectedTags = tagLists.filter((t) => t.isSelected);
+		if (selectedTags.length === 0) {
+			showNotification(NotifType.ERROR, 'You must select at least one interest', '');
+			setIsConfirmOpen(false);
+			return;
+		}
 		apiService({
 			method: 'POST',
 			path: '/account/upsert-interest-tags',
