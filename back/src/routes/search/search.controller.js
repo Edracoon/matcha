@@ -132,7 +132,8 @@ class SearchController {
             const fameRating = (user.likesCounter / user.viewCounter) || 0;
 
             const maxDistance = 10000; 
-            const distanceScore = 1 - Math.min(user.Distance / maxDistance, 1);
+            user.Distance = Distance(req.user.latitude, req.user.longitude, user.latitude, user.longitude);
+            const distanceScore = 1 - (user.Distance / maxDistance);
             
             const userTags = tagUsers.filter(tagUser => tagUser.userId === user.id);
             const commonTags = userTags.filter(userTag => 
@@ -147,7 +148,6 @@ class SearchController {
                 if (user.fameRating > fameGap.max || user.fameRating < fameGap.min)
                     return false;
             }
-            user.Distance = Distance(req.user.latitude, req.user.longitude, user.latitude, user.longitude);
             if (distanceGap && (distanceGap.max)) {
                 distanceGap.min = 0;
                 if (user.Distance > distanceGap.max)
@@ -168,7 +168,7 @@ class SearchController {
 
         allUsers = allUsers.sort((a, b) => b.Score - a.Score);
 
-        allUsers = allUsers.slide(0, 32);
+        allUsers = allUsers.slice(0, 32);
 
         return res.status(200).json({ users: allUsers });
 
