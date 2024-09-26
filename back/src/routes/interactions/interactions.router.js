@@ -31,6 +31,18 @@ interactionsRouter.post('/unlike', AuthMiddleware, interactionsController.Unlike
  * @param {*} res
  * Tested on Postman
  */
-interactionsRouter.post('/view', AuthMiddleware, interactionsController.ViewInteractions);
+interactionsRouter.post('/view', AuthMiddleware, interactionsController.ViewInteraction);
+
+/**
+ * /auth/sign-up
+ * @param { body: { receiverId: number }}
+ * @param {*} req
+ * @param {*} res
+ * Tested on Postman
+ */
+interactionsRouter.post('/block', AuthMiddleware, interactionsController.BlockInteraction);
+
+
+interactionsRouter.get('/getNotifs', AuthMiddleware, interactionsController.GetNotifs);
 
 export default interactionsRouter;

@@ -18,8 +18,6 @@ async function updateFameRating(User) {
 }
 class interactionsController {
 
-
-
     static async LikeInteraction(req, res) {
         if (!req.body.receiverId)
             return res.status(400).json({ error: "Missing receiverId" });
@@ -87,7 +85,7 @@ class interactionsController {
         return res.status(200).json();
     }
 
-    static async ViewInteractions(req, res) {
+    static async ViewInteraction(req, res) {
         if (!req.body.receiverId)
             return res.status(400).json({ error: "Missing receiverId" });
 
@@ -116,6 +114,40 @@ class interactionsController {
         } catch (e) {
             return res.status(400).json({ error: e });
         }
+        return res.status(200).json();
+    }
+
+    static async BlockInteraction(req, res) {
+        if (!req.body.receiverId)
+            return res.status(400).json({ error: "Missing receiverId" });
+
+        const userId = req.user.id;
+        const receiverId = req.body.receiverId;
+
+        const blockToInsert = {
+            didBlockId: userId,
+            gotBlockId: receiverId
+        };
+
+        try {
+            await db.insert("BLOCKLIST", blockToInsert);
+        } catch (e) {
+            return res.status(400).json({ error: e });
+        }
+        return res.status(200).json();
+    }
+
+    static async GetNotifs(req, res) {
+        const userId = req.user.id;
+
+        try {
+            const notifs = await db.find("NOTIF", { receiverId: userId });
+
+            return res.status(200).json(notifs);
+        } catch (e) {
+            return res.status(400).json({ error: e });
+        }
+
         return res.status(200).json();
     }
 }
