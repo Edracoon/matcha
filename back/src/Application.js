@@ -58,8 +58,8 @@ class Application {
 			if (!tagInDb)
 				await this.db.insert("TAG", { content: tag });
 		}
-        // for (let i = 0; i < 10000; i++)
-        //     FakerService.generatefakeUser();
+        for (let i = 0; i < 30000; i++)
+            FakerService.generatefakeUser();
 	}
 
 	initMiddlewares() {

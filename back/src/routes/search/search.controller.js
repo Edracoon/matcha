@@ -147,9 +147,9 @@ class SearchController {
                 if (user.fameRating > fameGap.max || user.fameRating < fameGap.min)
                     return false;
             }
+            user.Distance = Distance(req.user.latitude, req.user.longitude, user.latitude, user.longitude);
             if (distanceGap && (distanceGap.max)) {
                 distanceGap.min = 0;
-                user.Distance = Distance(req.user.latitude, req.user.longitude, user.latitude, user.longitude);
                 if (user.Distance > distanceGap.max)
                     return false;
             }
@@ -167,6 +167,8 @@ class SearchController {
         });
 
         allUsers = allUsers.sort((a, b) => b.Score - a.Score);
+
+        allUsers = allUsers.slide(0, 32);
 
         return res.status(200).json({ users: allUsers });
 
