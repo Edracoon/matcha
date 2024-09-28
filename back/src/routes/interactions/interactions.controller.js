@@ -35,8 +35,8 @@ class interactionsController {
 
         try {
             const like = await db.insert("LIKES", likeToInsert);
-            const isLikedBack = await db.findOne("LIKES", { type: "like", likedBy: receiverId, gotLiked: userId });
             if (like.type === "like") {
+                const isLikedBack = await db.findOne("LIKES", { type: "like", likedBy: receiverId, gotLiked: userId });
                 const notif = {
                     senderId: userId,
                     receiverId: receiverId,

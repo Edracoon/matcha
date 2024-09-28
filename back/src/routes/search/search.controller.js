@@ -106,10 +106,17 @@ class SearchController {
         allUsers = allUsers.filter(user => user.id !== req.user.id);
 
         allUsers = allUsers.filter(user => {
-            if (likedUsers.find(like => like.likedBy === req.user.id)) 
+            // Si le req.user.id l'a deja like alors on ne le renvoie pas
+            const l = likedUsers.find(like => like.likedBy === req.user.id && like.gotLiked === user.id);
+            if (l) 
                 return false;
-            if (blockedUsers.find(block => block.didBlockId === req.user.id)) 
+
+
+            // Si le user a bloqué le req.user.id alors on ne le renvoie pas
+            const b = blockedUsers.find(block => block.didBlockId === req.user.id && block.gotBlockId === user.id);
+            if (b) 
                 return false;
+
             if (req.user.wantToMeet === "anyone") 
                 return true;
             else if (req.user.wantToMeet === "men" && user.gender !== "man")

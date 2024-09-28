@@ -29,6 +29,7 @@ import interactionsRouter from "./routes/interactions/interactions.router.js";
 /* Services */
 import FakerService from "./services/faker.service.js";
 import SocketService from "./services/socket.service.js"
+import { log } from "console";
 
 class Application {
 	constructor() {
@@ -58,8 +59,10 @@ class Application {
 			if (!tagInDb)
 				await this.db.insert("TAG", { content: tag });
 		}
-        for (let i = 0; i < 1000; i++)
-            FakerService.generatefakeUser();
+        // for (let i = 0; i < 1000; i++)
+        //     FakerService.generatefakeUser();
+        console.log("Database initialized");
+        
 	}
 
 	initMiddlewares() {
