@@ -7,7 +7,7 @@ export default function LoginView() {
 	const { login } = useAuth();
 
 	const [username, setUsername] = useState("Edracoon");
-	const [password, setPassword] = useState("@larette2EDGAR!");
+	const [password, setPassword] = useState("password");
 
 	const uNavigate = useNavigate();
 

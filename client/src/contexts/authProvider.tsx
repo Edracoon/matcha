@@ -63,7 +63,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 			onSuccess: (data) => {
 				setCookies('accessToken', data.accessToken);
 				setUser(data.user);
-				showNotification(NotifType.SUCCESS, "Success", "You are logged in !");
+				showNotification(NotifType.SUCCESS, "You are logged in !", "");
 				if (!data.user.emailValidated)
 					return navigate('/verify-account');
 				navigate('/home');

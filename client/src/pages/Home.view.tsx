@@ -1,17 +1,14 @@
 import { useState, useEffect } from 'react';
-import { showNotification } from '../components/Notif';
 import apiService from '../services/apiService';
 // import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/authProvider';
 import Navbar from '../components/Navbar';
-import { useSearchParams } from 'react-router-dom';
 import UserCard, { UserType } from '../components/UserCard';
 
 export default function HomeView() {
 
 	const { cookies } = useAuth();
 
-	const [_, setSearchParams] = useSearchParams();
 	const [loading, setLoading] = useState(true);
 	const [users, setUsers] = useState<UserType[]>([]);
 
@@ -32,8 +29,31 @@ export default function HomeView() {
 	return (
 		<>
 			<Navbar />
-			<div className="p-4 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 ">
-				{loading && <div>Loading...</div>}
+			<div className="p-12 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4 ">
+				{loading && 
+					Array.from({ length: 12 }).map(() => (
+						<div className='animate-pulse rounded-lg bg-indigo-500 p-4 text-left'>
+							<img alt="" className="animate-pulse aspect-[13/13] w-full rounded-lg object-cover" src={""} />
+							<div className='flex flex-row justify-center w-full gap-4 pt-2'>
+								<button className="text-red-400 bg-white p-2 rounded-full text-lg sm:!w-auto z-10 !gap-0 z-1">
+								</button>
+								<button className="text-green-400 bg-white p-2 rounded-full text-lg sm:!w-auto z-10 !gap-0 z-1">
+								</button>
+							</div>
+							<div className='flex flex-col sm:flex-row justify-between w-full'>
+								<div className='flex flex-row align-middle gap-1'>
+									<h3 className="text-sm sm:text-lg font-semibold leading-8 tracking-tight text-white">...,</h3>
+									<p className="text-sm sm:text-lg leading-8 text-white font-medium">...</p>
+								</div>
+								<p className="text-sm leading-8 text-gray-200 font-semibold">... 🤝</p>
+							</div>
+							<div className='flex flex-row justify-between w-full'>
+								<p className="text-sm leading-6 text-gray-300">... km</p>
+								<p className="text-sm leading-6 text-gray-200 font-semibold">... 🔥</p>
+							</div>
+						</div>
+					))
+				}
 				{!loading && users.map((u: UserType) => (
 					<UserCard key={u.id} user={u} />
 				))}

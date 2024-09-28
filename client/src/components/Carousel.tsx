@@ -4,11 +4,12 @@ import { showNotification, NotifType } from "./Notif";
 
 interface CarouselProps {
 	urlsArray: string[];
-	onAdd: (files: File) => void;
-	onDelete: (id: string) => void;
+	isEdit?: boolean;
+	onAdd?: (files: File) => void;
+	onDelete?: (id: string) => void;
 }
 
-export default function Carousel({ urlsArray = [], onAdd, onDelete }: CarouselProps) {
+export default function Carousel({ urlsArray = [], isEdit = true, onAdd, onDelete }: CarouselProps) {
 
 	const [photosArray, setPhotosArray] = useState(urlsArray);
 	const [photoIdx, setPhotoIdx] = useState(0);
@@ -52,7 +53,7 @@ export default function Carousel({ urlsArray = [], onAdd, onDelete }: CarouselPr
 			if (photosArray.length >= maxPhotos)
 				showNotification(NotifType.WARNING, "Careful", "You can't upload more than 5 images");
 			else {
-				onAdd(image);
+				onAdd?(image) : null;
 			}
 		}
 	}
@@ -70,7 +71,7 @@ export default function Carousel({ urlsArray = [], onAdd, onDelete }: CarouselPr
 		
 		carousel.style.transform = `translateX(-${newIdx}00%)`;
 
-		onDelete(photosArray[photoIdx]);
+		onDelete?(photosArray[photoIdx]) : null;
 	}
 
 	const handleClick = () => {
@@ -80,7 +81,7 @@ export default function Carousel({ urlsArray = [], onAdd, onDelete }: CarouselPr
 	}
 
 	return (
-		<div className="carousel w-[360px] sm:w-[500px] flex flex-row relative overflow-hidden h-[500px] sm:h-[600px] my-10">
+		<div className="carousel w-[360px] sm:w-[500px] flex flex-row relative overflow-hidden h-[500px] sm:h-[600px] my-8">
 			<div className="carousel-inner flex w-full">
 				{photosArray.length === 0 &&
 					<div style={{ flex: '0 0 auto' }} className="w-full">
@@ -100,14 +101,13 @@ export default function Carousel({ urlsArray = [], onAdd, onDelete }: CarouselPr
 							alt="carousel"
 							className="rounded-lg w-full h-full block object-cover"
 						/>
-						
 					</div>
 				))}
 				
 			</div>
-			<div className="absolute text-white bg-indigo-500/60 px-1 py-1 rounded-lg text-lg bottom-2 sm:bottom-4 left-4 sm:left-6 z-1">
+			{isEdit && <div className="absolute text-white bg-indigo-500/60 px-1 py-1 rounded-lg text-lg bottom-2 sm:bottom-4 left-4 sm:left-6 z-1">
 				{photosArray.length > 0 ? photoIdx + 1 : 0} / 5
-			</div>
+			</div>}
 
 			{/* Left and Right Navigation Arrows */}
 			<div className="absolute inset-y-0 flex items-center w-full justify-between">
@@ -120,25 +120,25 @@ export default function Carousel({ urlsArray = [], onAdd, onDelete }: CarouselPr
 					onClick={onClickNext}
 				/>
 			</div>
-			{ photosArray.length > 0 &&
+			{ photosArray.length > 0 && isEdit &&
 				<button onClick={() => deleteOne()} className="text-white bg-indigo-500/60 px-1 py-1 rounded-lg text-sm !w-10 sm:!w-auto absolute top-2 sm:top-4 right-2 sm:right-4 z-10 !h-10 !gap-0">
 					<XMarkIcon className="h-6 w-6" />
 				</button>
 			}
-			<button
+			{isEdit && <button
 				onClick={handleClick}
 				className=" text-white bg-indigo-500/60 px-1 py-1 rounded-lg text-sm absolute bottom-2 sm:bottom-4 right-2 sm:right-4 z-10 !gap-0"
 			>
 				<PlusIcon className="h-6 w-6" />
 				{/* <span className="hidden sm:flex">Add a picture</span> */}
-			</button>
+			</button>}
 
-			<input
+			{isEdit && <input
 				ref={coverInput}
 				type="file"
 				onChange={(e) => onInputImage(e)}
 				className="hidden"
-			/>
+			/>}
 		</div>
 	);
 };

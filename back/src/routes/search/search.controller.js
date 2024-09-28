@@ -30,30 +30,32 @@ const getScore = (fameRating, distanceScore, tagScore) => {
 class SearchController {
 
     static async getAccordingUser(req, res) {
+		const askingUser = req.user;
+
         let allUsers = await sql.findAll("USER");
-        const likedUsers = await sql.find("LIKES", { likedBy: req.user.id });
-        const blockedUsers = await sql.find("BLOCKLIST", { didBlockId: req.user.id });
+        const likedUsers = await sql.find("LIKES", { likedBy: askingUser.id });
+        const blockedUsers = await sql.find("BLOCKLIST", { didBlockId: askingUser.id });
         const tagUsers = await sql.findAll("TAG_USER");
         const tags = await sql.findAll("TAG");
 
-        const currentUserTags = await sql.find("TAG_USER", { userId: req.user.id });
+        const currentUserTags = await sql.find("TAG_USER", { userId: askingUser.id });
 
-        allUsers = allUsers.filter(user => user.id !== req.user.id);
+        allUsers = allUsers.filter(user => user.id !== askingUser.id);
 
         allUsers = allUsers.filter(user => {
-            if (likedUsers.find(like => like.likedBy === req.user.id)) 
+            if (likedUsers.find(like => like.likedBy === askingUser.id)) 
                 return false;
-            if (blockedUsers.find(block => block.didBlockId === req.user.id)) 
+            if (blockedUsers.find(block => block.didBlockId === askingUser.id)) 
                 return false;
-            if (req.user.wantToMeet === "anyone") 
+            if (askingUser.wantToMeet === "anyone") 
                 return true;
-            else if (req.user.wantToMeet === "men" && user.gender !== "man")
+            else if (askingUser.wantToMeet === "men" && user.gender !== "man")
                 return false;
-            else if (req.user.wantToMeet === "women" && user.gender !== "woman")
+            else if (askingUser.wantToMeet === "women" && user.gender !== "woman")
                 return false;
-            else if (user.wantToMeet === "men" && req.user.gender !== "man")
+            else if (user.wantToMeet === "men" && askingUser.gender !== "man")
                 return false;
-            else if (user.wantToMeet === "women" && req.user.gender !== "woman")
+            else if (user.wantToMeet === "women" && askingUser.gender !== "woman")
                 return false;
 
             return true;
@@ -66,7 +68,7 @@ class SearchController {
         allUsers = allUsers.map(user => {
             const fameRating = (user.likesCounter / user.viewCounter) || 0;
 
-            user.Distance = Distance(req.user.latitude, req.user.longitude, user.latitude, user.longitude);
+            user.Distance = Distance(askingUser.latitude, askingUser.longitude, user.latitude, user.longitude);
             const maxDistance = 10000; 
             const distanceScore = 1 - Math.min(user.Distance / maxDistance, 1);
             
@@ -89,6 +91,8 @@ class SearchController {
     }
 
     static async GetUserWithFilter(req, res) {
+		const askingUser = req.user;
+
         const filter = ["ageGap", "fameGap", "distanceGap", "tags"];
         const ageGap = req.body["ageGap"];
         const fameGap = req.body["fameGap"];
@@ -96,36 +100,48 @@ class SearchController {
         const tagsFilter = req.body["tags"];
 
         let allUsers = await sql.findAll("USER");
-        const likedUsers = await sql.find("LIKES", { likedBy: req.user.id });
-        const blockedUsers = await sql.find("BLOCKLIST", { didBlockId: req.user.id });
+        const likedUsers = await sql.find("LIKES", { likedBy: askingUser.id });
+        const blockedUsers = await sql.find("BLOCKLIST", { didBlockId: askingUser.id });
         const tagUsers = await sql.findAll("TAG_USER");
         const tags = await sql.findAll("TAG");
 
-        const currentUserTags = await sql.find("TAG_USER", { userId: req.user.id });
+        const currentUserTags = await sql.find("TAG_USER", { userId: askingUser.id });
 
-        allUsers = allUsers.filter(user => user.id !== req.user.id);
+        allUsers = allUsers.filter(user => user.id !== askingUser.id);
 
         allUsers = allUsers.filter(user => {
-            // Si le req.user.id l'a deja like alors on ne le renvoie pas
-            const l = likedUsers.find(like => like.likedBy === req.user.id && like.gotLiked === user.id);
+            // Si le askingUser.id l'a deja like alors on ne le renvoie pas
+            const l = likedUsers.find(like => like.likedBy === askingUser.id && like.gotLiked === user.id);
             if (l) 
                 return false;
 
-
-            // Si le user a bloqué le req.user.id alors on ne le renvoie pas
-            const b = blockedUsers.find(block => block.didBlockId === req.user.id && block.gotBlockId === user.id);
+            // Si le user a bloqué le askingUser.id alors on ne le renvoie pas
+            const b = blockedUsers.find(block => block.didBlockId === askingUser.id && block.gotBlockId === user.id);
             if (b) 
                 return false;
 
-            if (req.user.wantToMeet === "anyone") 
-                return true;
-            else if (req.user.wantToMeet === "men" && user.gender !== "man")
+			// Si je cherche n'importe qui et que le user cherche n'importe qui
+			if ((askingUser.wantToMeet === "anyone" && user.wantToMeet === "anyone") ||
+				// Si je cherche n'importe qui et que le user cherche des hommes et que je suis un homme
+				(askingUser.wantToMeet === "anyone" && (user.wantToMeet === "men" && askingUser.gender === "man")) ||
+				// Si je cherche n'importe qui et que le user cherche des femmes et que je suis une femme
+				(askingUser.wantToMeet === "anyone" && (user.wantToMeet === "women" && askingUser.gender === "woman")))
+				;
+			// Si cherche n'importe qui et que les conditions ci-dessus ne sont pas respectees
+			else if (askingUser.wantToMeet === "anyone")
+				return false;
+
+			// Si je cherche des hommes et que ce n'est pas un homme
+            if (askingUser.wantToMeet === "men" && user.gender !== "man")
                 return false;
-            else if (req.user.wantToMeet === "women" && user.gender !== "woman")
+			// Si je cherche des femmes et que ce n'est pas une femme
+            else if (askingUser.wantToMeet === "women" && user.gender !== "woman")
                 return false;
-            else if (user.wantToMeet === "men" && req.user.gender !== "man")
+			// Si je suis un homme et que le user ne cherche pas un homme
+            else if (askingUser.gender === "man" && (user.wantToMeet !== "men" && user.wantToMeet !== "anyone"))
                 return false;
-            else if (user.wantToMeet === "women" && req.user.gender !== "woman")
+			// Si je suis une femme et que le user ne cherche pas une femme
+            else if (askingUser.gender === "woman" && (user.wantToMeet !== "women" && user.wantToMeet !== "anyone"))
                 return false;
             
             // Process to apply filters from request
@@ -139,7 +155,7 @@ class SearchController {
             const fameRating = (user.likesCounter / user.viewCounter) || 0;
 
             const maxDistance = 10000; 
-            user.Distance = Distance(req.user.latitude, req.user.longitude, user.latitude, user.longitude);
+            user.Distance = Distance(askingUser.latitude, askingUser.longitude, user.latitude, user.longitude);
             const distanceScore = 1 - (user.Distance / maxDistance);
             
             const userTags = tagUsers.filter(tagUser => tagUser.userId === user.id);
@@ -169,19 +185,9 @@ class SearchController {
             return true;
         })
 
-
-
         allUsers = allUsers.sort((a, b) => b.Score - a.Score);
 
         allUsers = allUsers.slice(0, 32);
-
-        // allUsers =  allUsers.map(async user => {
-        //     const pictures = await sql.find("PICTURE", { userId: user.id });
-
-        //     user.pictures = pictures.map(picture => picture.url);
-
-        //     return UserSchema.methods.formatSafeUser(user); 
-        // });
 
         for (let i = 0; i < allUsers.length; i++) {
             const pictures = await sql.find("PICTURE", { userId: allUsers[i].id });

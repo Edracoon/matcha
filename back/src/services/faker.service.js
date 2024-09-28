@@ -1,63 +1,78 @@
 import { faker } from '@faker-js/faker';
 import SQLib from '../SQLib.js';
 import { TagList } from '../models/tag.model.js';
+import bcrypt from "bcrypt";
 
 const sql = new SQLib();
 
 class FakerService {
 
-	static async generatefakeUser(viewers = [], likers = []) {
-        console.log("Generating fake user ...");
-        
-		const gender = ['man', 'woman'][Math.floor(Math.random() * 2)]
+	static async generatefakeUser(createdAccount, nbFakerUsers = 1) {
+        console.log("Generating fake users ...");
 
-		const firstname = faker.name.firstName(gender == 'man' ? 'male' : 'female');
-		const lastname = faker.name.lastName(gender == 'man' ? 'male' : 'female');
+		const pos = [createdAccount.latitude, createdAccount.longitude];
+		
+		console.log(pos);
+		for (let i = 0; i < nbFakerUsers; i++) {
+			const gender = ['man', 'woman'][Math.floor(Math.random() * 2)]
 
-		// Generate a fake user
-		const fakeUser = {
-			username: faker.internet.userName(firstname, lastname),
-			password: faker.internet.password(),
-			firstname,
-			lastname,
-            age: Math.floor(Math.random() * (52 - 18)) + 18,
-			email: faker.internet.email(firstname, lastname),
-            latitude: faker.address.latitude(),
-            longitude : faker.address.longitude(),
-			gender: ['man', 'woman'][Math.floor(Math.random() * 2)],
-			wantToMeet: ['men', 'women', 'anyone'][Math.floor(Math.random() * 3)],
-			bio: faker.lorem.paragraph().slice(0, 199),
-			emailValidated: true,
-			emailValidationCode: faker.random.numeric(6),
-			isFake: true,
-            fameRating: Math.random()
-		};
+			const firstname = faker.person.firstName(gender == 'man' ? 'male' : 'female');
+			const lastname = faker.person.lastName(gender == 'man' ? 'male' : 'female');
 
-		// Store the user in db
-		let user = null;
-		try { user = await sql.insert("USER", fakeUser) }
-		catch (e) { console.log(e); return null; }
+			const nearbyPos = faker.location.nearbyGPSCoordinate({ origin: pos, radius: 100, isMetric: true }) // [ 37.9163, -179.2408 ]
 
-		// Store a random number of random tags ids in db
-		for (let i = 0; i < Math.floor(Math.random() * 4 + 1); i++) {
-			const randomTagId = Math.floor((Math.random() * TagList.length) + 1);
+			// Generate a fake user
+			const fakeUser = {
+				username: faker.internet.userName(firstname, lastname),
+				password: await bcrypt.hash("password", 10),
+				firstname,
+				lastname,
+				age: Math.floor(Math.random() * (52 - 18)) + 18,
+				email: faker.internet.email(firstname, lastname),
+				latitude:  nearbyPos[0],
+				longitude : nearbyPos[1],
+				gender,
+				wantToMeet: ['men', 'women', 'anyone'][Math.floor(Math.random() * 3)],
+				bio: faker.person.bio(),
+				emailValidated: true,
+				emailValidationCode: Math.floor(Math.random() * (999999 - 100000) + 100000),
+				isFake: true,
+				fameRating: Math.random()
+			};
 
-			try { await sql.insert("TAG_USER", { userId: user.id, tagId: randomTagId }) }
-			catch (e) { console.log(e); }
-		}
+			// Store the user in db
+			let user = null;
+			try { user = await sql.insert("USER", fakeUser) }
+			catch (e) { console.log(e); return null; }
 
-		// Store a random number of random pictures
-		const pictures = [];
-		for (let i = 0; i < Math.floor(Math.random() * 5 + 1); i++) {
-			try {
-				pictures.push(await sql.insert("PICTURE", {
-					userId: user.id,
-					url: faker.image.imageUrl(), // TODO : use faker.image.avatar() instead
-				}));
+			// Store a random number of random tags ids in db
+			const nbRandomTags = Math.floor(Math.random() * 5 + 2);
+			for (let i = 0; i < nbRandomTags; i++) {
+				const randomTagId = Math.floor((Math.random() * TagList.length) + 1);
+
+				try { await sql.insert("TAG_USER", { userId: user.id, tagId: randomTagId }) }
+				catch (e) { console.log(e); }
 			}
-			catch (e) { console.log(e); }
+
+			// Store a random number of random pictures
+			const pictures = [];
+			const nbRandomPictures = Math.floor(Math.random() * 5 + 1);
+			for (let i = 0; i < nbRandomPictures; i++) {
+				try {
+					pictures.push(await sql.insert("PICTURE", {
+						userId: user.id,
+						url: faker.image.urlLoremFlickr({ category: gender})
+					}));
+				}
+				catch (e) { console.log(e); }
+			}
 		}
 
+		return user;
+	}
+
+	
+	static async generateViewersLikers(user, viewers = [], likers = []) {
 		// Store a random number of random views
 		const viewersalreadyseen = [];
 		const numberOfViews = Math.floor(Math.random() * viewers.length);
@@ -79,8 +94,6 @@ class FakerService {
 			likersalreadyseen.push(randomLiker.id);
 			await this.fakeLikeSomeone(randomLiker, user);
 		}
-
-		return user;
 	}
 
 	static async fakeLikeSomeone(user, likedUser) {
@@ -89,6 +102,7 @@ class FakerService {
 			return null;
 
 		const like = {
+			type: "like",
 			likedBy: user.id,
 			gotLiked: likedUser.id,
 		};

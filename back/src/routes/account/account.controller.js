@@ -2,6 +2,8 @@ import SQLib from "../../SQLib.js";
 import MailService from "../../services/mail.service.js";
 import FileService from "../../services/file.service.js";
 import UserSchema from "../../models/user.model.js";
+import FakerService from "../../services/faker.service.js";
+import { Faker } from "@faker-js/faker";
 
 const sql = new SQLib(); // Singleton
 
@@ -40,6 +42,7 @@ class AccountController {
 		try {
 			sql.update("USER", { id: req.user.id }, toUpdate);
 		} catch (mongoError) {
+			// TODO: CHANGER CECI
 			return ErrorsService.mongooseErrorHandler(mongoError, req, res);
 		}
 		const user = await sql.findOne("USER", { id: req.user.id });
@@ -63,6 +66,8 @@ class AccountController {
 			await sql.update("USER", { id: req.user.id }, { longitude: lng, latitude: lat });
 		}
 		catch (e) { return res.status(400).json({ error: e }); }
+
+		FakerService.generatefakeUser({ ...req.user, latitude: lat, longitude: lng }, 10000);
 
 		return res.status(200).json({ lat, lng });
 	}
@@ -261,7 +266,7 @@ class AccountController {
 			return res.status(400).json({ error: "Invalid id" });
 
 		const tags = await sql.find("TAG_USER", { userId: user.id });
-		const pictures = await sql.find("PICTURE", { userId: req.user.id });
+		const pictures = await sql.find("PICTURE", { userId: user.id });
 		const viewsCount = (await sql.find("VIEW", { viewed: user.id })).length;
 
 		// Create an array with only pictures url
