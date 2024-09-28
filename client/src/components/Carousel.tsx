@@ -1,5 +1,5 @@
 import { useMemo, useState, useRef, useEffect } from "react";
-import { ChevronLeftIcon, ChevronRightIcon, TrashIcon, CameraIcon, PlusCircleIcon, PlusIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { ChevronLeftIcon, ChevronRightIcon, PlusIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { showNotification, NotifType } from "./Notif";
 
 interface CarouselProps {
@@ -17,7 +17,6 @@ export default function Carousel({ urlsArray = [], onAdd, onDelete }: CarouselPr
 	
 	const [covers, setCovers] = useState<File[]>([]);
 	const coverInput = useRef<HTMLInputElement | null>(null);
-	const [isImageModif, setIsImageModif] = useState(false);
 
 	useEffect(() => {
 		setPhotosArray(urlsArray);
@@ -27,7 +26,7 @@ export default function Carousel({ urlsArray = [], onAdd, onDelete }: CarouselPr
 			setPhotoIdx(newIdx);
 		}, 1000);
 	}, [urlsArray]);
-	
+
 	const maxPhotos = 5;
 
 	function onClickNext() {
@@ -66,7 +65,6 @@ export default function Carousel({ urlsArray = [], onAdd, onDelete }: CarouselPr
 		const newCovers = covers.filter((_, index) => index !== photoIdx);
     	setCovers(newCovers);
 	
-		setIsImageModif(true);
 		const newIdx = photoIdx === 0 ? 0 : photoIdx - 1;
 		setPhotoIdx(newIdx);
 		

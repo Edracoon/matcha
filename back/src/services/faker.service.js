@@ -9,8 +9,10 @@ class FakerService {
 	static async generatefakeUser(viewers = [], likers = []) {
         console.log("Generating fake user ...");
         
-		const firstname = faker.name.firstName();
-		const lastname = faker.name.lastName();
+		const gender = ['man', 'woman'][Math.floor(Math.random() * 2)]
+
+		const firstname = faker.name.firstName(gender == 'man' ? 'male' : 'female');
+		const lastname = faker.name.lastName(gender == 'man' ? 'male' : 'female');
 
 		// Generate a fake user
 		const fakeUser = {
@@ -18,7 +20,7 @@ class FakerService {
 			password: faker.internet.password(),
 			firstname,
 			lastname,
-            age: Math.floor(Math.random() * (100 - 18)) + 18,
+            age: Math.floor(Math.random() * (52 - 18)) + 18,
 			email: faker.internet.email(firstname, lastname),
             latitude: faker.address.latitude(),
             longitude : faker.address.longitude(),
@@ -50,7 +52,7 @@ class FakerService {
 			try {
 				pictures.push(await sql.insert("PICTURE", {
 					userId: user.id,
-					url: faker.image.avatar(),
+					url: faker.image.imageUrl(), // TODO : use faker.image.avatar() instead
 				}));
 			}
 			catch (e) { console.log(e); }

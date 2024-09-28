@@ -41,7 +41,7 @@ export default function Navbar() {
 	}, [window.location.pathname]);
 
 	return (
-		<Disclosure as="nav" className="bg-indigo-500">
+		<Disclosure as="nav" className="bg-indigo-600">
 		  <div className="mx-auto max-w-7xl px-4">
 			<div className="relative flex h-16 items-center justify-between">
 			  {/* Mobile menu button*/}
@@ -82,7 +82,7 @@ export default function Navbar() {
 			  <div className="absolute inset-y-0 right-0 flex items-center pr-2">
 				<button
 				  type="button"
-				  className="relative rounded-full bg-indigo-500 p-1 text-white hover:outline-none hover:ring-1 hover:ring-white hover:ring-offset-1"
+				  className="relative rounded-full bg-indigo-600 p-1 text-white hover:outline-none hover:ring-1 hover:ring-white hover:ring-offset-1"
 				>
 				  <span className="absolute -inset-1.5" />
 				  <span className="sr-only">View notifications</span>
@@ -92,7 +92,7 @@ export default function Navbar() {
 				{/* Profile dropdown */}
 				<Menu as="div" className="relative ml-3">
 				  <div>
-					<Menu.Button className="relative flex rounded-full text-white bg-indigo-500 text-sm hover:outline-none hover:ring-1 hover:ring-white hover:ring-offset-1">
+					<Menu.Button className="relative flex rounded-full text-white bg-indigo-600 text-sm hover:outline-none hover:ring-1 hover:ring-white hover:ring-offset-1">
 					  <span className="absolute -inset-1.5" />
 					  <span className="sr-only">Open user menu</span>
 					  <UserCircleIcon aria-hidden="true" className="h-8 w-8" />
