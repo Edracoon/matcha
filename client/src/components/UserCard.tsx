@@ -34,6 +34,7 @@ export default function UserCard({ user }: { user: UserType; }) {
 	const nav = useNavigate();
 
 	useEffect(() => {
+		// console.log(user.pictures);
 	}, []);
 
 	function onInteraction(liked: boolean) {

@@ -5,9 +5,12 @@ import LikeSchema from "../models/like.model.js";
 
 const db = new SQLib();
 
-export const UsersSocket = [];
+export let UsersSocket = [];
 
 const Authenticate = async (token, socket) => {
+    // console.log("Auth token", token);
+    if (!token)
+        return null;
     const data = jwt.verify(token, Config.jwtSecret);
 
     if (!data.user)
@@ -15,9 +18,9 @@ const Authenticate = async (token, socket) => {
     const user = await db.findOne("USER", { id: data.user.id });
     if (!user)
         return null;
-    const UserSocket = UsersSocket[data.user.id];
+    const UserSocket = UsersSocket.find((u) => u.id === data.user.id && socket === u.socket);
     if (!UserSocket) {
-        UsersSocket[data.user.id] = socket;
+        UsersSocket.push({ id: data.user.id, socket });
     }
     return user;
 }
@@ -25,14 +28,20 @@ const Authenticate = async (token, socket) => {
 export default class SocketService {
 
     static async NotifHandler(Notif) {
-        const userSocket = UsersSocket[Notif.receiverId];
+        // console.log("Notif", Notif);
+
+        const userSocket = UsersSocket.find((u) => u.id === Notif.receiverId);
         if (userSocket) {
-            userSocket.emit('Notif', Notif);
+            // console.log("User connected");
+            const sender = await db.findOne("USER", { id: Notif.senderId });
+            userSocket.socket.emit('Notif', { notif : Notif, sender});
+        } else {
+            // console.log("User not connected");
         }
     }
 
-    static async isConnected(userId) {
-        return UsersSocket[userId] ? true : false;
+    static isConnected(userId) {
+        return UsersSocket.find((u) => u.id === userId) ? true : false;
     }
 
     static async Handler(socket, io) {
@@ -41,16 +50,30 @@ export default class SocketService {
             const user = await Authenticate(token, socket);
             if (!user)
                 return;
+            // console.log("User connected", user.id);
             io.emit('userConnected', user.id);
         });
 
-        socket.on('disconnect', async () => {
-            const user = await Authenticate(socket.handshake.query.token, socket);
+        socket.on('manualDisconnect', async (token) => {
+            const user = await Authenticate(token, socket);
             if (!user)
                 return;
-            io.emit('userDisconnected', user.id);
+            console.log("User disconnected", user.id);
+            io.emit('userDisconnected', {userId: user.id, lastConnection: new Date()});
             await db.update("USER", { id: user.id }, { lastConnection: new Date() });
-            delete UsersSocket[user.id];
+            UsersSocket = UsersSocket.filter((u) => u.id !== user.id);
+        });
+
+        socket.on('disconnect', async () => {
+            const socketDisconnected = UsersSocket.filter((u) => u.socket === socket);
+            if (socketDisconnected) {
+                for (const user of socketDisconnected) {
+                    console.log("User disconnected", user.id);
+                    io.emit('userDisconnected', {userId: user.id, lastConnection: new Date()});
+                    await db.update("USER", { id: user.id }, { lastConnection: new Date() });
+                    UsersSocket = UsersSocket.filter((u) => u.id !== user.id);
+                }
+            }
         });
 
         socket.on('sendMessage', async (data) => {
@@ -58,17 +81,30 @@ export default class SocketService {
             if (!user)
                 return;
             if (data.receiverId && data.content) {
-                let message = {
+                const message = {
                     senderId: user.id,
                     receiverId: data.receiverId,
                     content: data.content,
                     date: new Date()
                 };
+                const notif = {
+                    senderId: user.id,
+                    receiverId: data.receiverId,
+                    category: "message",
+                    date: new Date(),
+                    seen: false
+                };
                 try {
                     await db.insert("MESSAGE", message);
-                    const receiverSocket = UsersSocket[data.receiverId];
+                    await db.insert("NOTIF", notif);
+                    SocketService.NotifHandler(notif);
+                    // const receiverSocket = UsersSocket.find((u) => u.id === data.receiverId);
+                    const receiverSocket = UsersSocket.filter((u) => u.id !== user.id);
                     if (receiverSocket) {
-                        receiverSocket.emit('receiveMesage', message);
+                        receiverSocket.forEach((u) => {
+                            u.socket.emit('receiveMessage', message);
+                        });
+                        // receiverSocket.socket.emit('receiveMessage', message);
                     }
                 } catch (e) {
                     console.log(e);

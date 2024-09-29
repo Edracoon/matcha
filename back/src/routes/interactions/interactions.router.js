@@ -49,4 +49,6 @@ interactionsRouter.post('/report', AuthMiddleware, interactionsController.Report
 
 interactionsRouter.get('/getMatches', AuthMiddleware, interactionsController.GetMatches);
 
+interactionsRouter.post('/getMessages', AuthMiddleware, interactionsController.GetMessages);
+
 export default interactionsRouter;

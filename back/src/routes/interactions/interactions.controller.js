@@ -18,6 +18,22 @@ async function updateFameRating(User) {
 
     await db.update("USER", { id: User.id }, { fameRating: fameRating });
 }
+
+const Distance = (lat1, lon1, lat2, lon2) => {
+    const R = 6371e3; // metres
+    const φ1 = lat1 * Math.PI / 180; // φ, λ in radians
+    const φ2 = lat2 * Math.PI / 180;
+    const Δφ = (lat2 - lat1) * Math.PI / 180;
+    const Δλ = (lon2 - lon1) * Math.PI / 180;
+
+    const a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+        Math.cos(φ1) * Math.cos(φ2) *
+        Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+    return R * c / 1000; // in kilometres
+}
+
 class interactionsController {
 
     static async LikeInteraction(req, res) {
@@ -37,14 +53,14 @@ class interactionsController {
             const like = await db.insert("LIKES", likeToInsert);
             if (like.type === "like") {
                 const isLikedBack = await db.findOne("LIKES", { type: "like", likedBy: receiverId, gotLiked: userId });
-                const notif = {
+                let notif = {
                     senderId: userId,
                     receiverId: receiverId,
                     category: isLikedBack ? "liked_back" : "liked",
                     date: new Date(),
                     seen: false,
                 };
-                await db.insert("NOTIF", notif);
+                notif = await db.insert("NOTIF", notif);
                 SocketService.NotifHandler(notif);
 
                 if (isLikedBack) {
@@ -145,7 +161,19 @@ class interactionsController {
         try {
             const notifs = await db.find("NOTIF", { receiverId: userId });
 
-            return res.status(200).json(notifs);
+            let returnNotifs = [];
+
+            for (const notif of notifs) {
+                const sender = await db.findOne("USER", { id: notif.senderId });
+                returnNotifs.push({
+                    sender: UserSchema.methods.formatSafeUser(sender),
+                    notif : notif
+                });
+            }
+
+            // console.log(returnNotifs);
+            
+            return res.status(200).json(returnNotifs);
         } catch (e) {
             return res.status(400).json({ error: e });
         }
@@ -174,24 +202,65 @@ class interactionsController {
         const userId = req.user.id;
 
         try {
-            const likes = await db.find("LIKES", { likedBy: userId });
-            const matches = likes.filter(like => {
-                return likes.find(l => l.likedBy === like.gotLiked && l.gotLiked === like.likedBy);
-            });
+            const likes = await db.findAll("LIKES");
 
-            matches.map(likes => {
-                const user = likes.gotLiked === userId ? likes.likedBy : likes.gotLiked;
+            const mutualLikes = [];
+
+            likes.forEach((like) => {
+                // Chercher un "like" réciproque
+                const reciprocalLike = likes.find((l) => 
+                    l.likedBy === like.gotLiked && l.gotLiked === like.likedBy && l.type === 'like' && like.type === 'like'
+                );
                 
-                user.isConnected = SocketService.isConnected(user);
-
-                return UserSchema.methods.formatSafeUser(user);
+                if (reciprocalLike) {
+                    // Ajouter uniquement les utilisateurs qui ne sont pas déjà dans le tableau
+                    if (!mutualLikes.some((m) => (m.likedBy === like.likedBy && m.gotLiked === like.gotLiked))) {
+                        mutualLikes.push(like);
+                    }
+                }
             });
 
-            return res.status(200).json(matches);
+            let matches = [];
+
+            for (const like of mutualLikes) {
+            
+                const user = await db.findOne("USER", { id: like.gotLiked === userId ? like.likedBy : like.gotLiked });
+                const pictures = await db.find("PICTURE", { userId: user.id });
+
+
+                user.distance = Distance(user.latitude, user.longitude, req.user.latitude, req.user.longitude);
+                user.pictures = pictures.map(picture => picture.url);
+                user.isConnected = SocketService.isConnected(user.id);
+
+                matches.push(UserSchema.methods.formatSafeUser(user));
+            }
+
+
+            const uniqueUsers = [...new Map(matches.map(user => [user.id, user])).values()];
+
+
+            return res.status(200).json(uniqueUsers);
+        } catch (e) {
+            console.log(e);
+            return res.status(400).json({ error: e });
+        }
+    }
+
+    static async GetMessages(req, res) {
+        const userId = req.user.id;
+        const receiverId = req.body.receiverId;
+
+        try {
+            const messages = await db.find("MESSAGE", { senderId: userId, receiverId: receiverId });
+            messages.push(...await db.find("MESSAGE", { senderId: receiverId, receiverId: userId }));
+
+            messages.sort((a, b) => a.date - b.date);
+            return res.status(200).json(messages);
         } catch (e) {
             return res.status(400).json({ error: e });
         }
     }
+
 }
 
 export default interactionsController;

@@ -103,6 +103,7 @@ class Application {
                 }
             });
 
+            
             // Gérer les connexions WebSocket
             io.on('connection', async (socket) => {
                 console.log('Nouvelle connexion WebSocket :', socket.id);
