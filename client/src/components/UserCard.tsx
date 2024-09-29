@@ -1,11 +1,9 @@
-import { useState, useEffect } from 'react';
-import { showNotification } from '../components/Notif';
+import { useEffect } from 'react';
 import apiService from '../services/apiService';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/authProvider';
-import Navbar from '../components/Navbar';
-import { useSearchParams } from 'react-router-dom';
-import { CameraIcon, PlusCircleIcon, PlusIcon, XMarkIcon, HeartIcon } from '@heroicons/react/24/outline';
+import { HeartIcon, XMarkIcon } from '@heroicons/react/24/solid';
+
 
 export type UserType = {
 	CommonTags: number;
@@ -56,11 +54,11 @@ export default function UserCard({ user }: { user: UserType; }) {
 			<div onClick={() => nav("/profile/" + user.id)} className="rounded-lg bg-indigo-500 p-4 text-left">
 				<img alt="" className="w-full rounded-lg aspect-[13/14] object-cover overflow-hidden" src={user.pictures[0]} />
 				<div className='flex flex-row justify-center w-full gap-4 pt-2'>
-					<button onClick={() => onInteraction(false)} className="text-red-400 bg-white p-2 rounded-full text-lg sm:!w-auto z-10 !gap-0 z-1">
-						<XMarkIcon className="h-3 w-3 sm:h-5 sm:w-5" />
+					<button onClick={(e) => {e.stopPropagation(); onInteraction(false)}} className="text-indigo-500 bg-white p-2 rounded-full text-lg sm:!w-auto !gap-0">
+						<XMarkIcon className="h-3 w-3 sm:h-6 sm:w-6" />
 					</button>
-					<button onClick={() => onInteraction(true)} className="text-green-400 bg-white p-2 rounded-full text-lg sm:!w-auto z-10 !gap-0 z-1">
-						<HeartIcon className="h-3 w-3 sm:h-5 sm:w-5" />
+					<button onClick={(e) => {e.stopPropagation(); onInteraction(true)}} className="text-red-500 bg-white p-2 rounded-full text-lg sm:!w-auto !gap-0">
+						<HeartIcon className="h-3 w-3 sm:h-6 sm:w-6" />
 					</button>
 				</div>
 				<div className='flex flex-col sm:flex-row justify-between w-full'>

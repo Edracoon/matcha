@@ -75,7 +75,7 @@ export default function StepPictures() {
 		<div className='flex py-4 flex-col gap-8 min-h-[450px] justify-center'>
 			<h1 className="text-2xl">Choose the best pictures to show you off !</h1>
 			<div className='h-96 sm:h-[600px] w-full !rounded-lg flex flex-col gap-4 justify-center'>
-				<div className="flex sm:flex-row flex-col justify-center gap-4">
+				<div className="flex sm:flex-row flex-col justify-center gap-4 mt-8">
 					<Carousel urlsArray={pictures} onAdd={addPicture} onDelete={deletePicture} />
 				</div>
 			

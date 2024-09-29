@@ -240,14 +240,11 @@ class AccountController {
 			realTags.push((await sql.findOne("TAG", { id: tag.tagId })));
 		}
 
-		const fameRating = likes * 10 + viewsCount;
-
 		return res.status(200).json({ user: {
 			...UserSchema.methods.formatSafeUser(req.user),
-			tags,
+			tags: realTags,
 			pictures: pictureUrls,
 			views: viewsCount,
-			fameRating,
 			likes,
 		}});
 	}
@@ -283,9 +280,10 @@ class AccountController {
 
 		const likes = (await sql.find("LIKES", { gotLiked: user.id })).length;
 		const views = (await sql.find("VIEW", { viewed: user.id })).length;
-		const fameRating = likes * 10 + views;
 
-		user.tags = tags;
+		const fameRating = likes.length / views.length;
+
+		user.tags = realTags;
 		user.pictures = pictureUrls;
 		user.views = viewsCount;
 		user.fameRating = fameRating;

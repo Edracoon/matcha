@@ -7,9 +7,10 @@ interface CarouselProps {
 	isEdit?: boolean;
 	onAdd?: (files: File) => void;
 	onDelete?: (id: string) => void;
+	sx?: string;
 }
 
-export default function Carousel({ urlsArray = [], isEdit = true, onAdd, onDelete }: CarouselProps) {
+export default function Carousel({ urlsArray = [], isEdit = true, onAdd, onDelete, sx = "" }: CarouselProps) {
 
 	const [photosArray, setPhotosArray] = useState(urlsArray);
 	const [photoIdx, setPhotoIdx] = useState(0);
@@ -81,7 +82,7 @@ export default function Carousel({ urlsArray = [], isEdit = true, onAdd, onDelet
 	}
 
 	return (
-		<div className="carousel w-[360px] sm:w-[500px] flex flex-row relative overflow-hidden h-[500px] sm:h-[600px] my-8">
+		<div className={"carousel w-full sm:w-[500px] flex flex-row relative overflow-hidden h-[500px] sm:h-[600px] " + sx}>
 			<div className="carousel-inner flex w-full">
 				{photosArray.length === 0 &&
 					<div style={{ flex: '0 0 auto' }} className="w-full">
