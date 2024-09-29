@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 // import { showNotification } from '../components/Notif';
 // import apiService from '../services/apiService';
 import { useNavigate } from 'react-router-dom';
@@ -20,6 +20,7 @@ export default function Navbar({ sx }: { sx?: string }) {
 	const { logout } = useAuth();
 	const navigate = useNavigate();
     const [cookies] = useCookies();
+    const [isOpen, setIsOpen] = useState(false);
 	type Notification = {
 		notif: {
 			category: string;
@@ -63,18 +64,25 @@ export default function Navbar({ sx }: { sx?: string }) {
 		return classes.filter(Boolean).join(' ')
 	}
 
+    useEffect(() => {
+        if (!isOpen) return;
+        console.log("Updating notifs", notifs);
+        apiService({
+            method: 'POST',
+            path: "/updateNotifs",
+            token: cookies.accessToken,
+            options: { data: { notifs: notifs } },
+            onSuccess: (data) => {
+                console.log(data);
+                setNotifs(data);
+            },
+            onError: (error) => {
+                console.log(error);
+            }
+        })
+    }, [cookies.accessToken, isOpen, notifs]); 
+
 	useEffect(() => {
-        // socket.connect();        
-
-        // if (cookies.accessToken) {
-        //     socket.emit('auth', cookies.accessToken);
-        // }
-
-        socket.on('Notif', (data) => {
-            console.log("Notif received", data);
-            setNotifs([...notifs, data]);
-        });
-
 		const updated = navigation.map((item: navItem) => {
 			item.current = false;
 			if (window.location.pathname === item.path)
@@ -99,13 +107,24 @@ export default function Navbar({ sx }: { sx?: string }) {
         
 		// Update the state
 		setNavigation(updated);
-		
-        return () => {
-			socket.off('Notif'); // Supprimer l'écoute de l'événement 'Notif'
-			handleDisconnectWithData(cookies.accessToken) // Déconnecter le socket proprement
-		};
 
 	}, [window.location.pathname, cookies.accessToken]);
+
+    useEffect(() => {
+        socket.on('Notif', (data) => {
+            console.log("Received notification", data);
+            apiService({
+                method: 'GET',
+                path: '/getNotifs',
+                token: cookies.accessToken,
+                onSuccess: (data) => {
+                    console.log(data);
+                    setNotifs(data);
+                },
+                onError: () => { }
+            });
+        });
+    }, [cookies.accessToken]);
 
 	return (
 		<Disclosure as="div" className={"bg-indigo-600 " + sx} >
@@ -163,7 +182,10 @@ export default function Navbar({ sx }: { sx?: string }) {
                                 <span className="sr-only">Open user menu</span>
                                 <BellIcon aria-hidden="true" className="h-6 w-6" />
                             </Menu.Button> */}
-                            <Menu.Button className="relative flex rounded-full text-white bg-indigo-600 text-sm hover:outline-none hover:ring-1 hover:ring-white hover:ring-offset-1">
+                            <Menu.Button 
+                                className="relative flex rounded-full text-white bg-indigo-600 text-sm hover:outline-none hover:ring-1 hover:ring-white hover:ring-offset-1"
+                                onClick={() => setIsOpen(!isOpen)}
+                            >
                                 <span className="absolute -inset-1.5" />
                                 <span className="sr-only">Open user menu</span>
                                 
@@ -172,9 +194,9 @@ export default function Navbar({ sx }: { sx?: string }) {
                                     <BellIcon aria-hidden="true" className="h-6 w-6" />
                                     
                                     {/* Badge with the number of unread notifications */}
-                                    {notifs.length > 0 && (
+                                    {notifs.filter((notif) => !notif.notif.seen).length > 0 && (
                                         <span className="absolute top-0 right-0 inline-flex items-center justify-center px-1.5 py-0.5 text-xs font-bold leading-none text-white bg-red-600 rounded-full">
-                                            {notifs.filter((notif) => !notif.seen).length}
+                                            {notifs.filter((notif) => !notif.notif.seen).length}
                                         </span>
                                     )}
                                 </div>

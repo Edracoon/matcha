@@ -51,4 +51,6 @@ interactionsRouter.get('/getMatches', AuthMiddleware, interactionsController.Get
 
 interactionsRouter.post('/getMessages', AuthMiddleware, interactionsController.GetMessages);
 
+interactionsRouter.post('/updateNotifs', AuthMiddleware, interactionsController.UpdateNotifs);
+
 export default interactionsRouter;

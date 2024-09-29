@@ -172,6 +172,8 @@ class interactionsController {
             }
 
             // console.log(returnNotifs);
+
+            returnNotifs.sort((a, b) => b.notif.date - a.notif.date);
             
             return res.status(200).json(returnNotifs);
         } catch (e) {
@@ -244,6 +246,23 @@ class interactionsController {
             console.log(e);
             return res.status(400).json({ error: e });
         }
+    }
+
+    static async UpdateNotifs(req, user) {
+        const notifs = req.body.notifs;
+
+        const updatedNotifs = [];
+
+        for (const notif of notifs) {
+            const sender = await db.findOne("USER", { id: notif.sender.id });
+            const newNotif =  await db.update("NOTIF", { id: notif.notif.id }, { seen: true });
+
+            updatedNotifs.push({sender, notif: newNotif});
+        }
+
+        updatedNotifs.sort((a, b) => b.notif.date - a.notif.date);
+
+        return updatedNotifs;
     }
 
     static async GetMessages(req, res) {
