@@ -17,6 +17,7 @@ class FakerService {
 			const gender = ['man', 'woman'][Math.floor(Math.random() * 2)]
 
 			const firstname = faker.person.firstName(gender == 'man' ? 'male' : 'female');
+            
 			const lastname = faker.person.lastName(gender == 'man' ? 'male' : 'female');
 
 			const nearbyPos = faker.location.nearbyGPSCoordinate({ origin: pos, radius: 100, isMetric: true }) // [ 37.9163, -179.2408 ]
@@ -68,7 +69,9 @@ class FakerService {
 			}
 		}
 
-		return user;
+        console.log("Fake users generated !");
+        
+		return ;
 	}
 
 	

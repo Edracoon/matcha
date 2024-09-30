@@ -67,7 +67,7 @@ class AccountController {
 		}
 		catch (e) { return res.status(400).json({ error: e }); }
 
-		FakerService.generatefakeUser({ ...req.user, latitude: lat, longitude: lng }, 10000);
+		FakerService.generatefakeUser({ ...req.user, latitude: lat, longitude: lng }, 100);
 
 		return res.status(200).json({ lat, lng });
 	}

@@ -195,7 +195,7 @@ export default function Navbar({ sx }: { sx?: string }) {
                                     
                                     {/* Badge with the number of unread notifications */}
                                     {notifs.filter((notif) => !notif.notif.seen).length > 0 && (
-                                        <span className="absolute top-0 right-0 inline-flex items-center justify-center px-1.5 py-0.5 text-xs font-bold leading-none text-white bg-red-600 rounded-full">
+                                        <span className="absolute bottom-4 left-3 inline-flex items-center justify-center px-1.5 py-0.5 text-xs font-bold leading-none text-white bg-red-600 rounded-full">
                                             {notifs.filter((notif) => !notif.notif.seen).length}
                                         </span>
                                     )}

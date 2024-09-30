@@ -30,6 +30,16 @@ const Authenticate = async (token, socket) => {
     }
 }
 
+const isMatch = async (userId, receiverId) => {
+    try {
+        const like2 = await db.findOne("LIKES", { likerId: receiverId, likedId: userId });
+        const like1 = await db.findOne("LIKES", { likerId: userId, likedId: receiverId });
+        return like1 && like2;
+    } catch (e) {
+        return false;
+    }
+}
+
 export default class SocketService {
 
     static async NotifHandler(Notif) {
@@ -86,6 +96,8 @@ export default class SocketService {
             if (!user)
                 return;
             if (data.receiverId && data.content) {
+                if (!isMatch(user.id, data.receiverId))
+                    return;
                 const message = {
                     senderId: user.id,
                     receiverId: data.receiverId,

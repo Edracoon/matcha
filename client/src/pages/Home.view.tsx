@@ -40,17 +40,8 @@ export default function HomeView() {
 		})
 	}, []);
 
-	const [filters, setFilters] = useState({
-		ageMin: 18,
-		ageMax: 100,
-		fameMin: 1,
-		fameMax: 100,
-		distance: 100,
-		selectedTags: [],
-	});
-
-	useEffect(() => {
-		if (!isFilterOpen){
+    function search() {
+        if (!isFilterOpen){
             setLoading(true);
             apiService({
                 method: 'POST',
@@ -92,6 +83,19 @@ export default function HomeView() {
 			},
 			onError: () => { }
 		})
+    }
+
+	const [filters, setFilters] = useState({
+		ageMin: 18,
+		ageMax: 100,
+		fameMin: 1,
+		fameMax: 100,
+		distance: 100,
+		selectedTags: [],
+	});
+
+	useEffect(() => {
+		search();
 	}, [cookies.accessToken, filters.ageMax, filters.ageMin, filters.distance, filters.fameMax, filters.fameMin, filters.selectedTags, isFilterOpen]);
 
       const handleFilterChange = (newFilters) => {
@@ -107,9 +111,9 @@ export default function HomeView() {
             <FilterComponent filters={filters} onFilterChange={handleFilterChange} isOpen={isFilterOpen} setIsOpen={setIsFilterOpen}/>
 			<div className="p-12 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4 ">
 				{loading && 
-					Array.from({ length: 12 }).map(() => (
+					Array.from({ length: 16 }).map(() => (
 						<div className='animate-pulse rounded-lg bg-indigo-500 p-4 text-left'>
-							<img alt="" className="animate-pulse aspect-[13/13] w-full rounded-lg object-cover" src={""} />
+							<img alt="" className="animate-pulse aspect-[13/14] w-full rounded-lg object-cover" src={""} />
 							<div className='flex flex-row justify-center w-full gap-4 pt-2'>
 								<button className="text-red-400 bg-white p-2 rounded-full text-lg sm:!w-auto z-10 !gap-0 z-1">
 								</button>
@@ -131,7 +135,7 @@ export default function HomeView() {
 					))
 				}
 				{!loading && users.map((u: UserType) => (
-					<UserCard key={u.id} user={u} />
+					<UserCard key={u.id} user={u} reload={search}/>
 				))}
                 {users.length === 0 && !loading && <div className="text-white text-2xl">No users found</div>}
    			</div>

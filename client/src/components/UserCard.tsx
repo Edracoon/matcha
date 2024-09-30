@@ -28,7 +28,7 @@ export type UserType = {
 	wantToMeet: string;
 };
 
-export default function UserCard({ user }: { user: UserType; }) {
+export default function UserCard({ user, reload }: { user: UserType, reload: () => void }) {
 
 	const { cookies } = useAuth();
 	const nav = useNavigate();
@@ -36,7 +36,7 @@ export default function UserCard({ user }: { user: UserType; }) {
 
 
 	useEffect(() => {
-		// console.log(user.pictures);
+
 	}, []);
 
 	function onInteraction(liked: boolean) {
@@ -46,6 +46,7 @@ export default function UserCard({ user }: { user: UserType; }) {
 			token: cookies.accessToken,
 			options: { data: { type: liked ? "like" : "reject", receiverId: user.id } },
 			onSuccess: () => {
+                reload();
 			},
 			onError: () => {
 			}

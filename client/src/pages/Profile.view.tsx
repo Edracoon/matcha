@@ -62,6 +62,19 @@ export default function ProfileView() {
 			onError: () => {}
 		})
 
+        apiService({
+            method: 'POST',
+            path: '/view',
+            token: cookies.accessToken,
+            options: { data: { receiverId: Number(id) } },
+            onSuccess: (data) => {
+                console.log(data);
+            },
+            onError: (e) => {
+                console.log(e);
+            }
+        })
+            
 		apiService({
 			method: 'GET',
 			path: "/account/myself",
