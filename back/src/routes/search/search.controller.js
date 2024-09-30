@@ -93,7 +93,6 @@ class SearchController {
     static async GetUserWithFilter(req, res) {
 		const askingUser = req.user;
 
-        const filter = ["ageGap", "fameGap", "distanceGap", "tags"];
         const ageGap = req.body["ageGap"];
         const fameGap = req.body["fameGap"];
         const distanceGap = req.body["distanceGap"];

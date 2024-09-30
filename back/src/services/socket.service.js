@@ -9,20 +9,25 @@ export let UsersSocket = [];
 
 const Authenticate = async (token, socket) => {
     // console.log("Auth token", token);
-    if (!token)
+    try {
+        if (!token)
+            return null;
+        const data = jwt.verify(token, Config.jwtSecret);
+    
+        if (!data.user)
+            return null;
+        const user = await db.findOne("USER", { id: data.user.id });
+        if (!user)
+            return null;
+        const UserSocket = UsersSocket.find((u) => u.id === data.user.id && socket === u.socket);
+        if (!UserSocket) {
+            UsersSocket.push({ id: data.user.id, socket });
+        }
+        return user;
+    } catch (e) {
+        console.log(e);
         return null;
-    const data = jwt.verify(token, Config.jwtSecret);
-
-    if (!data.user)
-        return null;
-    const user = await db.findOne("USER", { id: data.user.id });
-    if (!user)
-        return null;
-    const UserSocket = UsersSocket.find((u) => u.id === data.user.id && socket === u.socket);
-    if (!UserSocket) {
-        UsersSocket.push({ id: data.user.id, socket });
     }
-    return user;
 }
 
 export default class SocketService {
