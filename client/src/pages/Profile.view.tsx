@@ -5,6 +5,9 @@ import { useParams } from 'react-router-dom';
 import apiService from '../services/apiService';
 import { useAuth } from '../contexts/authProvider';
 import { ChevronDoubleLeftIcon, ChevronDoubleRightIcon } from '@heroicons/react/24/solid';
+import { HeartIcon, XMarkIcon } from '@heroicons/react/24/solid';
+import { useNavigate } from 'react-router-dom';
+import ConfirmModal from '../components/ConfirmModal';
 
 function classNames(...classes: string[]) {
 	return classes.filter(Boolean).join(' ')
@@ -44,7 +47,9 @@ export default function ProfileView() {
 	const { cookies } = useAuth();
 	const [mySelf, setMySelf] = useState<UserType | undefined>();
 	const [profile, setProfile] = useState<UserType | undefined>();
-	
+    const nav = useNavigate();
+    const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+
 	useEffect(() => {
 		apiService({
 			method: 'GET',
@@ -67,6 +72,35 @@ export default function ProfileView() {
 			onError: () => {}
 		})
 	}, []);
+
+
+    function onInteraction(liked: boolean) {
+		apiService({
+			method: 'POST',
+			path: '/like',
+			token: cookies.accessToken,
+			options: { data: { type: liked ? "like" : "reject", receiverId: profile.id } },
+			onSuccess: () => {
+			},
+			onError: () => {
+			}
+		});
+        nav("/home");
+	}
+
+    function blockInteraction() {
+        apiService({
+			method: 'POST',
+			path: '/block',
+			token: cookies.accessToken,
+			options: { data: { receiverId: profile.id } },
+			onSuccess: () => {
+			},
+			onError: () => {
+			}
+		});
+        nav("/home");
+    }
 
 	function tagContained(tag: TagType) {
 		let ret = false;
@@ -103,6 +137,20 @@ export default function ProfileView() {
 					</div>
 				</div>
 			</div>
+            <div className='flex flex-row justify-center mt-8 gap-3'>
+                <button onClick={() => {onInteraction(false)}} className="text-indigo-500 bg-white p-2 rounded-full text-lg sm:!w-auto !gap-0">
+                    <XMarkIcon className="h-3 w-3 sm:h-6 sm:w-6" />
+                </button>
+                <button onClick={() => {onInteraction(true)}} className="text-red-500 bg-white p-2 rounded-full text-lg sm:!w-auto !gap-0">
+                    <HeartIcon className="h-3 w-3 sm:h-6 sm:w-6" />
+                </button>
+                <button className="text-red-500 bg-white p-2 rounded-full text-lg sm:!w-auto !gap-0" title="Bloquer cet utilisateur" onClick={blockInteraction}>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M18.364 18.364A9 9 0 0 0 5.636 5.636m12.728 12.728A9 9 0 0 1 5.636 5.636m12.728 12.728L5.636 5.636" />
+                    </svg>
+                </button>
+            </div>
+            
 		</>
 	);
 }

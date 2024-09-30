@@ -4,6 +4,7 @@ import apiService from '../services/apiService';
 import { useAuth } from '../contexts/authProvider';
 import Navbar from '../components/Navbar';
 import UserCard, { UserType } from '../components/UserCard';
+import FilterComponent from '../components/FilterComponent';
 
 export default function HomeView() {
 
@@ -11,6 +12,8 @@ export default function HomeView() {
 
 	const [loading, setLoading] = useState(true);
 	const [users, setUsers] = useState<UserType[]>([]);
+    const [isFilterOpen, setIsFilterOpen] = useState(false);
+    const [tags, setTags] = useState([]);
 
 	useEffect(() => {
 		setLoading(true);
@@ -24,11 +27,84 @@ export default function HomeView() {
 			},
 			onError: () => { }
 		})
+
+        apiService({
+			method: 'GET',
+			path: '/account/all-tags',
+			token: cookies.accessToken,
+			onSuccess: (data) => {
+                console.log(data);
+				setTags(data.tags);
+			},
+			onError: () => {}
+		})
 	}, []);
+
+	const [filters, setFilters] = useState({
+		ageMin: 18,
+		ageMax: 100,
+		fameMin: 1,
+		fameMax: 100,
+		distance: 100,
+		selectedTags: [],
+	});
+
+	useEffect(() => {
+		if (!isFilterOpen){
+            setLoading(true);
+            apiService({
+                method: 'POST',
+                path: '/search',
+                token: cookies.accessToken,
+                onSuccess: (data) => {
+                    setUsers(data.users);
+                    setLoading(false);
+                },
+                onError: () => { }
+            })
+            return ;
+        }
+		apiService({
+			method: 'POST',
+			path: '/search',
+			token: cookies.accessToken,
+			options: { 
+                data: {
+                    ageGap: {
+                        min: filters.ageMin, 
+                        max: filters.ageMax
+                    }, 
+                    fameGap: {
+                        min: filters.fameMin / 100,
+                        max: filters.fameMax / 100
+                    },
+                    distanceGap: {
+                        min: 0, 
+                        max: filters.distance
+                    }, 
+                    tags: filters.selectedTags 
+                }
+            },
+			onSuccess: (data) => {
+                console.log("Refresh data with filters : ", data);
+				setUsers(data.users);
+				setLoading(false);
+			},
+			onError: () => { }
+		})
+	}, [cookies.accessToken, filters.ageMax, filters.ageMin, filters.distance, filters.fameMax, filters.fameMin, filters.selectedTags, isFilterOpen]);
+
+      const handleFilterChange = (newFilters) => {
+        setFilters((prevFilters) => ({
+          ...prevFilters,
+          ...newFilters, // Met à jour uniquement les parties modifiées du filtre
+        }));
+      };
 
 	return (
 		<>
 			<Navbar />
+            <FilterComponent filters={filters} onFilterChange={handleFilterChange} isOpen={isFilterOpen} setIsOpen={setIsFilterOpen}/>
 			<div className="p-12 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4 ">
 				{loading && 
 					Array.from({ length: 12 }).map(() => (
@@ -57,6 +133,7 @@ export default function HomeView() {
 				{!loading && users.map((u: UserType) => (
 					<UserCard key={u.id} user={u} />
 				))}
+                {users.length === 0 && !loading && <div className="text-white text-2xl">No users found</div>}
    			</div>
 		</>
 	);

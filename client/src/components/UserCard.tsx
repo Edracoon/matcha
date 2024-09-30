@@ -3,7 +3,7 @@ import apiService from '../services/apiService';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/authProvider';
 import { HeartIcon, XMarkIcon } from '@heroicons/react/24/solid';
-
+import ConfirmModal from './ConfirmModal';
 
 export type UserType = {
 	CommonTags: number;
@@ -32,6 +32,8 @@ export default function UserCard({ user }: { user: UserType; }) {
 
 	const { cookies } = useAuth();
 	const nav = useNavigate();
+    
+
 
 	useEffect(() => {
 		// console.log(user.pictures);
