@@ -5,8 +5,8 @@ import { showNotification, NotifType } from "./Notif";
 interface CarouselProps {
 	urlsArray: string[];
 	isEdit?: boolean;
-	onAdd?: (files: File) => void;
-	onDelete?: (id: string) => void;
+	onAdd?: (files: File) => void | null;
+	onDelete?: (id: string) => void | null;
 	sx?: string;
 }
 
@@ -54,7 +54,7 @@ export default function Carousel({ urlsArray = [], isEdit = true, onAdd, onDelet
 			if (photosArray.length >= maxPhotos)
 				showNotification(NotifType.WARNING, "Careful", "You can't upload more than 5 images");
 			else {
-				onAdd?(image) : null;
+				onAdd ? onAdd(image) : null;
 			}
 		}
 	}
@@ -72,7 +72,7 @@ export default function Carousel({ urlsArray = [], isEdit = true, onAdd, onDelet
 		
 		carousel.style.transform = `translateX(-${newIdx}00%)`;
 
-		onDelete?(photosArray[photoIdx]) : null;
+		onDelete ? onDelete(photosArray[photoIdx]) : null;
 	}
 
 	const handleClick = () => {
