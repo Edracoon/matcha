@@ -42,7 +42,8 @@ class AuthController {
 				username: req.body.username,
 				password: encryptedPass,
 				emailValidationCode: Math.floor(100000 + Math.random() * 900000),
-				emailValidated: false
+				emailValidated: false,
+                fameRating: 1.0,
 			});
 		} catch (e) {
 			const trace = new Error().stack?.match(/at\s+(.+):(\d+):\d+/);

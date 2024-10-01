@@ -8,15 +8,15 @@ import { Socket } from "socket.io";
 
 const db = new SQLib();
 
-async function updateFameRating(User) {
-    const user = await db.findOne("USER", { id: User.id });
+async function updateFameRating(UserId) {
+    const user = await db.findOne("USER", { id: UserId });
 
-    const likes = await db.find("LIKES", { gotLiked: User.id });
-    const views = await db.find("VIEW", { viewed: User.id });
+    const likes = await db.find("LIKES", { gotLiked: UserId});
+    const views = await db.find("VIEW", { viewed: UserId });
 
     const fameRating = likes.length / (views.length || 1);
 
-    await db.update("USER", { id: User.id }, { fameRating: fameRating });
+    await db.update("USER", { id: UserId }, { fameRating: fameRating });
 }
 
 const Distance = (lat1, lon1, lat2, lon2) => {
@@ -248,21 +248,30 @@ class interactionsController {
         }
     }
 
-    static async UpdateNotifs(req, user) {
+    static async UpdateNotifs(req, res) {
         const notifs = req.body.notifs;
 
-        const updatedNotifs = [];
-
+        console.log(notifs);
+        
         for (const notif of notifs) {
-            const sender = await db.findOne("USER", { id: notif.sender.id });
-            const newNotif =  await db.update("NOTIF", { id: notif.notif.id }, { seen: true });
-
-            updatedNotifs.push({sender, notif: newNotif});
+            await db.update("NOTIF", { id: notif.notif.id }, { seen: true });
         }
 
-        updatedNotifs.sort((a, b) => b.notif.date - a.notif.date);
+        const returnObject = [];
 
-        return updatedNotifs;
+        const updatedNotifs = await db.find("NOTIF", { receiverId: req.user.id });
+
+
+        for (let i = 0; i < updatedNotifs.length; i++) {
+            const sender = await db.findOne("USER", { id: updatedNotifs[i].senderId });
+            returnObject.push({sender, notif: updatedNotifs[i]});
+        }
+
+        returnObject.sort((a, b) => b.notif.date - a.notif.date);
+
+        console.log("RETURN OBJH ->", returnObject);
+
+        return res.status(200).json(returnObject);
     }
 
     static async GetMessages(req, res) {
@@ -278,6 +287,23 @@ class interactionsController {
         } catch (e) {
             return res.status(400).json({ error: e });
         }
+    }
+
+    static async HasLiked (req, res) {
+        const userId = req.user.id;
+
+        if (!req.body.receiverId)
+            return res.status(400).json({ error: "Missing receiverId" });
+
+        const hasLiked = await db.findOne("LIKES", { likedBy: req.body.receiverId, gotLiked: userId });
+
+        const isLikedBack = await db.findOne("LIKES", { likedBy: userId, gotLiked: req.body.receiverId });
+
+        if (isLikedBack) {
+            return res.status(200).json({ hasLiked: false });
+        }
+
+        return res.status(200).json({ hasLiked: hasLiked ? true : false });
     }
 
 }

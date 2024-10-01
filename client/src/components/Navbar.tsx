@@ -66,21 +66,21 @@ export default function Navbar({ sx }: { sx?: string }) {
 
     useEffect(() => {
         if (!isOpen) return;
-        console.log("Updating notifs", notifs);
+        console.log("Notif to update", notifs);
         apiService({
             method: 'POST',
             path: "/updateNotifs",
             token: cookies.accessToken,
             options: { data: { notifs: notifs } },
             onSuccess: (data) => {
-                console.log(data);
+                console.log("New Notifs ->", data);
                 setNotifs(data);
             },
             onError: (error) => {
                 console.log(error);
             }
         })
-    }, [cookies.accessToken, isOpen, notifs]); 
+    }, [cookies.accessToken, isOpen]); 
 
 	useEffect(() => {
 		const updated = navigation.map((item: navItem) => {

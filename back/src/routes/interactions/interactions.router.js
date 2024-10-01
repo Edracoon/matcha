@@ -53,4 +53,6 @@ interactionsRouter.post('/getMessages', AuthMiddleware, interactionsController.G
 
 interactionsRouter.post('/updateNotifs', AuthMiddleware, interactionsController.UpdateNotifs);
 
+interactionsRouter.post('/hasLiked', AuthMiddleware, interactionsController.HasLiked);
+
 export default interactionsRouter;

@@ -38,7 +38,8 @@ class FakerService {
 				emailValidated: true,
 				emailValidationCode: Math.floor(Math.random() * (999999 - 100000) + 100000),
 				isFake: true,
-				fameRating: Math.random()
+				fameRating: Math.random(),
+                lastConnection: faker.date.recent(),
 			};
 
 			// Store the user in db

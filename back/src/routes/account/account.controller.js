@@ -4,6 +4,7 @@ import FileService from "../../services/file.service.js";
 import UserSchema from "../../models/user.model.js";
 import FakerService from "../../services/faker.service.js";
 import { Faker } from "@faker-js/faker";
+import SocketService from "../../services/socket.service.js";
 
 const sql = new SQLib(); // Singleton
 
@@ -281,13 +282,17 @@ class AccountController {
 		const likes = (await sql.find("LIKES", { gotLiked: user.id })).length;
 		const views = (await sql.find("VIEW", { viewed: user.id })).length;
 
-		const fameRating = likes.length / views.length;
+		// const fameRating = likes.length / views.length;
 
 		user.tags = realTags;
 		user.pictures = pictureUrls;
 		user.views = viewsCount;
-		user.fameRating = fameRating;
+		// user.fameRating = fameRating;
+        user.isConnected = SocketService.isConnected(user.id);
 
+
+        // console.log("user", user);
+        
 		return res.status(200).json({
 			user: UserSchema.methods.formatSafeUser(user)
 		});
