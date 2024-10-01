@@ -105,7 +105,7 @@ function ChatComponent({match}) {
                                     : 'bg-gray-300 text-black rounded-bl-none'
                             }`}
                         >
-                            <p>{message.content}</p>
+                            <p className="break-words w-[10ch] whitespace-normal">{message.content}</p>
                             <p className="text-xs text-gray-400 mt-1">
                                 {new Date(message.date).toLocaleTimeString([], {
                                     hour: '2-digit',
@@ -279,7 +279,7 @@ export default function ChatView() {
                 <div className="w-96 bg-indigo-500 p-4 overflow-y-scroll">
                     <ul role="list" className="divide-y divide-gray-800">
                         { matches.map((match) => (
-                            <div>
+                            <div key={match.id}>
                                 <button key={match.id} onClick={() => nav('/profile/' + match.id)}>
                                     <MatchCards match={match} onClicked={() => setSelectedMatch(match)} />
                                 </button>

@@ -55,4 +55,6 @@ interactionsRouter.post('/updateNotifs', AuthMiddleware, interactionsController.
 
 interactionsRouter.post('/hasLiked', AuthMiddleware, interactionsController.HasLiked);
 
+interactionsRouter.post('/isMatch', AuthMiddleware, interactionsController.IsMatch);
+
 export default interactionsRouter;

@@ -35,7 +35,7 @@ export default function Navbar({ sx }: { sx?: string }) {
 
 	const [navigation, setNavigation] = useState<navItem[]>([
 		{ name: 'Home', icon: HeartIcon, path: '/home', current: false },
-		{ name: 'Matchs', icon: UsersIcon, path: '/matchs', current: false },
+		// { name: 'Matchs', icon: UsersIcon, path: '/matchs', current: false },
 		{ name: 'Chat', icon: ChatBubbleOvalLeftEllipsisIcon, path: '/chat', current: false },
 	])
 

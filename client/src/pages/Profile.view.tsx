@@ -51,6 +51,7 @@ export default function ProfileView() {
 	const [profile, setProfile] = useState<UserType | undefined>();
     const nav = useNavigate();
     const [hasLiked, setHasLiked] = useState(false);
+    const [isMatch, setIsMatch] = useState(false);
 
 	useEffect(() => {
 		apiService({
@@ -95,6 +96,17 @@ export default function ProfileView() {
             onSuccess: (data) => {
                 if (data.hasLiked)
                     setHasLiked(data.hasLiked);
+            },
+            onError: () => {}
+        });
+
+        apiService({
+            method: 'POST',
+            path: "/isMatch",
+            token: cookies.accessToken,
+            options: { data: { receiverId: Number(id) } },
+            onSuccess: (data) => {
+                setIsMatch(data.isMatch);
             },
             onError: () => {}
         });
@@ -206,6 +218,9 @@ export default function ProfileView() {
 							))}
 						</div>}
 					</div>
+                    <span>I am a {profile?.gender}</span>
+                    <span>I am looking for {profile?.wantToMeet}</span>
+                    <span>I am {profile?.age} years old</span>
                     { hasLiked && <div className="text-xl font-bold text-red-300">This user has liked your profile </div> }
                     { profile && profile.isConnected ? 
                         <div className="mt-1 flex items-center gap-x-1.5">
@@ -231,18 +246,29 @@ export default function ProfileView() {
 				</div>
 			</div>
             <div className='flex flex-row justify-center mt-8 gap-3'>
-                <button onClick={() => {onInteraction(false)}} className="text-indigo-500 bg-white p-2 rounded-full text-lg sm:!w-auto !gap-0">
-                    <XMarkIcon className="h-3 w-3 sm:h-6 sm:w-6" />
-                </button>
-                <button onClick={() => {onInteraction(true)}} className="text-red-500 bg-white p-2 rounded-full text-lg sm:!w-auto !gap-0">
-                    <HeartIcon className="h-3 w-3 sm:h-6 sm:w-6" />
-                </button>
-                <button className="text-red-500 bg-white p-2 rounded-full text-lg sm:!w-auto !gap-0" title="Bloquer cet utilisateur" onClick={blockInteraction}>
-                    <NoSymbolIcon className="h-3 w-3 sm:h-6 sm:w-6" />
-                </button>
-                <button className="text-orange-500 bg-white p-2 rounded-full text-lg sm:!w-auto !gap-0" title="Signaler cet utilisateur" onClick={ReportInteraction}>
-                    <FlagIcon className="h-3 w-3 sm:h-6 sm:w-6" />
-                </button>
+                { isMatch === true ?
+                <>
+                    <button className="text-red-500 bg-white p-2 rounded-full text-lg sm:!w-auto !gap-0" title="Bloquer cet utilisateur" onClick={blockInteraction}>
+                        <NoSymbolIcon className="h-3 w-3 sm:h-6 sm:w-6" />
+                    </button>
+                    <button className="text-orange-500 bg-white p-2 rounded-full text-lg sm:!w-auto !gap-0" title="Signaler cet utilisateur" onClick={ReportInteraction}>
+                        <FlagIcon className="h-3 w-3 sm:h-6 sm:w-6" />
+                    </button>
+                </>
+                :
+                <>
+                    <button onClick={() => { onInteraction(false); } } className="text-indigo-500 bg-white p-2 rounded-full text-lg sm:!w-auto !gap-0">
+                        <XMarkIcon className="h-3 w-3 sm:h-6 sm:w-6" />
+                    </button><button onClick={() => { onInteraction(true); } } className="text-red-500 bg-white p-2 rounded-full text-lg sm:!w-auto !gap-0">
+                        <HeartIcon className="h-3 w-3 sm:h-6 sm:w-6" />
+                    </button><button className="text-red-500 bg-white p-2 rounded-full text-lg sm:!w-auto !gap-0" title="Bloquer cet utilisateur" onClick={blockInteraction}>
+                        <NoSymbolIcon className="h-3 w-3 sm:h-6 sm:w-6" />
+                    </button>
+                    <button className="text-orange-500 bg-white p-2 rounded-full text-lg sm:!w-auto !gap-0" title="Signaler cet utilisateur" onClick={ReportInteraction}>
+                        <FlagIcon className="h-3 w-3 sm:h-6 sm:w-6" />
+                    </button>
+                </>
+                }   
             </div>
             
 		</>

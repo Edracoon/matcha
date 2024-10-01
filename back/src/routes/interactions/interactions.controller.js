@@ -321,6 +321,22 @@ class interactionsController {
         return res.status(200).json({ hasLiked: hasLiked ? true : false });
     }
 
+    static async IsMatch (req, res) {
+        const userId = req.user.id;
+
+        if (!req.body.receiverId)
+            return res.status(400).json({ error: "Missing receiverId" });
+
+        const hasLiked = await db.findOne("LIKES", { type: "like", likedBy: req.body.receiverId, gotLiked: userId });
+
+        const isLikedBack = await db.findOne("LIKES", { type: "like", likedBy: userId, gotLiked: req.body.receiverId });
+
+        if (hasLiked && isLikedBack) {
+            return res.status(200).json({ isMatch: true });
+        }
+        return res.status(200).json({ isMatch: false});
+    }
+
 }
 
 export default interactionsController;
