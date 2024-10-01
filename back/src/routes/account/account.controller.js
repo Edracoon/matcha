@@ -66,7 +66,7 @@ class AccountController {
         try {
             const alreadyExist = await sql.find("USER" , { id: req.user.id, username });
 
-            if (!alreadyExist) {
+            if (alreadyExist.length === 0) {
                 await sql.update("USER", { id: req.user.id }, { username });
 
 
