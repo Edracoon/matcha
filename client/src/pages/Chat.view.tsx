@@ -231,6 +231,21 @@ export default function ChatView() {
             });
         });
 
+        socket.on('Notif', (data) => {
+            apiService({
+                method: 'GET',
+                path: '/getMatches',
+                token: cookies.accessToken,
+                onSuccess: (data) => {
+                    console.log(data);
+                    setMatches(data);
+                },
+                onError: (error) => {
+                    console.log(error);
+                }
+            });
+        });
+
         return () => {
             socket.off('userDisconnected');
         }

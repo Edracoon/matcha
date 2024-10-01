@@ -149,6 +149,21 @@ class interactionsController {
 
         try {
             await db.insert("BLOCKLIST", blockToInsert);
+            await db.delete("LIKES", { likedBy: userId, gotLiked: receiverId });
+            await db.delete("LIKES", { likedBy: receiverId, gotLiked: userId });
+            await db.delete("NOTIF", { senderId: userId, receiverId: receiverId, category: "liked" });
+            await db.delete("NOTIF", { senderId: receiverId, receiverId: userId, category: "liked" });
+            const notif = {
+                senderId: userId,
+                receiverId: receiverId,
+                category: "unliked",
+                date: new Date(),
+                seen: false,
+            };
+            await db.insert("NOTIF", notif);
+            SocketService.NotifHandler(notif);
+            updateFameRating(receiverId);
+
         } catch (e) {
             return res.status(400).json({ error: e });
         }

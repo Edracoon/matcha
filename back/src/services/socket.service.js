@@ -30,21 +30,34 @@ const Authenticate = async (token, socket) => {
     }
 }
 
-const isMatch = async (userId, receiverId) => {
+async function isMatch(userId, receiverId) {
     try {
-        const like2 = await db.findOne("LIKES", { likerId: receiverId, likedId: userId });
         const like1 = await db.findOne("LIKES", { likerId: userId, likedId: receiverId });
+        const like2 = await db.findOne("LIKES", { likerId: receiverId, likedId: userId });
         return like1 && like2;
     } catch (e) {
         return false;
     }
 }
 
+// const isMatch = async (userId, receiverId) => {
+//     try {
+//         const like2 = await db.findOne("LIKES", { likerId: receiverId, likedId: userId });
+//         const like1 = await db.findOne("LIKES", { likerId: userId, likedId: receiverId });
+//         return like1 && like2;
+//     } catch (e) {
+//         return false;
+//     }
+// }
+
 export default class SocketService {
 
     static async NotifHandler(Notif) {
         // console.log("Notif", Notif);
-
+        const isBlocked = await db.findOne("BLOCKLIST", { didBlockId: Notif.receiverId, gotBlockId: Notif.senderId });
+        const isOtherBlocked = await db.findOne("BLOCKLIST", { didBlockId: Notif.senderId, gotBlockId: Notif.receiverId });
+        if (isBlocked || isOtherBlocked)
+            return;
         const userSocket = UsersSocket.find((u) => u.id === Notif.receiverId);
         if (userSocket) {
             // console.log("User connected");
@@ -96,7 +109,9 @@ export default class SocketService {
             if (!user)
                 return;
             if (data.receiverId && data.content) {
-                if (!isMatch(user.id, data.receiverId))
+                const like1 = await db.findOne("LIKES", { type: "like", likedBy: user.id, gotLiked: data.receiverId });
+                const like2 = await db.findOne("LIKES", { type: "like", likedBy: data.receiverId, gotLiked: user.id });
+                if (!like1 || !like2)
                     return;
                 const message = {
                     senderId: user.id,
