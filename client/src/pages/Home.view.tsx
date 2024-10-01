@@ -111,8 +111,8 @@ export default function HomeView() {
             <FilterComponent filters={filters} onFilterChange={handleFilterChange} isOpen={isFilterOpen} setIsOpen={setIsFilterOpen}/>
 			<div className="p-12 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4 ">
 				{loading && 
-					Array.from({ length: 16 }).map(() => (
-						<div className='animate-pulse rounded-lg bg-indigo-500 p-4 text-left'>
+					Array.from({ length: 16 }).map((_, index: number) => (
+						<div key={index} className='animate-pulse rounded-lg bg-indigo-500 p-4 text-left'>
 							<img alt="" className="animate-pulse aspect-[13/14] w-full rounded-lg object-cover" src={""} />
 							<div className='flex flex-row justify-center w-full gap-4 pt-2'>
 								<button className="text-red-400 bg-white p-2 rounded-full text-lg sm:!w-auto z-10 !gap-0 z-1">

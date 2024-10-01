@@ -126,9 +126,9 @@ export default function VerifyAccount() {
 
 			<div className="mt-6 sm:mx-auto sm:w-full sm:max-w-sm">
 				<p>We sent the code to 
-					<p className="font-semibold leading-6 text-indigo-400 hover:text-indigo-300">
+					<span className="font-semibold leading-6 text-indigo-400 hover:text-indigo-300">
 					{user?.email}
-					</p>
+					</span>
 				</p>
 				<div className="mb-6 flex justify-center">					
 					<div id="digits" className="mt-6 flex flex-row">

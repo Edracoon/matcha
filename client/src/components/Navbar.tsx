@@ -41,7 +41,7 @@ export default function Navbar({ sx }: { sx?: string }) {
 
     const getNotificationMessage = (notif) => {
 
-        console.log("NotifFromGetMessage", notif.notif.category);
+        // console.log("NotifFromGetMessage", notif.notif.category);
         
         // Fonction pour retourner un message personnalisé en fonction du type de notification
         switch (notif.notif.category) {
@@ -66,14 +66,14 @@ export default function Navbar({ sx }: { sx?: string }) {
 
     useEffect(() => {
         if (!isOpen) return;
-        console.log("Notif to update", notifs);
+        // console.log("Notif to update", notifs);
         apiService({
             method: 'POST',
             path: "/updateNotifs",
             token: cookies.accessToken,
             options: { data: { notifs: notifs } },
             onSuccess: (data) => {
-                console.log("New Notifs ->", data);
+                // console.log("New Notifs ->", data);
                 setNotifs(data);
             },
             onError: (error) => {
@@ -95,13 +95,13 @@ export default function Navbar({ sx }: { sx?: string }) {
             path: '/getNotifs',
             token: cookies.accessToken,
             onSuccess: (data) => {
-                console.log(data);
+                // console.log(data);
                 setNotifs(data);
             },
             onError: () => { }
         });
 
-        console.log("Cookies", cookies);
+        // console.log("Cookies", cookies);
 
         
         
@@ -118,13 +118,15 @@ export default function Navbar({ sx }: { sx?: string }) {
                 path: '/getNotifs',
                 token: cookies.accessToken,
                 onSuccess: (data) => {
-                    console.log(data);
+                    // console.log(data);
                     setNotifs(data);
                 },
                 onError: () => { }
             });
         });
     }, [cookies.accessToken]);
+
+
 
 	return (
 		<Disclosure as="div" className={"bg-indigo-600 " + sx} >
