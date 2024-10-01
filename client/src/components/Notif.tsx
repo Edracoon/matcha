@@ -1,4 +1,4 @@
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client'; // Nouvelle méthode
 import { Fragment, useEffect, useState } from 'react'
 import { Transition } from '@headlessui/react'
 import { CheckCircleIcon, XCircleIcon, InformationCircleIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline'
@@ -88,12 +88,13 @@ export const showNotification = (type: NotifType, headline: string, message?: st
   document.body.appendChild(container);
 
   const onClose = () => {
-    ReactDOM.unmountComponentAtNode(container);
+    root.unmount();
     container.remove();
   };
- 
-  ReactDOM.render(
-    <Notif type={type} headline={headline} message={message} onClose={onClose} />,
-    container
+
+  // Utilisation de createRoot au lieu de ReactDOM.render
+  const root = createRoot(container);
+  root.render(
+    <Notif type={type} headline={headline} message={message} onClose={onClose} />
   );
 };

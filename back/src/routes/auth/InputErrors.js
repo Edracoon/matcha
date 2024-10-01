@@ -31,12 +31,17 @@ export default class InputErrors {
 	}
 
 	static password(password) {
+        const regex = /^(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).+$/;
+
+
 		if (!password || password === "")
 			return "Provide a valid password";
 		else if (password.length < 7)
 			return "Password must at least be 7 characters long";
 		else if (password.length > 72)
 			return "Password must be less than 72 characters";
+        else if (!regex.test(password))
+            return "Password must contain at least one uppercase letter, one number and one special character";
 		return undefined;
 	}
 
