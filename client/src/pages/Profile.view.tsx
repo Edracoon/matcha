@@ -197,6 +197,19 @@ export default function ProfileView() {
 		return ret
 	}
 
+	function formatLastConnection(lastConnection: any) {
+		const lastDate = new Date(lastConnection);
+		
+		const day = String(lastDate.getDate()).padStart(2, '0');
+		const month = String(lastDate.getMonth() + 1).padStart(2, '0'); // Months are zero-indexed, so add 1
+		const year = lastDate.getFullYear();
+		
+		const hours = String(lastDate.getHours()).padStart(2, '0');
+		const minutes = String(lastDate.getMinutes()).padStart(2, '0');
+	
+		return `${day}/${month}/${year} at ${hours}:${minutes}`;
+	}
+
 	return (
 		<>
 			<Navbar />
@@ -236,8 +249,8 @@ export default function ProfileView() {
                             </div>
                             <p className="text-xs leading-5 text-gray-400">Offline</p>
                             { profile?.lastConnection &&
-                            <p className="mt-1 text-xs leading-5 text-gray-400">
-                                Last seen <time dateTime={profile.lastConnection}>{profile.lastConnection}</time>
+                            <p className="text-xs leading-5 text-gray-400">
+                                since {formatLastConnection(profile.lastConnection)}
                             </p>
                             }
                         </div>

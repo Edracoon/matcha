@@ -6,6 +6,11 @@ import Navbar from '../components/Navbar';
 import UserCard, { UserType } from '../components/UserCard';
 import FilterComponent from '../components/FilterComponent';
 
+type SortBy = {
+	by: 'age' | 'fame' | 'distance' | 'tag' | 'none';
+	asc: boolean;
+};
+
 export default function HomeView() {
 
 	const { cookies } = useAuth();
@@ -13,7 +18,17 @@ export default function HomeView() {
 	const [loading, setLoading] = useState(true);
 	const [users, setUsers] = useState<UserType[]>([]);
     const [isFilterOpen, setIsFilterOpen] = useState(false);
-    const [tags, setTags] = useState([]);
+    const [_, setTags] = useState([]);
+	const [sort, setSort] = useState<SortBy>({ by: 'none', asc: true });
+
+	const [filters, setFilters] = useState({
+		ageMin: 18,
+		ageMax: 100,
+		fameMin: 1,
+		fameMax: 100,
+		distance: 100,
+		selectedTags: [],
+	});
 
 	useEffect(() => {
 		setLoading(true);
@@ -41,43 +56,29 @@ export default function HomeView() {
 	}, []);
 
     function search() {
-        if (!isFilterOpen){
-            setLoading(true);
-            apiService({
-                method: 'POST',
-                path: '/search',
-                token: cookies.accessToken,
-                onSuccess: (data) => {
-                    setUsers(data.users);
-                    setLoading(false);
-                },
-                onError: () => { }
-            })
-            return ;
-        }
 		apiService({
 			method: 'POST',
 			path: '/search',
 			token: cookies.accessToken,
 			options: { 
-                data: {
-                    ageGap: {
-                        min: filters.ageMin, 
-                        max: filters.ageMax
-                    }, 
-                    fameGap: {
-                        min: filters.fameMin / 100,
-                        max: filters.fameMax / 100
-                    },
-                    distanceGap: {
-                        min: 0, 
-                        max: filters.distance
-                    }, 
-                    tags: filters.selectedTags 
-                }
-            },
+				data: {
+					ageGap: {
+						min: filters.ageMin, 
+						max: filters.ageMax
+					}, 
+					fameGap: {
+						min: filters.fameMin / 100,
+						max: filters.fameMax / 100
+					},
+					distanceGap: {
+						min: 0, 
+						max: filters.distance
+					}, 
+					tags: filters.selectedTags 
+				}
+			},
 			onSuccess: (data) => {
-                console.log("Refresh data with filters : ", data);
+				console.log("Refresh data with filters : ", data);
 				setUsers(data.users);
 				setLoading(false);
 			},
@@ -85,30 +86,42 @@ export default function HomeView() {
 		})
     }
 
-	const [filters, setFilters] = useState({
-		ageMin: 18,
-		ageMax: 100,
-		fameMin: 1,
-		fameMax: 100,
-		distance: 100,
-		selectedTags: [],
-	});
-
 	useEffect(() => {
 		search();
 	}, [cookies.accessToken, filters.ageMax, filters.ageMin, filters.distance, filters.fameMax, filters.fameMin, filters.selectedTags, isFilterOpen]);
 
-      const handleFilterChange = (newFilters) => {
-        setFilters((prevFilters) => ({
-          ...prevFilters,
-          ...newFilters, // Met à jour uniquement les parties modifiées du filtre
-        }));
-      };
+	const handleFilterChange = (newFilters: any) => {
+		setFilters((prevFilters) => ({
+			...prevFilters,
+			...newFilters, // Met à jour uniquement les parties modifiées du filtre
+		}));
+	};
+
+	useEffect(() => {
+		if (sort.by === 'none') {
+			search();
+			return ;
+		}
+		setUsers((val) => 
+		  [...val].sort((a, b) => { // Créer une copie du tableau avec `slice` pour éviter de muter `val`.
+			if (sort.by === 'age') 
+			  return sort.asc ? b.age - a.age : a.age - b.age;
+			else if (sort.by === 'fame')
+			  return sort.asc ? b.fameRating - a.fameRating : a.fameRating - b.fameRating ;
+			else if (sort.by === 'distance')
+			  return sort.asc ? b.Distance - a.Distance : a.Distance - b.Distance ;
+			else if (sort.by === 'tag')
+			  return sort.asc ? b.CommonTags - a.CommonTags : a.CommonTags - b.CommonTags;
+			return 0;
+		  })
+		);
+	}, [sort]);
+
 
 	return (
 		<>
 			<Navbar />
-            <FilterComponent filters={filters} onFilterChange={handleFilterChange} isOpen={isFilterOpen} setIsOpen={setIsFilterOpen}/>
+            <FilterComponent filters={filters} onFilterChange={handleFilterChange} isOpen={isFilterOpen} setIsOpen={setIsFilterOpen} sort={sort} setSort={setSort}/>
 			<div className="p-12 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4 ">
 				{loading && 
 					Array.from({ length: 16 }).map((_, index: number) => (

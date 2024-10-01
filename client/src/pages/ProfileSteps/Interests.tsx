@@ -97,11 +97,11 @@ export default function StepInterests() {
 	return (
 		<div className='flex py-4 flex-col gap-8 min-h-[400px] justify-center'>
 			<h1 className="text-2xl">What are you interested in { user?.username } ?</h1>
-			<div className='h-96 w-full !rounded-lg flex flex-col gap-4 justify-center'>
-				<div className="flex sm:flex-row flex-col justify-center gap-4">
-					{ tagLists.length && <div className="grid grid-cols-4 gap-4">
+			<div className='h-96 w-full !rounded-lg flex flex-col gap-4 justify-between'>
+				<div className="flex p-12 sm:pt-48 sm:flex-row flex-col justify-center gap-4">
+					{ tagLists.length && <div className="flex flex-wrap gap-4">
 						{tagLists.map((tag, index) => (
-						<div key={index} onClick={() => toggleSelectTag(tag)} className={classNames(tag.isSelected ? "bg-green-500/30" : "bg-white/10", "cursor-pointer flex flex-col gap-1  px-3 py-1 rounded-full text-sm")}>
+						<div key={index} onClick={() => toggleSelectTag(tag)} className={classNames(tag.isSelected ? "bg-indigo-500/30" : "bg-white/10", "cursor-pointer flex flex-col gap-1  px-3 py-1 rounded-full text-sm")}>
 							{tag.content}
 						</div>
 						))}

@@ -135,25 +135,32 @@ function ChatComponent({match}) {
 
 function MatchCards({match, onClicked, unLike}) {
 
-
-    // useEffect(() => {
-        
-    //     })}, []);
+    function formatLastConnection(lastConnection: any) {
+		const lastDate = new Date(lastConnection);
+		
+		const day = String(lastDate.getDate()).padStart(2, '0');
+		const month = String(lastDate.getMonth() + 1).padStart(2, '0'); // Months are zero-indexed, so add 1
+		const year = lastDate.getFullYear();
+		
+		const hours = String(lastDate.getHours()).padStart(2, '0');
+		const minutes = String(lastDate.getMinutes()).padStart(2, '0');
+	
+		return `${day}/${month}/${year} at ${hours}:${minutes}`;
+	}
 
     return (
             <li key={match.id} className="flex justify-between gap-x-6 py-5" onClick={onClicked}>
               <div className="flex min-w-0 gap-x-4">
                 <img alt="" src={match.pictures[0]} className="h-12 w-12 flex-none rounded-full bg-gray-800 object-cover" />
                 <div className="min-w-0 flex-auto">
-                  <p className="text-sm font-semibold leading-6 text-white">{match.firstname}</p>
-                  <p className="mt-1 truncate text-xs leading-5 text-gray-400">{match.age}</p>
+                  <p className="text-sm font-semibold leading-6 text-white">{match.firstname}, {match.age}</p>
                 </div>
               </div>
               <div className="hidden shrink-0 sm:flex sm:flex-col sm:items-end">
-                <p className="text-sm leading-6 text-white">{match.distance}</p>
+			  	<p className="text-sm leading-6 text-gray-300">{Math.round(match.distance)} km</p>
                 {!match.isConnected ? (
-                  <p className="mt-1 text-xs leading-5 text-gray-400">
-                    Last seen <time dateTime={match.lastConnection}>{match.lastConnection}</time>
+                  <p className="text-xs leading-5 text-gray-400">
+                    {formatLastConnection(match.lastConnection)}
                   </p>
                 ) : (
                   <div className="mt-1 flex items-center gap-x-1.5">
@@ -272,34 +279,34 @@ export default function ChatView() {
         }
     }, [matches, selectedMatch]);
 
-    return (
-        <div className='h-screen flex flex-grow flex-col'>
-            <Navbar />
-            <div className='flex flex-grow flex-row overflow-hidden'>
-                <div className="w-96 bg-indigo-500 p-4 overflow-y-scroll">
-                    <ul role="list" className="divide-y divide-gray-800">
-                        { matches.map((match) => (
-                            <div key={match.id}>
-                                <button key={match.id} onClick={() => nav('/profile/' + match.id)}>
-                                    <MatchCards match={match} onClicked={() => setSelectedMatch(match)} />
-                                </button>
-                                <div className='flex flex-row justify-between'>
-                                    <button onClick={() => unLike(match)}>
-                                        <HandThumbDownIcon className="h-6 w-6 text-white" />
-                                    </button>
-                                    <button onClick={() => setSelectedMatch(match)}>
-                                        <ChatBubbleBottomCenterIcon className="h-6 w-6 text-white" />
-                                    </button>
-                                </div>
-                                
-                            </div>
-                        ))}
-                    </ul>
-                </div>
-                { selectedMatch && 
-                    <ChatComponent match={selectedMatch}/>
-                }
-            </div>
-        </div>
-    );
+	return (
+		<div className='h-screen flex flex-grow flex-col'>
+			<Navbar />
+			<div className='flex flex-grow flex-row overflow-hidden'>
+				<div className="w-96 bg-indigo-500 p-4 overflow-y-scroll">
+					<ul role="list" className="divide-y divide-gray-800">
+						{ matches.map((match) => (
+							<div key={match.id}>
+								<button key={match.id} onClick={() => nav('/profile/' + match.id)}>
+									<MatchCards match={match} onClicked={() => setSelectedMatch(match)} />
+								</button>
+								<div className='flex flex-row justify-between'>
+									<button onClick={() => unLike(match)}>
+										<HandThumbDownIcon className="h-6 w-6 text-white" />
+									</button>
+									<button onClick={() => setSelectedMatch(match)}>
+										<ChatBubbleBottomCenterIcon className="h-6 w-6 text-white" />
+									</button>
+								</div>
+								<div className='mt-2 border-[1px] border-indigo-300'></div>
+							</div>
+						))}
+					</ul>
+				</div>
+				{ selectedMatch && 
+					<ChatComponent match={selectedMatch}/>
+				}
+			</div>
+		</div>
+	);
 }

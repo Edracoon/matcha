@@ -15,6 +15,7 @@ import ProfileView from './pages/Profile.view'
 import MatchsView from './pages/Matchs.view'
 import ChatView from './pages/Chat.view'
 import ProfileSteps from './pages/ProfileSteps/ProfileSteps.view'
+import ForgotPassword from './pages/ForgotPassword'
 
 // Socket.io
 import { socket } from './socket';
@@ -60,6 +61,9 @@ function App() {
 				
 				{/* Profile */}
 				<Route path="/profile/:id" element={<ProtectedLayout> <ProfileView /> </ProtectedLayout>} />
+
+				{/* Forgot Password */}
+				<Route path="/forgot-password" element={<ForgotPassword />} />
 
 				{/* 404 */}
 				<Route path="*" element={<NotFound404View />} />

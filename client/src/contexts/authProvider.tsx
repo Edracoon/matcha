@@ -33,7 +33,7 @@ interface AuthContextType {
 	login: (username: string, password: string) => Promise<unknown>,
 	logout: () => void,
 	register: (data: { email: string, firstname: string, lastname: string, age: number, username: string, password: string, confirmPassword: string }) => void,
-	confirmEmailWithCode: () => {},
+	confirmEmailWithCode: (emailValidationCode: string) => {},
 	isLogged: () => Promise<boolean>,
 	isProfileNotComplete: () => Promise<ProfileNotComplete>
 }
@@ -98,7 +98,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 			},
 			onError: (error) => {
 				console.log("onError: ", error);
-				showNotification(NotifType.ERROR, "Couldn't register", error.data.error);
+				showNotification(NotifType.ERROR, error.data.error, error.data.errors[0] ?? "");
 			},
 		});
 	}
