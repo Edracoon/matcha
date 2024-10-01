@@ -26,7 +26,6 @@ class AccountController {
 			if (user)
 				return res.status(400).json({ error: `This email (${email}) is already taken.` });
 
-			// Store the updates for later
 			toUpdate.emailValidationCode = (Math.floor(Math.random() * (999999 - 100000) + 100000)).toString();
 			toUpdate.emailValidated = false;
 			toUpdate.email = email;
@@ -41,14 +40,44 @@ class AccountController {
 			toUpdate.lastname = lastname;
 
 		try {
-			sql.update("USER", { id: req.user.id }, toUpdate);
+            if (Object.keys(toUpdate).length > 0)
+			    await sql.update("USER", { id: req.user.id }, toUpdate);
 		} catch (mongoError) {
-			// TODO: CHANGER CECI
-			return ErrorsService.mongooseErrorHandler(mongoError, req, res);
+            console.log("mongoError", mongoError);
+            return res.status(400).json({ error: mongoError });
 		}
-		const user = await sql.findOne("USER", { id: req.user.id });
-		return res.status(200).json({ user: user });
+        return res.status(200).json();
 	}
+
+    static async editUsername(req, res) {
+
+        const { username } = req.body;
+
+        if (!username)
+            return res.status(400).json({ error: "Invalid username" });
+
+        if (username.length < 3 || username.length > 20)
+            return res.status(400).json({ error: "Username must be between 3 and 20 characters" });
+
+        if (req.user.username === username)
+            return res.status(200).json();
+
+
+        try {
+            const alreadyExist = await sql.find("USER" , { id: req.user.id, username });
+
+            if (!alreadyExist) {
+                await sql.update("USER", { id: req.user.id }, { username });
+
+
+                return res.status(200).json({ username });
+            }
+
+            return res.status(400).json({ error: "Username already taken" });
+        } catch (e) {
+            return res.status(400).json({ error: e });
+        }
+    }
 
 	/**
 	 * POST to update the user location

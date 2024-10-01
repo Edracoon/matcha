@@ -18,6 +18,13 @@ accountRouter.post(
 	AccountController.editAccount
 );
 
+
+accountRouter.post(
+    "/account/edit-username",
+    AuthMiddleware,
+    AccountController.editUsername
+);
+
 /**
  * Update the genders of the user
  * @param { body: { lng, lat } }
