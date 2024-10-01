@@ -219,7 +219,7 @@ class interactionsController {
         const userId = req.user.id;
 
         try {
-            const likes = await db.findAll("LIKES");
+            const likes = await db.find("LIKES", { type: "like" });
 
             const mutualLikes = [];
 
@@ -232,7 +232,8 @@ class interactionsController {
                 if (reciprocalLike) {
                     // Ajouter uniquement les utilisateurs qui ne sont pas déjà dans le tableau
                     if (!mutualLikes.some((m) => (m.likedBy === like.likedBy && m.gotLiked === like.gotLiked))) {
-                        mutualLikes.push(like);
+                        if (like.likedBy === userId || like.gotLiked === userId)
+                            mutualLikes.push(like);
                     }
                 }
             });
@@ -249,7 +250,8 @@ class interactionsController {
                 user.pictures = pictures.map(picture => picture.url);
                 user.isConnected = SocketService.isConnected(user.id);
 
-                matches.push(UserSchema.methods.formatSafeUser(user));
+                if (user.id !== userId)
+                    matches.push(UserSchema.methods.formatSafeUser(user));
             }
 
 
