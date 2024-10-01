@@ -55,7 +55,7 @@ export default class InputErrors {
 		for (let key in inputs) {
 			if (!this[key]) continue ;
 			if (this[key](inputs[key]))
-				errors.push({ [key]: this[key](inputs[key]) });
+				errors.push(this[key](inputs[key]));
 		}
 		if (checkConfirm && inputs.password !== inputs.confirmPassword)
 			errors.push({ confirmPassword: "Passwords are not the same."});

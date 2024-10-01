@@ -22,5 +22,4 @@ export default function ConfirmModal({ isOpen, text, littleText, onConfirm, onCa
 		<div className="opacity-50 fixed inset-0 z-40 bg-gray-900"></div>
 		</>
 	)
-
 }

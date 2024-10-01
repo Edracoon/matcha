@@ -10,6 +10,8 @@ export default function ProtectedLayout({ children }: { children: React.ReactNod
 	const { isLogged, isProfileNotComplete, user } = useAuth();
 	const navigate = useNavigate();
 
+
+
 	const [loading, setLoading] = useState(true);
 
 	useEffect(() => {
@@ -30,7 +32,7 @@ export default function ProtectedLayout({ children }: { children: React.ReactNod
 				navigate("/verify-account");
 			}
 
-			else if (isNotComplete) {
+			else if (user?.emailValidated == true && isNotComplete) {
 				navigate("/profile-steps?step=" + isNotComplete.key);
 			}
 

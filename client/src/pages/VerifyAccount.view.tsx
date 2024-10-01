@@ -1,12 +1,17 @@
-import { useEffect, useState, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useState, useRef, ReactEventHandler } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/authProvider';
 import apiService from '../services/apiService';
+import { showNotification, NotifType } from '../components/Notif';
 
 export default function VerifyAccount() {
 
-	const { user, logout, confirmEmailWithCode } = useAuth();
+	const { user, cookies, logout, confirmEmailWithCode } = useAuth();
 	const navigate = useNavigate();
+
+	const location = useLocation();
+	const queryParams = new URLSearchParams(location.search);
+	const urlCode = queryParams.get('code');
 
 	const [code, setCode] = useState('');
 
@@ -20,16 +25,15 @@ export default function VerifyAccount() {
         useRef(null),
     ];
 
-	// Reset all inputs and clear state
-	const resetCode = () => {
-		inputRefs.forEach(ref => {
-			if (ref.current) {
-				ref.current.value = '';
-			}
-		});
-		inputRefs[0].current?.focus();
-		setCode('');
-	}
+	useEffect(() => {
+		if (urlCode) {
+			inputRefs.forEach((inputRef, index) => {
+				if (inputRef.current)
+					(inputRef.current as HTMLInputElement).value = urlCode.charAt(index);
+			});
+			setCode(urlCode);
+		}
+	}, [urlCode]);
 
 	// Call our callback when code = 6 chars
 	useEffect(() => {
@@ -37,78 +41,91 @@ export default function VerifyAccount() {
 			console.log("Code: ", code);
 			handleSubmit();
 		}
-	}, [code]); //eslint-disable-line
+	}, [code]);
+
+	// Reset all inputs and clear state
+	function resetCode() {
+		inputRefs.forEach(ref => {
+			if (ref.current) {
+				(ref.current as HTMLInputElement).value = '';
+			}
+		});
+		(inputRefs[0].current as HTMLInputElement | null)?.focus();
+		setCode('');
+	}
 
 	// Handle input
-	function handleInput(e, index) { 
+	function handleInput(e: React.ChangeEvent<HTMLInputElement>, index: number) {
 		const input = e.target;
 		const previousInput = inputRefs[index - 1];
 		const nextInput = inputRefs[index + 1];
 
 		// Update code state with single digit
 		const newCode = [...code];
-		// Convert lowercase letters to uppercase
-		if (/^[a-z]+$/.test(input.value)) {
-			const uc = input.value.toUpperCase();
-			newCode[index] = uc;
-			inputRefs[index].current.value = uc;
-		} else {
-			newCode[index] = input.value;
-		}
+		newCode[index] = input.value;
 		setCode(newCode.join(''));
 
 		input.select();
 
-		if (input.value === '') {
-			// If the value is deleted, select previous input, if exists
-			if (previousInput) {
-				previousInput.current.focus();
-			}
-		} else if (nextInput) {
+		// If the value is deleted, select previous input, if exists
+		if (input.value === '' && previousInput.current) {
+			(previousInput.current as HTMLInputElement).focus();
+		} else if (nextInput.current) {
 			// Select next input on entry, if exists
-			nextInput.current.select();
+			(nextInput.current as HTMLInputElement).select();
 		}
 	}
 
 	// Select the contents on focus
-	function handleFocus(e) {
-		e.target.select();
+	function handleFocus(e: React.FocusEvent<HTMLInputElement>) {
+		e.currentTarget.select();
 	}
 
 	// Handle backspace key
-	function handleKeyDown(e, index) {
-		const input = e.target;
+	function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>, index: number) {
+		const input = e.currentTarget;
 		const previousInput = inputRefs[index - 1];
-		const nextInput = inputRefs[index + 1];
 
-		if ((e.keyCode === 8 || e.keyCode === 46) && input.value === '') {
+		if ((e.key === 'Backspace' || e.key === 'Delete') && input.value === '') {
 			e.preventDefault();
 			setCode((prevCode) => prevCode.slice(0, index) + prevCode.slice(index + 1));
-			if (previousInput) {
-				previousInput.current.focus();
+			if (previousInput.current) {
+				(previousInput.current as unknown as HTMLInputElement).focus();
 			}
 		}
 	}
 
 	// Capture pasted characters
-	const handlePaste = (e) => {
+	function  handlePaste(e: React.ClipboardEvent<HTMLInputElement>) {
 		const pastedCode = e.clipboardData.getData('text');
 		if (pastedCode.length === 6) {
 			setCode(pastedCode);
 			inputRefs.forEach((inputRef, index) => {
 				if (inputRef.current)
-					inputRef.current.value = pastedCode.charAt(index);
+					(inputRef.current as HTMLInputElement).value = pastedCode.charAt(index);
 			});
 		}
 	};
 
-	const handleSubmit = () => {
+	function handleSubmit() {
 		console.log("Submit code");
 		confirmEmailWithCode(code);
 	}
 
-	const resendCode = () => {
+	function resendCode() {
 		console.log("Resend code");
+		apiService({
+			method: "GET",
+			path: "/auth/send-confirm-email",
+			token:cookies.accessToken,
+			onSuccess: () => {
+				console.log("Code resent");
+				showNotification(NotifType.SUCCESS, 'Code sent', 'Check your mails');
+			},
+			onError: (error) => {
+				console.log("Error: ", error);
+			}
+		});
 	};
 
 	return (

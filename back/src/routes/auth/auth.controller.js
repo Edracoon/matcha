@@ -28,11 +28,12 @@ class AuthController {
 				errors.push({ [key]: "This field is required." });
 		errors = [...errors, ...InputErrors.checkMultipleInput(req.body, true)];
 		if (errors.length > 0)
-			return res.status(400).json({ error: "All fields are required", errors});
+			return res.status(400).json({ error: "Some fields are invalid", errors});
 
 		let encryptedPass = await bcrypt.hash(req.body.password, saltRounds);
 
 		let user = null;
+		const code = Math.floor(100000 + Math.random() * 900000);
 		try {
 			user = await sql.insert("USER", {
 				firstname: req.body.firstname,
@@ -41,7 +42,7 @@ class AuthController {
 				age: req.body.age,
 				username: req.body.username,
 				password: encryptedPass,
-				emailValidationCode: Math.floor(100000 + Math.random() * 900000),
+				emailValidationCode: code,
 				emailValidated: false,
                 fameRating: 1.0,
 			});
@@ -51,7 +52,7 @@ class AuthController {
 			return res.status(400).json({ error: e });
 		}
 
-		await MailService.sendMail(user.email, "Confirm your registration to Matcha !", `Using your code: ${user.emailValidationCode}`);
+		await MailService.sendMail(user.email, "Confirm your registration to Matcha !", `Using your code: ${user.emailValidationCode}. Or click this link: ${Config.frontUrl}/verify-account?code=${code}`);
 
 		return res.status(200).json({ accessToken: jwt.sign({ user }, Config.jwtSecret, { expiresIn: "7d" }), user: UserSchema.methods.formatSafeUser(user) });
 	}
@@ -84,12 +85,15 @@ class AuthController {
 	 * Tested on Postman
 	 */
 	static async sendConfirmEmail(req, res) {
-		const newValidationCode = Math.floor(Math.random() * 1000000);
+		const newValidationCode = Math.floor(100000 + Math.random() * 900000);
 
-		// Update the user validationCode
-		sql.update("USER", { id: req.user.id }, { emailValidationCode: newValidationCode });
-
-		await MailService.sendMail(req.user.email, "Confirm your registration to Matcha !", `Click this link ${Config.frontUrl + "/verify-account/?validationCode=" + newValidationCode} or use your code: ${newValidationCode}`);
+		try {
+			// Update the user validationCode
+			await sql.update("USER", { id: req.user.id }, { emailValidationCode: newValidationCode });
+			await MailService.sendMail(req.user.email, "Confirm your registration to Matcha !", `Using your code: ${newValidationCode} or click this link: ${Config.frontUrl}/verify-account?code=${newValidationCode}`);
+		} catch (e) {
+			return res.status(400).json({ error : e });
+		}
 		return res.status(200).json({ message: "Email sent" });
 	}
 
@@ -123,14 +127,14 @@ class AuthController {
 		if (!user)
 			return res.status(400).json({ error: "No account is registered with this email." });
 
-		const resetPasswordCode =  Math.floor(100000 + Math.random() * 900000);
+		const resetPasswordCode = Math.floor(100000 + Math.random() * 900000);
 
 		// Update user with resetPasswordCode
 		try { await sql.update("USER", { id: user.id }, { resetPasswordCode }); }
 		catch (e) { return res.status(400).json({ error: e }); }
 
 		try {
-			await MailService.sendMail(email, "Reset your password", `This is your reset password code ${resetPasswordCode}. Click here to reset your password: " http://localhost:80/reset-password/${resetPasswordCode} "`);
+			MailService.sendMail(email, "Reset your password", `This is your reset password code ${resetPasswordCode} or click this link: ${Config.frontUrl}/forgot-password?code=${resetPasswordCode}`);
 		}
 		catch (e) {
 			console.log(e);
@@ -160,6 +164,12 @@ class AuthController {
 			return res.status(400).json({ error: "Invalid password" });
 		if (!confirmPassword)
 			return res.status(400).json({ error: "Invalid confirm password" });
+		if (password !== confirmPassword)
+			return res.status(400).json({ error: "Passwords are not the same" });
+
+		const checkPassword = InputErrors.password(password);
+		if (checkPassword)
+			return res.status(400).json({ error: checkPassword });
 		if (password !== confirmPassword)
 			return res.status(400).json({ error: "Passwords are not the same" });
 

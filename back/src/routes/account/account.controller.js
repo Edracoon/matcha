@@ -26,11 +26,11 @@ class AccountController {
 			if (user)
 				return res.status(400).json({ error: `This email (${email}) is already taken.` });
 
-			toUpdate.emailValidationCode = (Math.floor(Math.random() * (999999 - 100000) + 100000)).toString();
+			toUpdate.emailValidationCode = Math.floor(100000 + Math.random() * 900000);
 			toUpdate.emailValidated = false;
 			toUpdate.email = email;
 
-			await MailService.sendMail(email, "Email address change on Matcha", `To verify and secure your account, please enter the following email verification code ${req.user.emailValidationCode}`);
+			await MailService.sendMail(email, "Email address change on Matcha", `To verify and secure your account, please enter the following email verification code ${toUpdate.emailValidationCode} or click this link: ${Config.frontUrl}/verify-account?code=${toUpdate.emailValidationCode}`);
 		}
 
 		if (firstname && firstname !== req.user.firstname)
