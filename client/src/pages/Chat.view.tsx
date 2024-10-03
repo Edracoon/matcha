@@ -262,7 +262,7 @@ export default function ChatView() {
                 onSuccess: (data) => {
                     console.log(data);
                     setMatches(data);
-                    if (selectedMatch)
+                    if (selectedMatch && (data.notif.category === "unliked"))
                     {
                         if (!data.includes(match => match.id === selectedMatch.id))
                             setSelectedMatch(null);

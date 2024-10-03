@@ -32,7 +32,7 @@ async function apiService(
 	}
 	catch (error: any) {
 		//  redirect to "/login" if 401
-		if (error.response.status === 401 && window.location.pathname !== "/")
+		if (error.response && error.response.status === 401 && window.location.pathname !== "/")
 			window.location.href = "/";
 		console.log("apiService error => ", error.response)
 		onError(error.response)
