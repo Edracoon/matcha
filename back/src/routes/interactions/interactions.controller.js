@@ -14,7 +14,10 @@ async function updateFameRating(UserId) {
     const likes = await db.find("LIKES", { gotLiked: UserId});
     const views = await db.find("VIEW", { viewed: UserId });
 
-    const fameRating = likes.length / (views.length || 1);
+    // Get unique viewers
+    const uniqueViewers = [...new Set(views.map(view => view.viewer))];
+
+    const fameRating = likes.length / (uniqueViewers.length || 1);
 
     await db.update("USER", { id: UserId }, { fameRating: fameRating });
 }
@@ -53,20 +56,26 @@ class interactionsController {
             const like = await db.insert("LIKES", likeToInsert);
             if (like.type === "like") {
                 const isLikedBack = await db.findOne("LIKES", { type: "like", likedBy: receiverId, gotLiked: userId });
-                let notif = {
-                    senderId: userId,
-                    receiverId: receiverId,
-                    category: isLikedBack ? "liked_back" : "liked",
-                    date: new Date(),
-                    seen: false,
-                };
-                notif = await db.insert("NOTIF", notif);
-                SocketService.NotifHandler(notif);
 
-                if (isLikedBack) {
-                    return res.status(200).json({ match: true });
+                // Check if the user is blocked
+                const isBlocked = await db.findOne("BLOCKLIST", { didBlockId: receiverId, gotBlockId: userId });
+
+                if (!isBlocked) {
+                    let notif = {
+                        senderId: userId,
+                        receiverId: receiverId,
+                        category: isLikedBack ? "liked_back" : "liked",
+                        date: new Date(),
+                        seen: false,
+                    };
+                    notif = await db.insert("NOTIF", notif);
+                    SocketService.NotifHandler(notif);
+
+                    if (isLikedBack) {
+                        return res.status(200).json({ match: true });
+                    }
+                    updateFameRating(receiverId);
                 }
-                updateFameRating(receiverId);
             }
         } catch (e) {
             console.log(e);
@@ -87,6 +96,8 @@ class interactionsController {
             await db.delete("LIKES", { likedBy: receiverId, gotLiked: userId });
             await db.delete("NOTIF", { senderId: userId, receiverId: receiverId, category: "liked" });
             await db.delete("NOTIF", { senderId: receiverId, receiverId: userId, category: "liked" });
+            await db.delete("MESSAGE", { senderId: userId, receiverId: receiverId });
+            await db.delete("MESSAGE", { senderId: receiverId, receiverId: userId });
             const notif = {
                 senderId: userId,
                 receiverId: receiverId,
@@ -118,16 +129,19 @@ class interactionsController {
         try {
             const view = await db.insert("VIEW", viewToInsert);
             if (view) {
-                const notif = {
-                    senderId: userId,
-                    receiverId: receiverId,
-                    category: "visited",
-                    date: new Date(),
-                    seen: false,
-                };
-                await db.insert("NOTIF", notif);
-                SocketService.NotifHandler(notif);
-                updateFameRating(receiverId);
+                const isBlocked = await db.findOne("BLOCKLIST", { didBlockId: receiverId, gotBlockId: userId });
+                if (!isBlocked) {
+                    const notif = {
+                        senderId: userId,
+                        receiverId: receiverId,
+                        category: "visited",
+                        date: new Date(),
+                        seen: false,
+                    };
+                    await db.insert("NOTIF", notif);
+                    SocketService.NotifHandler(notif);
+                    updateFameRating(receiverId);
+                }
             }
         } catch (e) {
             return res.status(400).json({ error: e });

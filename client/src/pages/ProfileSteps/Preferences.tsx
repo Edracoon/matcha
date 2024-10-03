@@ -13,8 +13,8 @@ export default function StepPreferences() {
 	const [_, setSearchParams] = useSearchParams();
 	const [isConfirmOpen, setIsConfirmOpen] = useState(false);
 
-	const [gender, setGender] = useState<OptionType | undefined>();
-	const [wantToMeet, setWantToMeet] = useState<OptionType | undefined>();
+	const [gender, setGender] = useState<OptionType | null>(null);
+	const [wantToMeet, setWantToMeet] = useState<OptionType | null>(null);
 
 	const [alreadySet, setAlreadySet ] = useState(false);
 

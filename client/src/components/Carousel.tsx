@@ -24,7 +24,11 @@ export default function Carousel({ urlsArray = [], isEdit = true, onAdd, onDelet
 		setPhotosArray(urlsArray);
 		const newIdx = urlsArray.length - 1;
 		setTimeout(() => {
-			carousel.style.transform = `translateX(-${newIdx}00%)`;
+            if (carousel)
+            {
+                if (carousel.style)
+                    carousel.style.transform = `translateX(-${newIdx}00%)`;
+            }
 			setPhotoIdx(newIdx);
 		}, 1000);
 	}, [urlsArray]);
