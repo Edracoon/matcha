@@ -19,6 +19,9 @@ async function updateFameRating(UserId) {
 
     const fameRating = likes.length / (uniqueViewers.length || 1);
 
+    if (fameRating > 1)
+        fameRating = 1;
+
     await db.update("USER", { id: UserId }, { fameRating: fameRating });
 }
 
