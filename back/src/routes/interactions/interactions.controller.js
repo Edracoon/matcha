@@ -43,7 +43,7 @@ const Distance = (lat1, lon1, lat2, lon2) => {
 class interactionsController {
 
     static async LikeInteraction(req, res) {
-        if (!req.body.receiverId)
+        if (!req.body.receiverId || !req.body.type)
             return res.status(400).json({ error: "Missing receiverId" });
 
         const userId = req.user.id;
@@ -217,6 +217,10 @@ class interactionsController {
 
     static async ReportUser(req, res) {
         const userId = req.user.id;
+
+        if (!req.body.reportedId)
+            return res.status(400).json({ error: "Missing reportedId" });
+
         const reportedId = req.body.reportedId;
 
         const reportToInsert = {
@@ -283,6 +287,10 @@ class interactionsController {
     }
 
     static async UpdateNotifs(req, res) {
+
+        if (!req.body.notifs)
+            return res.status(400).json({ error: "Missing notifs" });
+
         const notifs = req.body.notifs;
 
         console.log(notifs);
@@ -310,6 +318,10 @@ class interactionsController {
 
     static async GetMessages(req, res) {
         const userId = req.user.id;
+
+        if (!req.body.receiverId)
+            return res.status(400).json({ error: "Missing receiverId" });
+
         const receiverId = req.body.receiverId;
 
         try {
