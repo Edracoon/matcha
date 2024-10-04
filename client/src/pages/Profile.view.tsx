@@ -231,6 +231,7 @@ export default function ProfileView() {
 							))}
 						</div>}
 					</div>
+                    <span>{profile?.firstname} {profile?.lastname}</span>
                     <span>I am a {profile?.gender}</span>
                     <span>I am looking for {profile?.wantToMeet}</span>
                     <span>I am {profile?.age} years old</span>
@@ -253,6 +254,12 @@ export default function ProfileView() {
                                 since {formatLastConnection(profile.lastConnection)}
                             </p>
                             }
+                        </div>
+                      }
+                      {
+                        isMatch === true &&
+                        <div>
+                            <p className="text-xl font-bold text-red-500">It's a match!</p>
                         </div>
                       }
                       <p className="text-sm leading-6 text-gray-200 font-semibold">{Math.round(profile?.fameRating * 100)} 🔥</p>

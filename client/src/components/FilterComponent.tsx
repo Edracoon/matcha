@@ -151,7 +151,7 @@ const FilterComponent = ({ filters, onFilterChange, isOpen, setIsOpen, sort, set
 			)}
 			{isSortOpen && !isOpen && (
 				<div>
-					<div className='flex flex-row justify-center gap-2'>
+					<div className='flex flex-wrap justify-center gap-2'>
 						<span className='p-1 text-white'>Sort by </span>
 						<button onClick={() => onClickSort('age')} className={`flex flex-row gap-1 items-center px-3 py-1 rounded-full text-sm ${sort.by === 'age' ? 'bg-indigo-700 text-white' : 'bg-white text-gray-700'}`}>
 							<div>Age</div>
