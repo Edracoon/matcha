@@ -10,7 +10,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
 //   <React.StrictMode>
 	<BrowserRouter>
       <AuthProvider>
-		<APIProvider apiKey={"AIzaSyDUDV6IZYeo0uoRMQhC4dza6C7bpYkn7EM"}>
+		<APIProvider apiKey={"YOUR_GOOGLE_MAP_API_KEY"}>
           <App />
 		</APIProvider>
       </AuthProvider>
