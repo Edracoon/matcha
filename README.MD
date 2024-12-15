@@ -1,3 +1,1 @@
-## Test the SQLib
-## Create a faker
-## Create a visualizer for sql db in the admin panel
+## Made a SQL simple Library to act like an ORM
